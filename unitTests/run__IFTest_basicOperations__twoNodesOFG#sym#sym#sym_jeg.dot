@@ -1,0 +1,21 @@
+digraph JEG {
+  rankdir=TB;
+  68 [label = "in", shape = "ellipse"];
+  69 [label = "0()", shape = "diamond", color = "red"];
+  70 [label = "o1", shape = "note", color = "green"];
+  71 [label = "out", shape = "ellipse"];
+  72 [label = "1(0)", shape = "diamond", color = "red"];
+  73 [label = "o2", shape = "note", color = "green"];
+  74 [label = "out", shape = "ellipse"];
+  75 [label = "2(1)", shape = "diamond", color = "red"];
+  68 -> 69 [ label = "0", style = "solid" ];
+  69 -> 70 [ label = "1", style = "solid" ];
+  70 -> 71 [ label = "2", style = "solid" ];
+  71 -> 72 [ label = "3", style = "solid" ];
+  72 -> 69 [ label = "4", style = "dotted" ];
+  69 -> 73 [ label = "5", style = "solid" ];
+  73 -> 74 [ label = "6", style = "solid" ];
+  74 -> 75 [ label = "7", style = "solid" ];
+  75 -> 69 [ label = "8", style = "dotted" ];
+  69 -> 68 [ label = "9", style = "dotted" ];
+}

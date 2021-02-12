@@ -1,0 +1,3 @@
+
+### DIRECTORY SPECIFICS:
+encover.use_extended_state_id = false

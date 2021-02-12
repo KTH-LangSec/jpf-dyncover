@@ -1,0 +1,261 @@
+/*
+ * Copyright (C) 2012 ,  @author Gurvan Le Guernic
+ * 
+ * This file is part of ENCoVer. ENCoVer is a JavaPathFinder extension allowing
+ * to verify if a Java method respects different epistemic noninterference
+ * properties.
+ * 
+ * ENCoVer is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * ENCoVer is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * ENCoVer. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+options {
+  STATIC = true; // Set to true for performance
+  LOOKAHEAD = 2; // Reduce to maximize performance
+  // FORCE_LA_CHECK = true;
+  // CHOICE_AMBIGUITY_CHECK = 3;
+  ERROR_REPORTING = true; // Set to false for performance
+  CACHE_TOKENS = true;  // Set to true for performance, but is problematic with interactive programs
+}
+
+PARSER_BEGIN(Smt2Parser)
+
+  package se.kth.csc.jpf_encover;
+
+  import java.io.*;
+  import java.util.*;
+  import java.util.regex.*;
+
+  /**
+   * This class implements a parser for SMT2.
+   * 
+   * @author Gurvan Le Guernic
+   * @version 0.1
+   */
+  public class Smt2Parser {
+
+    private static final String REGEXP_TRUE = "true|t";
+    private static final String REGEXP_FALSE = "false|f";
+
+    private static boolean initialized = false;
+    private static Map<String,EE_Variable> pseudonym2variable = null;
+
+    /**
+     * Initializes the parser after class loading. To be called only once. If
+     * called more than once, it does not do anything.
+     */
+    public static void initialize() {
+      if (!initialized) new Smt2Parser(new StringReader(""));
+      initialized = true;
+    }
+
+    /**
+     * Parses the SMT2 string provided using the mapping from pseudonym to
+     * variables also provided. If this mapping is {@code null}, then it relies
+     * on the mapping to existing variables provided by EE_Variable.
+     *
+     * @param str The SMT2 streing to parse.
+     * @param pseudo2var The mapping from pseudonym to EE_Variable to use.
+     * @return The EExpression corresponding to {@code str}.
+     */
+    public static EExpression parse(String str, Map<String,EE_Variable> pseudo2var) throws ParseException {
+      if (!initialized) initialize();
+      pseudonym2variable = pseudo2var;
+      Smt2Parser.ReInit(new StringReader(str));
+      return Smt2Parser.start();
+    }
+
+    /**
+     * Retrieves a variable from its pseudonym. If a mapping has been provided
+     * when calling {@link parse(String, Map<String,EE_Variable>)}, then it uses
+     * it. Otherwise, it relies on the mapping to existing variables provided by
+     * EE_Variable. In any way, if this pseudonym is unknown, then it creates a
+     * new variable with an unknown type.
+     *
+     * @param pseudo The pseudonym of the EE_Variable to retrieve.
+     * @return The EE_Variable with this pseudonym.
+     */
+    private static EE_Variable getVarWithPseudo(String pseudo) {
+      EE_Variable res;
+      if ( pseudonym2variable != null ) {
+        res = pseudonym2variable.get(pseudo);
+      } else {
+        try { res = EE_Variable.getExistingVariableWithPseudonym(pseudo); }
+        catch(Error e) { res = null; }
+      }
+      if ( res == null ) res = new EE_Variable(EExpression.Type.UNKNOWN, pseudo);
+      return res;
+    }
+
+    /**
+     * Transforms a {@link String} to the corresponding {@link Boolean} if the
+     * string is correspond to the regular expression "{@value #REGEXP_TRUE}" or
+     * "{@value #REGEXP_FALSE}". Otherwise, it throws an exception.
+     *
+     * @param str The String to parse.
+     * @return The Boolean corresponding to str.
+     */
+    private static Boolean decodeBoolean(String str) throws Exception {
+      Pattern pattern_true = Pattern.compile(REGEXP_TRUE, Pattern.CASE_INSENSITIVE);
+      Pattern pattern_false = Pattern.compile(REGEXP_FALSE, Pattern.CASE_INSENSITIVE);
+      if ( pattern_true.matcher(str).matches() ) {
+        return Boolean.TRUE;
+      } else if ( pattern_false.matcher(str).matches() ) {
+        return Boolean.FALSE;
+      } else {
+        throw new Exception("'" + str + "' is not a boolean.");
+      }
+    }
+
+    /**
+     * Local testing method.
+     */
+    public static void main(String[] args) throws ParseException, TokenMgrError {
+      String test1 = "(not (or (<= x 0) (<= x -2.86)))";
+      System.out.println(test1 + " -> " + Smt2Parser.parse(test1, null));
+      String test2 = "(let (($x35 (<= x -1))) (not $x35))";
+      System.out.println(test2 + " -> " + Smt2Parser.parse(test2, null));
+      String test3 = "(not (or (= b True) f))";
+      System.out.println(test3 + " -> " + Smt2Parser.parse(test3, null));
+    }
+  }
+PARSER_END(Smt2Parser)
+
+SKIP : { " " | "\t" }
+SKIP : { "\n" | "\r" | "\n\r" }
+
+TOKEN: { < LET: "let" > }
+TOKEN: { < BOOL: ( ["t","T"] "rue" | ["f","F"] "alse" ) > }
+TOKEN: { < INT: ((("-")? (["0"-"9"])+) | ("(- " (["0"-"9"])+ ")")) > }
+TOKEN: { < REAL: ((("-")? (["0"-"9"])* "." (["0"-"9"])+) | ("(- " (["0"-"9"])* "." (["0"-"9"])+ ")")) > }
+TOKEN: { < L_PAR: "(" > }
+TOKEN: { < R_PAR: ")" > }
+TOKEN: { < VAR: ((["$","?"] (["a"-"z","A"-"Z","0"-"9"])+) | ("a!" (["0"-"9"])+)) > }
+TOKEN: { < STR: (~["(",")","$","?","!"," "])+ > }
+
+EExpression start() : {
+  EExpression res;
+}{
+  res = formula(new HashMap<String,EExpression>()) { return res; }
+}
+
+EExpression formula(Map<String,EExpression> env) : {
+  EExpression formula;
+}{
+    ( formula = atom(env) | formula = varCall(env) | formula = op(env) | formula = let(env) )
+    { return formula; }
+}
+
+EExpression atom(Map<String,EExpression> env) : {
+  Token a;
+  EExpression.Type t;
+  Object value = null;
+  EExpression res;
+}{
+  (
+   (
+    a = <BOOL> {
+      t = EExpression.Type.BOOL;
+      try { value = decodeBoolean(a.toString()); }
+      catch(Exception e) { throw new Error(e); }
+    }
+   |
+    a = <INT> {
+      t = EExpression.Type.INT; 
+      try { value = new Integer(a.toString().replaceAll("[() ]", "")); }
+      catch(NumberFormatException e) { throw new Error(e); }
+    }
+   |
+    a = <REAL> {
+      t = EExpression.Type.REAL; 
+      try { value = new Double(a.toString().replaceAll("[() ]", "")); }
+      catch(NumberFormatException e) { throw new Error(e); }
+    }
+   )
+   { res = new EE_Constant(t, value); }
+  |
+   a = <STR> {
+     String vPseudo = a.toString();
+     res = getVarWithPseudo(vPseudo);
+   }
+  )
+    { return res; }
+}
+
+EExpression varCall(Map<String,EExpression> env) : {
+  Token v;
+}{
+  v = <VAR> {
+    String vName = v.toString();
+    if (env.containsKey(vName)) {
+      return env.get(vName);
+    } else {
+      throw new Error("Usage of unbounded variable " + vName);
+    }
+  }
+}
+
+EExpression op(Map<String,EExpression> env) : {
+  Token  op;
+  EExpression arg;
+  List<EExpression> fmlArgs = new ArrayList();
+}{
+  <L_PAR> op = <STR> ( arg = formula(env) { fmlArgs.add(arg); } )* <R_PAR>
+    {
+      String opStr = op.toString();
+      int nbArgs = fmlArgs.size();
+      EE_Operation eop = EExpression.getInstanceOf(EFormula.StrEncoding.SMT2, opStr);
+      if (eop instanceof EE_UnaryOperation) {
+        if ( nbArgs != 1) throw new Error("Parsing an SMT2 operation with the wrong number of operands: " + opStr);
+        ((EE_UnaryOperation) eop).setOperand(fmlArgs.get(0));
+      }
+      if (eop instanceof EE_BinaryOperation) {
+        if ( nbArgs != 2) throw new Error("Parsing an SMT2 operation with the wrong number of operands: " + opStr);
+        ((EE_BinaryOperation) eop).setLeftHandSide(fmlArgs.get(0));
+        ((EE_BinaryOperation) eop).setRightHandSide(fmlArgs.get(1));
+      }
+      if (eop instanceof EE_TernaryOperation) {
+        if ( nbArgs != 3) throw new Error("Parsing an SMT2 operation with the wrong number of operands: " + opStr);
+        ((EE_TernaryOperation) eop).setOperand1(fmlArgs.get(0));
+        ((EE_TernaryOperation) eop).setOperand2(fmlArgs.get(1));
+        ((EE_TernaryOperation) eop).setOperand3(fmlArgs.get(2));
+      }
+      if (eop instanceof EE_NaryOperation) {
+        ((EE_NaryOperation) eop).addOperands(fmlArgs);
+      }
+      return eop;
+    }
+}
+
+EExpression let(Map<String,EExpression> env) : {
+  Token v;
+  String vName;
+  EExpression fmlDef;
+  EExpression fmlIn;
+}{
+  <L_PAR> <LET>
+    <L_PAR>
+      ( <L_PAR>
+        v = <VAR> { vName = v.toString(); }
+        fmlDef = formula(env)
+        <R_PAR> { env.put(vName, fmlDef); }
+        )+
+      <R_PAR>
+    fmlIn = formula(env)
+  <R_PAR>
+    { return fmlIn; }
+}
+
+// Local Variables: 
+// c-basic-offset: 2
+// indent-tabs-mode: nil
+// End:

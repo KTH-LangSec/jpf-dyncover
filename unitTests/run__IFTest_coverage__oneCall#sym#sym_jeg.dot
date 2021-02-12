@@ -1,0 +1,17 @@
+digraph JEG {
+  rankdir=TB;
+  1 [label = "in", shape = "ellipse"];
+  2 [label = "0()", shape = "diamond", color = "red"];
+  3 [label = "out", shape = "ellipse"];
+  4 [label = "1(0)", shape = "diamond", color = "red"];
+  5 [label = "out", shape = "ellipse"];
+  6 [label = "2(1)", shape = "diamond", color = "red"];
+  1 -> 2 [ label = "0", style = "solid" ];
+  2 -> 3 [ label = "1", style = "solid" ];
+  3 -> 4 [ label = "2", style = "solid" ];
+  4 -> 2 [ label = "3", style = "dotted" ];
+  2 -> 5 [ label = "4", style = "solid" ];
+  5 -> 6 [ label = "5", style = "solid" ];
+  6 -> 2 [ label = "6", style = "dotted" ];
+  2 -> 1 [ label = "7", style = "dotted" ];
+}

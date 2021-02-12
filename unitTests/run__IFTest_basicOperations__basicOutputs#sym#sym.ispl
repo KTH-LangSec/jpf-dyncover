@@ -1,0 +1,103 @@
+-- Template ISPL file
+ Agent  Environment 
+
+   Obsvars :
+   outS1: { empty,   s,   douzeAAA12,   12douze,   EtAmaintenantA24A,   six };
+   outI1: -2..2;
+   shape: { empty,   S1,   I1 };
+
+   end   Obsvars 
+
+   Vars :
+   s: String;
+   i: -2..2;
+   
+   state: { Init, V0, V1, V2, V3, V4, V5, V6 };
+   end   Vars 
+
+   Actions = { Init, gotoV0, gotoV1, gotoV2, gotoV3, gotoV4, gotoV5, gotoV6 };
+
+   Protocol :
+    ( true)  and state =  Init : { gotoV0 };
+    ( true)  and state =  V0 : { gotoV1 };
+    ( true)  and state =  V1 : { gotoV2 };
+    ( true)  and state =  V2 : { gotoV3 };
+    ( true)  and state =  V3 : { gotoV4 };
+    ( true)  and state =  V4 : { gotoV5 };
+    ( true)  and state =  V5 : { gotoV6 };
+
+   end   Protocol 
+   Evolution :
+    outI1 = 6 and shape = I1  and state =  V0 if Action = gotoV0;
+    outS1 = six and shape = S1  and state =  V1 if Action = gotoV1;
+    outI1 = i and shape = I1  and state =  V2 if Action = gotoV2;
+    outS1 = s and shape = S1  and state =  V3 if Action = gotoV3;
+    outS1 = 12douze and shape = S1  and state =  V4 if Action = gotoV4;
+    outS1 = douzeAAA12 and shape = S1  and state =  V5 if Action = gotoV5;
+    outS1 = EtAmaintenantA24A and shape = S1  and state =  V6 if Action = gotoV6;
+
+   end   Evolution 
+ end Agent 
+
+
+ Agent  Attacker 
+
+   Vars :
+   nstep: 0..100; 
+    
+   obsI1L1: -2..2;
+   obsI1L3: -2..2;
+   obsS1L2: { empty,   s,   douzeAAA12,   12douze,   EtAmaintenantA24A,   six };
+   obsS1L7: { empty,   s,   douzeAAA12,   12douze,   EtAmaintenantA24A,   six };
+   obsS1L4: { empty,   s,   douzeAAA12,   12douze,   EtAmaintenantA24A,   six };
+   obsS1L6: { empty,   s,   douzeAAA12,   12douze,   EtAmaintenantA24A,   six };
+   obsS1L5: { empty,   s,   douzeAAA12,   12douze,   EtAmaintenantA24A,   six };
+   obsShapeL4: { empty,   S1,   I1 };
+   obsShapeL3: { empty,   S1,   I1 };
+   obsShapeL6: { empty,   S1,   I1 };
+   obsShapeL5: { empty,   S1,   I1 };
+   obsShapeL7: { empty,   S1,   I1 };
+   obsShapeL2: { empty,   S1,   I1 };
+   obsShapeL1: { empty,   S1,   I1 };
+
+
+   end   Vars 
+
+   Actions = {none};
+
+   Protocol :
+    Other: {none};
+   end   Protocol 
+
+   Evolution :
+    (nstep = nstep + 1) if nstep < 1;
+    obsI1L1 = Environment.outI1 and obsShapeL1 = Environment.shape and  (nstep = nstep + 1) if nstep = 1;
+    obsS1L2 = Environment.outS1 and obsShapeL2 = Environment.shape and  (nstep = nstep + 1) if nstep = 2;
+    obsI1L3 = Environment.outI1 and obsShapeL3 = Environment.shape and  (nstep = nstep + 1) if nstep = 3;
+    obsS1L4 = Environment.outS1 and obsShapeL4 = Environment.shape and  (nstep = nstep + 1) if nstep = 4;
+    obsS1L5 = Environment.outS1 and obsShapeL5 = Environment.shape and  (nstep = nstep + 1) if nstep = 5;
+    obsS1L6 = Environment.outS1 and obsShapeL6 = Environment.shape and  (nstep = nstep + 1) if nstep = 6;
+    obsS1L7 = Environment.outS1 and obsShapeL7 = Environment.shape and  (nstep = nstep + 1) if nstep = 7;
+    
+   end   Evolution 
+ end Agent 
+
+ Evaluation 
+  eot if Environment.state=Environment.state;
+  i0 if Environment.i=-2;
+  i1 if Environment.i=-1;
+  i2 if Environment.i=0;
+  i3 if Environment.i=1;
+  i4 if Environment.i=2;
+
+ end Evaluation
+
+
+ InitStates 
+  Environment.state = Init and Environment.shape = empty and Attacker.nstep = 0 and Attacker.obsShapeL1 = empty and Environment.outI1 = 0 and Attacker.obsI1L1 = 0 and Attacker.obsShapeL2 = empty and Environment.outS1 = empty and Attacker.obsS1L2 = empty and Attacker.obsShapeL3 = empty and Environment.outI1 = 0 and Attacker.obsI1L3 = 0 and Attacker.obsShapeL4 = empty and Environment.outS1 = empty and Attacker.obsS1L4 = empty and Attacker.obsShapeL5 = empty and Environment.outS1 = empty and Attacker.obsS1L5 = empty and Attacker.obsShapeL6 = empty and Environment.outS1 = empty and Attacker.obsS1L6 = empty and Attacker.obsShapeL7 = empty and Environment.outS1 = empty and Attacker.obsS1L7 = empty ;
+ end InitStates 
+
+ Formulae 
+  AG(eot and  eot);
+ end Formulae 
+

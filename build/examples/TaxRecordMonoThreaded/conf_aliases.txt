@@ -1,0 +1,6 @@
+MainClass   | TaxRecordMonoThreaded.EncoverTests
+inputsAlice | incomeAlice, charityAlice, paymentAlice
+fTaxesAlice | (* incomeAlice 100)
+vTaxesAlice | (let (($slice 10) ($v 1) ($income incomeAlice)) (let (($fs (div $income $slice))) (let (($sumFs (+ (* (+ $fs 1) (div $fs 2)) (* (div (+ $fs 1) 2) (mod $fs 2))))) (+ (* $sumFs $v $slice 10) (* (+ $fs 1) $v (mod $income $slice) 10)))))
+inputsBob   | incomeBob, charityBob, paymentBob
+fTaxesBob   | (* incomeBob 100)

@@ -1,0 +1,37 @@
+CONFIGURATION:
+  input domains:
+  leaked input expressions: (a)
+  harbored input expressions: (b)
+
+OUTPUT FLOW GRAPH:
+([root, end], [(root,end)])
+
+Contains variables:
+
+
+
+INTERFERENCE FORMULA:
+vacuously true ∧ a = a_bis ∧ b ≠ b_bis ∧ vacuously false
+
+SIMPLIFIED INTERFERENCE FORMULA:
+vacuously true ∧ a = a_bis ∧ b ≠ b_bis ∧ vacuously false
+
+SMT-BASED VERIFICATION: The program is noninterfering.
+
+TIMING ESTIMATIONS:
+  overall: 2071.5 ms (2071510765)
+  model extraction: 317.9 ms (317903106)
+  interference formula generation: 8.8 ms (8846352)
+  interference formula satisfaction: 41.8 ms (41865060)
+
+OFG SIZE:
+  number of nodes: 0
+  number of edges: 0
+  depth of OFG: 0
+  width of OFG: 0
+
+FORMULA SIZE:
+  number of distinct variables: 4
+  number of atomic formulas: 2
+  number of instances of variables or constants: 4
+

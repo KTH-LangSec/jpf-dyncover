@@ -1,0 +1,48 @@
+### JPF properties to run the example
+
+### TESTS CONFIGURATION:
+target = PaperCSF.DoubleLoop
+target_args = 1 5
+symbolic.method = PaperCSF.DoubleLoop.whileLoops(con#sym)
+symbolic.undefined = -2147483648
+encover.testNameSuffix = whileLoops-5
+encover.inputDomains = 
+encover.leakedInputs = 
+encover.harboredInputs = secret
+encover.observable = *.print*(O)
+
+### MAIN JPF CONFIGURATION:
+@using = jpf-symbc
+@using = jpf-encover
+sourcepath = .;${config_path}/../../src/examples
+classpath = .;${config_path}/../../build/examples
+
+### LISTENER TO USE:
+listener = se.kth.csc.jpf_encover.EncoverListener
+
+### VM configuration:
+vm.insn_factory.class = gov.nasa.jpf.symbc.SymbolicInstructionFactory
+# To achieve all-paths coverage by switching off execution state matching
+vm.storage.class = nil
+
+### SEARCH CONFIGURATION
+# search.multiple_errors = true # instruct jpf not to stop at first error
+
+### SYMBOLIC EXECUTION CONGIGURATION:
+## One of: "choco", "choco2", "coral", "iasolver", "cvc3", "cvc3bitvec", "yices",
+##         "debug", "compare", "no_solver"
+# symbolic.dp = choco
+# symbolic.choco_time_bound=1000
+# symbolic.string_dp = automata
+
+### ENCOVER CONGIGURATION:
+encover.debug_mode = false
+encover.use_extended_state_id = true
+encover.simplify_ofg = false
+encover.simplify_expressions = false
+# encover.verifiers = SMT, EMC
+encover.verifiers = SMT
+# encover.additional_outputs = config, sot, itf_fml, sitf_fml, timings, metrics
+encover.additional_outputs = config, timings, metrics
+# encover.byProducts = SOT, ISPL
+encover.byProducts = 

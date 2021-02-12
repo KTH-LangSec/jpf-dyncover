@@ -1,0 +1,40 @@
+CONFIGURATION:
+  input domains:
+  leaked input expressions:
+  harbored input expressions:
+
+OUTPUT FLOW GRAPH:
+([root, end, V0, V1], [(root,V0), (V0,end), (root,V1), (V1,end)])
+
+Contains variables: i
+
+V0 = “Yep3Ok” [[ IFF i = 3 ]] [[ UTC vacuously true ]]
+V1 = “Hmm3NO” [[ IFF i ≠ 3 ]] [[ UTC vacuously true ]]
+
+
+INTERFERENCE FORMULA:
+vacuously true ∧ vacuously true ∧ vacuously false ∧ (i ≠ 3 ∧ (¬ (i_bis ≠ 3 ∧ “Hmm3NO” = “Hmm3NO”) ∧ ¬ (i_bis = 3 ∧ “Yep3Ok” = “Hmm3NO”)) ∨ i = 3 ∧ (¬ (i_bis ≠ 3 ∧ “Hmm3NO” = “Yep3Ok”) ∧ ¬ (i_bis = 3 ∧ “Yep3Ok” = “Yep3Ok”)))
+
+SIMPLIFIED INTERFERENCE FORMULA:
+vacuously true ∧ vacuously true ∧ vacuously false ∧ (i ≠ 3 ∧ (¬ (i_bis ≠ 3 ∧ “Hmm3NO” = “Hmm3NO”) ∧ ¬ (i_bis = 3 ∧ “Yep3Ok” = “Hmm3NO”)) ∨ i = 3 ∧ (¬ (i_bis ≠ 3 ∧ “Hmm3NO” = “Yep3Ok”) ∧ ¬ (i_bis = 3 ∧ “Yep3Ok” = “Yep3Ok”)))
+
+SMT-BASED VERIFICATION: The program is noninterfering.
+
+TIMING ESTIMATIONS:
+  overall: 637.3 ms (637351418)
+  model extraction: 55.6 ms (55630557)
+  interference formula generation: 0.6 ms (636120)
+  interference formula satisfaction: 28.2 ms (28234017)
+  MCMAS model generation: 1.2 ms (1254301)
+
+OFG SIZE:
+  number of nodes: 2
+  number of edges: 0
+  depth of OFG: 1
+  width of OFG: 2
+
+FORMULA SIZE:
+  number of distinct variables: 2
+  number of atomic formulas: 10
+  number of instances of variables or constants: 20
+

@@ -1,0 +1,26 @@
+CONFIGURATION:
+  input domains:
+  leaked input expressions:
+  harbored input expressions: (secret)
+
+SMT-BASED VERIFICATION: The program is interfering.
+  secret -> 0
+  secret_bis -> -1
+
+TIMING ESTIMATIONS:
+  overall: 265.7 ms (265753194)
+  model extraction: 47.6 ms (47625471)
+  interference formula generation: 1.2 ms (1260244)
+  interference formula satisfaction: 52.4 ms (52457055)
+
+OFG SIZE:
+  number of nodes: 3
+  number of edges: 0
+  depth of OFG: 1
+  width of OFG: 3
+
+FORMULA SIZE:
+  number of distinct variables: 2
+  number of atomic formulas: 34
+  number of instances of variables or constants: 68
+

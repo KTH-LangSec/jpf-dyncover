@@ -1,0 +1,83 @@
+-- Template ISPL file
+ Agent  Environment 
+
+   Obsvars :
+   outI1: -2..2;
+   shape: { empty,   I1 };
+
+   end   Obsvars 
+
+   Vars :
+   h: boolean;
+   
+   state: { Init, V0, V1, V2, V3 };
+   end   Vars 
+
+   Actions = { Init, gotoV0, gotoV1, gotoV2, gotoV3 };
+
+   Protocol :
+    ( true)  and state =  Init : { gotoV0 };
+    ( true)  and state =  V0 : { gotoV1 };
+    ( !(h = 0))  and state =  V1 : { gotoV2 };
+    ( !(h = 0))  and state =  V2 : { gotoV3 };
+
+   end   Protocol 
+   Evolution :
+    outI1 = 0 and shape = I1  and state =  V0 if Action = gotoV0;
+    outI1 = 1 and shape = I1  and state =  V1 if Action = gotoV1;
+    outI1 = 2 and shape = I1  and state =  V2 if Action = gotoV2;
+    outI1 = 3 and shape = I1  and state =  V3 if Action = gotoV3;
+
+   end   Evolution 
+ end Agent 
+
+
+ Agent  Attacker 
+
+   Vars :
+   nstep: 0..100; 
+    
+   obsI1L1: -2..2;
+   obsI1L2: -2..2;
+   obsI1L3: -2..2;
+   obsI1L4: -2..2;
+   obsShapeL4: { empty,   I1 };
+   obsShapeL3: { empty,   I1 };
+   obsShapeL2: { empty,   I1 };
+   obsShapeL1: { empty,   I1 };
+
+
+   end   Vars 
+
+   Actions = {none};
+
+   Protocol :
+    Other: {none};
+   end   Protocol 
+
+   Evolution :
+    (nstep = nstep + 1) if nstep < 1;
+    obsI1L1 = Environment.outI1 and obsShapeL1 = Environment.shape and  (nstep = nstep + 1) if nstep = 1;
+    obsI1L2 = Environment.outI1 and obsShapeL2 = Environment.shape and  (nstep = nstep + 1) if nstep = 2;
+    obsI1L3 = Environment.outI1 and obsShapeL3 = Environment.shape and  (nstep = nstep + 1) if nstep = 3;
+    obsI1L4 = Environment.outI1 and obsShapeL4 = Environment.shape and  (nstep = nstep + 1) if nstep = 4;
+    
+   end   Evolution 
+ end Agent 
+
+ Evaluation 
+  eot if Environment.state=Environment.state;
+  hT if Environment.h=true;
+  hF if Environment.h=false;
+
+ end Evaluation
+
+
+ InitStates 
+  Environment.state = Init and Environment.shape = empty and Attacker.nstep = 0 and Attacker.obsShapeL1 = empty and Environment.outI1 = 0 and Attacker.obsI1L1 = 0 and Attacker.obsShapeL2 = empty and Environment.outI1 = 0 and Attacker.obsI1L2 = 0 and Attacker.obsShapeL3 = empty and Environment.outI1 = 0 and Attacker.obsI1L3 = 0 and Attacker.obsShapeL4 = empty and Environment.outI1 = 0 and Attacker.obsI1L4 = 0 ;
+ end InitStates 
+
+ Formulae 
+  AG(!K(Attacker,!(hT and hT)) and !K(Attacker,!(hT and hF)) and !K(Attacker,!(hF and hT)) and !K(Attacker,!(hF and hF)) and  eot);
+ end Formulae 
+

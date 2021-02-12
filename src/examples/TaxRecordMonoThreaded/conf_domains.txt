@@ -1,0 +1,3 @@
+simplestTest | incomeAlice[0,100]
+onePayer     | incomeAlice[0,100]; charityAlice[0,100]; paymentAlice[0,100]
+twoPayers    | incomeAlice[0,100]; charityAlice[0,100]; paymentAlice[0,100]; incomeBob[0,100]; charityBob[0,100]; paymentBob[0,100]

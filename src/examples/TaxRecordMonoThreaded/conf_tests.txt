@@ -1,0 +1,21 @@
+mono-smpl-Alice-F      | {{MainClass}} | 0 FIX      | {{MainClass}}.simplestTest(sym) | Alice      | incomeAlice | 
+mono-smpl-Alice-V      | {{MainClass}} | 0 VARIABLE | {{MainClass}}.simplestTest(sym) | Alice      | incomeAlice | 
+mono-smpl-taxChecker-F | {{MainClass}} | 0 FIX      | {{MainClass}}.simplestTest(sym) | taxChecker |             | incomeAlice
+mono-smpl-taxChecker-V | {{MainClass}} | 0 VARIABLE | {{MainClass}}.simplestTest(sym) | taxChecker |             | incomeAlice
+mono-smpl-charity-F    | {{MainClass}} | 0 FIX      | {{MainClass}}.simplestTest(sym) | charity    |             | incomeAlice
+mono-smpl-charity-V    | {{MainClass}} | 0 VARIABLE | {{MainClass}}.simplestTest(sym) | charity    |             | incomeAlice
+mono-oneP-Alice-F       | {{MainClass}} | 1 FIX      | {{MainClass}}.onePayer(sym#sym#sym) | Alice      | {{inputsAlice}} | 
+mono-oneP-Alice-V       | {{MainClass}} | 1 VARIABLE | {{MainClass}}.onePayer(sym#sym#sym) | Alice      | {{inputsAlice}} | 
+mono-oneP-taxChecker1-F | {{MainClass}} | 1 FIX      | {{MainClass}}.onePayer(sym#sym#sym) | taxChecker | (> (+ {{fTaxesAlice}} charityAlice) paymentAlice) | {{inputsAlice}}
+mono-oneP-taxChecker2-F | {{MainClass}} | 1 FIX      | {{MainClass}}.onePayer(sym#sym#sym) | taxChecker | (- (+ {{fTaxesAlice}} charityAlice) paymentAlice) | {{inputsAlice}}
+mono-oneP-taxChecker3-F | {{MainClass}} | 1 FIX      | {{MainClass}}.onePayer(sym#sym#sym) | taxChecker | (let (($toBePayed (+ {{fTaxesAlice}} charityAlice))) (ite (< paymentAlice $toBePayed) (- 1) (- paymentAlice $toBePayed))) | {{inputsAlice}}
+# mono-oneP-taxChecker2-V | {{MainClass}} | 1 VARIABLE | {{MainClass}}.onePayer(sym#sym#sym) | taxChecker | (- (+ {{fTaxesAlice}} charityAlice) paymentAlice) | {{inputsAlice}}
+mono-oneP-taxChecker4-V | {{MainClass}} | 1 VARIABLE | {{MainClass}}.onePayer(sym#sym#sym) | taxChecker | (let (($toBePayed (+ {{vTaxesAlice}} charityAlice))) (ite (< paymentAlice $toBePayed) (- 1) (- paymentAlice $toBePayed))) | {{inputsAlice}}
+mono-oneP-charity-F     | {{MainClass}} | 1 FIX      | {{MainClass}}.onePayer(sym#sym#sym) | charity    | | {{inputsAlice}}
+mono-oneP-charity-V     | {{MainClass}} | 1 VARIABLE | {{MainClass}}.onePayer(sym#sym#sym) | charity    | | {{inputsAlice}}
+mono-twoP-Alice-F       | {{MainClass}} | 2 FIX      | {{MainClass}}.twoPayers(sym#sym#sym#sym#sym#sym) | Alice      | {{inputsAlice}} | {{inputsBob}}
+mono-twoP-Alice-V       | {{MainClass}} | 2 VARIABLE | {{MainClass}}.twoPayers(sym#sym#sym#sym#sym#sym) | Alice      | {{inputsAlice}} | {{inputsBob}}
+mono-twoP-taxChecker3-F | {{MainClass}} | 2 FIX      | {{MainClass}}.twoPayers(sym#sym#sym#sym#sym#sym) | taxChecker | (let (($toBePayed (+ {{fTaxesAlice}} charityAlice))) (ite (< paymentAlice $toBePayed) (- 1) (- paymentAlice $toBePayed))), (let (($toBePayed (+ {{fTaxesBob}} charityBob))) (ite (< paymentBob $toBePayed) (- 1) (- paymentBob $toBePayed))) | {{inputsAlice}}, {{inputsBob}}
+mono-twoP-taxChecker4-V | {{MainClass}} | 2 VARIABLE | {{MainClass}}.twoPayers(sym#sym#sym#sym#sym#sym) | taxChecker | (let (($toBePayed (+ {{vTaxesAlice}} charityAlice))) (ite (< paymentAlice $toBePayed) (- 1) (- paymentAlice $toBePayed))), (let (($toBePayed (+ {{vTaxesBob}} charityBob))) (ite (< paymentBob $toBePayed) (- 1) (- paymentBob $toBePayed))) | {{inputsAlice}}, {{inputsBob}}
+mono-twoP-charity-F     | {{MainClass}} | 2 FIX      | {{MainClass}}.twoPayers(sym#sym#sym#sym#sym#sym) | charity    | (+ charityAlice charityBob) | {{inputsAlice}}, {{inputsBob}}
+mono-twoP-charity-V     | {{MainClass}} | 2 VARIABLE | {{MainClass}}.twoPayers(sym#sym#sym#sym#sym#sym) | charity    | (+ charityAlice charityBob) | {{inputsAlice}}, {{inputsBob}}

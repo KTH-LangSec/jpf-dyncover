@@ -1,0 +1,26 @@
+digraph OFG {
+  rankdir=TB;
+  V1 [label = "V1", shape = "octagon", shape = "doubleoctagon"];
+  V3 [label = "V3", shape = "octagon", shape = "doubleoctagon"];
+  V0 [label = "V0", shape = "octagon", ];
+  V7 [label = "V7", shape = "octagon", ];
+  V5 [label = "V5", shape = "octagon", shape = "doubleoctagon"];
+  V4 [label = "V4", shape = "octagon", ];
+  V6 [label = "V6", shape = "octagon", shape = "doubleoctagon"];
+  V2 [label = "V2", shape = "octagon", ];
+  V8 [label = "V8", shape = "octagon", shape = "doubleoctagon"];
+  V0FakedSrc [ label="", shape="none" ];
+  V0FakedSrc -> V0;
+  V0 -> V1;
+  V7FakedSrc [ label="", shape="none" ];
+  V7FakedSrc -> V7;
+  V7 -> V8;
+  V4FakedSrc [ label="", shape="none" ];
+  V4FakedSrc -> V4;
+  V4 -> V5;
+  V4 -> V6;
+  V2FakedSrc [ label="", shape="none" ];
+  V2FakedSrc -> V2;
+  V2 -> V3;
+  label="Output Flow Graph";
+}
