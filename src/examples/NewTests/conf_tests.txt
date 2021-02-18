@@ -1,0 +1,5 @@
+leak         | NewTests.Simple | 5 | NewTests.Simple.leak(sym#sym) | print | | secret
+
+
+
+
