@@ -253,8 +253,7 @@ public class OFG_Handler {
    * @param harbored A set of expressions corresponding to the harbored information.
    * @return An interference formula for the provided OFG.
    */
-  public static EFormula
-    generateInterferenceFormula(
+  public static EFormula generateInterferenceFormula(
       OutputFlowGraph ofg, Map<EE_Variable,List<EE_Constant>> domains,
       Set<EExpression> leaked, Set<EExpression> harbored
     ) {
@@ -336,11 +335,13 @@ public class OFG_Handler {
     while ( vIte1.hasNext() ) {
       OFG_Vertex v1 = vIte1.next();
       EFormula pc1 = v1.getPathCondition();
+      
       List<EExpression> o1 = OFG_Handler.getOutputSequence(ofg, v1);
 
       EF_Conjunction v1Formula = new EF_Conjunction();
       v1Formula.append(v1.getPathCondition());
 
+      
       EF_Conjunction bigInner = new EF_Conjunction();
 
       Iterator<OFG_Vertex> vIte2 = vertices.iterator();

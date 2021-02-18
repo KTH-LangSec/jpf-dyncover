@@ -164,7 +164,7 @@ public class EncoverListener extends SymbolicListener {
     testStartMethodBaseName = EncoverConfiguration.get_testStartMethodBaseName();
     symbolicTestSignature = EncoverConfiguration.get_symbolicTestSignature();
     formattedTestName = EncoverConfiguration.get_formattedTestName();
-
+    
     patternForObservableOnCall = EncoverConfiguration.get_patternForObservableOnCall();
     argPatForObservableOnCall = EncoverConfiguration.get_argPatForObservableOnCall();
     observablePosInCall = EncoverConfiguration.get_observablePosInCall();
@@ -177,7 +177,7 @@ public class EncoverListener extends SymbolicListener {
     inputDomains =  EncoverConfiguration.get_inputDomains();
     leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions();
     harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions();
-
+    	
     encoverOutFileName = GENERIC_OUT_FILE_NAME.replaceAll("%s", formattedTestName);
     PrintWriter tmpPW = null;
     try {
@@ -212,13 +212,14 @@ public class EncoverListener extends SymbolicListener {
       InvokeInstruction invInstr = (InvokeInstruction) instr;
       MethodInfo methInfo = invInstr.getInvokedMethod();
       String invokedMethodBaseName = methInfo.getBaseName();
-
+      
       // if (log.DEBUG_MODE) {
       //   log.println("execute InvokeInstruction");
       //   log.println("  invokedMethodBaseName = " + invokedMethodBaseName);
       //   log.println("  symbolicTestSignature = " + symbolicTestSignature);
       //   log.flush();
       // }
+      
 
       if ( testStartMethodBaseName.startsWith(invokedMethodBaseName) ) {
         if (log.DEBUG_MODE) log.println("Calling " + invokedMethodBaseName);
@@ -228,7 +229,7 @@ public class EncoverListener extends SymbolicListener {
       
       if ( symbolicTestSignature.startsWith(invokedMethodBaseName) ) {
         if (log.DEBUG_MODE) log.println("Calling " + invokedMethodBaseName);
-      
+        
         doOn_TestedMethodInvocation(vm);
         doOn_codeAnalysisStart(vm);
       
@@ -236,9 +237,10 @@ public class EncoverListener extends SymbolicListener {
       }
 
       if ( isCodeAnalysisRunning ) {
-
+    	  
         if ( patternForObservableOnCall != null ) {
           Matcher m = patternForObservableOnCall.matcher(methInfo.getFullName());
+          
           if ( m != null && m.matches() ) {
             if (log.DEBUG_MODE) log.println("Observable on call match: " + methInfo.getFullName());
 
@@ -252,6 +254,7 @@ public class EncoverListener extends SymbolicListener {
             Boolean matchArguments = true;
             if ( argPatForObservableOnCall != null ) {
               String[] argPatterns = argPatForObservableOnCall[groupIndex - 1];
+              
               if ( argPatterns != null )
                 for (int i = 0; matchArguments && i < argPatterns.length; i++) {
                   String argPat = argPatterns[i];
@@ -269,7 +272,7 @@ public class EncoverListener extends SymbolicListener {
             }
 
             if (log.DEBUG_MODE) log.println(" matchArguments = " + matchArguments);
-
+            
             if (matchArguments) {
               int obsPos = observablePosInCall[groupIndex - 1];
               Object obsVal = JPFHelper.getArgumentAtPosition(vm, invInstr, obsPos);
@@ -284,7 +287,7 @@ public class EncoverListener extends SymbolicListener {
       ThreadInfo threadInfo = vm.getLastThreadInfo();
       MethodInfo methInfo = instr.getMethodInfo();
       ReturnInstruction retInstr = (ReturnInstruction) instr;
-
+      
       if ( patternForObservableOnReturn != null ) {
         Matcher m = patternForObservableOnReturn.matcher(methInfo.getFullName());
         if ( m.matches() ) {
@@ -1082,6 +1085,7 @@ public class EncoverListener extends SymbolicListener {
   private void doOn_ObservableEvent(JVM vm, Object obsVal) {
 
     EExpression outputExpr = JPFHelper.symbolicStateValue2eExpression(obsVal);
+    
     EFormula pcF = JPFHelper.vm2pcFormula(vm);
 
     if (log.DEBUG_MODE) log.println(outputExpr + " [[ IFF " + pcF + " ]]");
@@ -1089,7 +1093,7 @@ public class EncoverListener extends SymbolicListener {
       
     OFG_Vertex v = ofg.registerOutput(outputExpr, pcF);
     // if (log.DEBUG_MODE) log.println(" created OFG vertex " + v.getId());
-
+    
     if (log.DEBUG_MODE) log.println();
   }
 

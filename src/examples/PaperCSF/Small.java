@@ -38,7 +38,7 @@ public class Small {
     try { testNb = Integer.parseInt(params[0]); }
     catch(Exception e) { System.out.println(e); }
 
-    if ( 0 < testNb && testNb < 5 ) {
+    if ( 0 < testNb && testNb < 6 ) {
       switch (testNb) {
       case 1: 
 	Small.empty();
@@ -51,6 +51,9 @@ public class Small {
         break;
       case 4: 
         Small.voidSecretTest(0);
+        break;
+    case 5: 
+        Small.leak(0);
         break;
       }
     }
@@ -71,6 +74,10 @@ public class Small {
   public static void voidSecretTest(int secret) {
     if ( secret == 0 ) System.out.println(secret);
     else System.out.println(0);
+  }
+  
+    public static void leak(int secret) {
+        System.out.println(-1);
   }
 
 }

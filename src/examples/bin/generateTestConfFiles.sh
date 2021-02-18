@@ -27,7 +27,7 @@ domainsFile=${dir}"/conf_domains.txt";
 observablesFile=${dir}"/conf_observableByAgents.txt";
 dirSpecificsFile=${dir}"/conf_dirSpecifics.txt";
 
-grep -Ev "^#|^[:space:]*$" ${testsFile} | while read line
+grep -Ev "^#|^[[:space:]]*$" ${testsFile} | while read line
 do
     testName=$(echo $(echo ${line} | cut -d '|' -f 1));
     target=$(echo $(echo ${line} | cut -d '|' -f 2));
@@ -48,7 +48,7 @@ do
 	    aliasName=$(echo $(echo ${line} | cut -d '|' -f 1));
 	    aliasCntt=$(echo $(echo ${line} | cut -d '|' -f 2));
 	    testConfFileName="$(echo "${testConfFileName}" | sed "s/{{${aliasName}}}/${aliasCntt}/g")";
-	done < <(grep -Ev "^#|^[:space:]*$" ${aliasesFile});
+	done < <(grep -Ev "^#|^[[:space:]]*$" ${aliasesFile});
     fi;
 	    echo "${testConfFileName}";
 
@@ -93,7 +93,7 @@ do
 
     if [[ -f ${aliasesFile} ]];
     then
-	grep -Ev "^#|^[:space:]*$" ${aliasesFile} | while read line
+	grep -Ev "^#|^[[:space:]]*$" ${aliasesFile} | while read line
 	do
 	    aliasName=$(echo $(echo ${line} | cut -d '|' -f 1));
 	    aliasCntt=$(echo $(echo ${line} | cut -d '|' -f 2));

@@ -90,6 +90,7 @@ class EncoverConfiguration {
     return (targetArgs.length > 0 ? targetArgs[0] : null);
   }
 
+  // [AMA] I think there is a bug here, the returned name of the method is not correct 
   /**
    * Returns the base name of the start method.
    *

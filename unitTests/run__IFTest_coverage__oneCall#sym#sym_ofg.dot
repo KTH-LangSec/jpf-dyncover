@@ -1,4 +1,0 @@
-digraph OFG {
-  rankdir=TB;
-  label="Output Flow Graph";
-}

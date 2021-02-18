@@ -1,2 +1,0 @@
-NPE-uncatched | Basics.Exceptions | 1 | Basics.Exceptions.NPE_uncatched(sym) | print | | secret
-NPE-catched   | Basics.Exceptions | 2 | Basics.Exceptions.NPE_catched(sym)   | print | | secret
