@@ -22,35 +22,37 @@
 sitePropertiesFile="$(dirname $0)/../site.properties";
 
 currentDir=$(pwd);
-cd $(dirname ${sitePropertiesFile}); sitePropertiesDir=$(pwd);
+cd $(dirname ${sitePropertiesFile}); 
+sitePropertiesDir=$(pwd);
 cd ${currentDir};
 
-jpfHomeDir=`\
-    grep "jpf.home =" ${sitePropertiesFile} \
-    | sed 's/ *//' | cut -d '=' -f 2 \
-    | sed "s/\\${config_path}/${sitePropertiesDir//\//\\/}/" \
-    | sed "s/\\${user.home}/${HOME//\//\\/}/"`;
-jpfCore=`\
-    grep "jpf-core =" ${sitePropertiesFile} \
-    | sed 's/ *//' | cut -d '=' -f 2 \
-    | sed "s/\\${config_path}/${sitePropertiesDir//\//\\/}/" \
-    | sed "s/\\${user.home}/${HOME//\//\\/}/"\
-    | sed "s/\\${jpf.home}/${jpfHomeDir//\//\\/}/"`;
-jpfSymbc=`\
-    grep "jpf-symbc =" ${sitePropertiesFile} \
-    | sed 's/ *//' | cut -d '=' -f 2 \
-    | sed "s/\\${config_path}/${sitePropertiesDir//\//\\/}/" \
-    | sed "s/\\${user.home}/${HOME//\//\\/}/"\
-    | sed "s/\\${jpf.home}/${jpfHomeDir//\//\\/}/"`;
+#jpfHomeDir=`\
+#    grep "jpf.home =" ${sitePropertiesFile} \
+#    | sed 's/ *//' | cut -d '=' -f 2 \
+#    | sed "s/${config_path}/${sitePropertiesDir//\//\\/}/" \
+#    | sed "s/${user.home}/${HOME//\//\\/}/"`;
+    
+#jpfCore=`\
+#    grep "jpf-core =" ${sitePropertiesFile} \
+#    | sed 's/ *//' | cut -d '=' -f 2 \
+#    | sed "s/\\${config_path}/${sitePropertiesDir//\//\\/}/" \
+#    | sed "s/\\${user.home}/${HOME//\//\\/}/"\
+#    | sed "s/\\${jpf.home}/${jpfHomeDir//\//\\/}/"`;
+#jpfSymbc=`\
+#    grep "jpf-symbc =" ${sitePropertiesFile} \
+#    | sed 's/ *//' | cut -d '=' -f 2 \
+#    | sed "s/\\${config_path}/${sitePropertiesDir//\//\\/}/" \
+#    | sed "s/\\${user.home}/${HOME//\//\\/}/"\
+#    | sed "s/\\${jpf.home}/${jpfHomeDir//\//\\/}/"`;
 
-currentDir=$(pwd);
-cd $(dirname ${sitePropertiesFile}); cd ${jpfCore}; jpfCore=$(pwd);
-cd $(dirname ${sitePropertiesFile}); cd ${jpfSymbc}; jpfSymbc=$(pwd);
-cd $(dirname ${sitePropertiesFile}); jpfEncover=$(pwd);
-cd ${currentDir};
+#currentDir=$(pwd);
+#cd $(dirname ${sitePropertiesFile}); cd ${jpfCore}; jpfCore=$(pwd);
+#cd $(dirname ${sitePropertiesFile}); cd ${jpfSymbc}; jpfSymbc=$(pwd);
+#cd $(dirname ${sitePropertiesFile}); jpfEncover=$(pwd);
+#cd ${currentDir};
 
-jpfCore="/home/amir/Other/InstalledSoftware/jpf-encover/lib/jpf-core-r644"
-jpfSymbc="/home/amir/Other/InstalledSoftware/jpf-encover/lib/jpf-symbc-r374"
+jpfCore="$sitePropertiesDir/lib/jpf-core-r644"
+jpfSymbc="$sitePropertiesDir/lib/jpf-symbc-r374"
 
 LD_LIBRARY_PATH=${jpfSymbc}/lib JVM_FLAGS="-Xmx2048m -ea" \
 bash ${jpfCore}/bin/jpf +site=${sitePropertiesFile} $@
