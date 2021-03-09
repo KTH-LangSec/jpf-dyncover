@@ -78,6 +78,11 @@ public class JPFHelper extends LoggerStaticUser {
     logln("JPFHelper", s);
   }
 
+  public static Map<String, EE_Variable> getSymbcName2eevar()
+  {
+    return symbcName2eevar;
+  }
+
   /**************************************************************************/
   /** JPFHelper configuration **/
   /**************************************************************************/

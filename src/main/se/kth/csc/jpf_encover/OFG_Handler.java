@@ -259,11 +259,13 @@ public class OFG_Handler {
     ) {
 
     Set<OFG_Vertex> vertices = ofg.getAllVertices();
-
     Set<EE_Variable> variables = ofg.getVariables();
+
     variables.addAll(domains.keySet());
+
     Iterator<EExpression> leakedIte = leaked.iterator();
     while ( leakedIte.hasNext() ) variables.addAll(leakedIte.next().getVariables());
+
     Iterator<EExpression> harboredIte = harbored.iterator();
     while ( harboredIte.hasNext() ) variables.addAll(harboredIte.next().getVariables());
 
@@ -330,6 +332,8 @@ public class OFG_Handler {
     interferenceFml.append(harboredDisj);
 
     EF_Disjunction bigOuter = new EF_Disjunction();
+
+    System.out.println(ofg);
 
     Iterator<OFG_Vertex> vIte1 = vertices.iterator();
     while ( vIte1.hasNext() ) {

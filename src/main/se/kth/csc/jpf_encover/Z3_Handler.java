@@ -281,6 +281,7 @@ public class Z3_Handler extends SolverHandler {
     Map<String,EE_Variable> pseudo2var = new HashMap();
     List<String> declarationLines = new ArrayList();
 
+
     Iterator<EE_Variable> varIte = formula.getVariables().iterator();
     while ( varIte.hasNext() ) {
       EE_Variable v = varIte.next();
@@ -291,6 +292,7 @@ public class Z3_Handler extends SolverHandler {
         pseudo2var.put(vPseudo, v);
       }
       String vType = "";
+
       switch (v.getType()) {
       case BOOL: vType = "Bool"; break;
       case INT: vType = "Int"; break;
@@ -430,6 +432,8 @@ public class Z3_Handler extends SolverHandler {
     EE_Variable.PseudonymPolicy oldPPolicy = EE_Variable.getPseudonymPolicy();
     EE_Variable.setPseudonymPolicy(pPolicyToUse);
 
+    System.out.println("---> " + formula + " <---");
+
     try { satisfyingAssignment = checkSatisfiability_internals(formula); }
     catch(Throwable t) { pendingThrowable = t; }
     finally { EE_Variable.setPseudonymPolicy(oldPPolicy); }
@@ -472,7 +476,8 @@ public class Z3_Handler extends SolverHandler {
     logln("  -> starts translating formula"); flushLog();
 
     String smt2Formula = null;
-    try { smt2Formula = formula.toString(EFormula.StrEncoding.SMT2); }
+    try { smt2Formula = formula.toString(EFormula.StrEncoding.SMT2); 
+    }
     catch(TranslationException e) {
       logln(e.getMessage()); flushLog();
       throw new Error("The formula " + formula + " could not be translated.\n" + e);
@@ -488,6 +493,8 @@ public class Z3_Handler extends SolverHandler {
       throw new Error(e);
     }
 
+    
+
     logln("  -> asking for satisfiability"); flushLog();
 
     StringBuilder answerCollector = null;
@@ -497,7 +504,7 @@ public class Z3_Handler extends SolverHandler {
       logln(e.getMessage()); flushLog();
       throw new Error(e);
     }
-    String answer = answerCollector.toString();
+    String answer = answerCollector.toString(); 
 
     if ( answer.equals("sat") ) {
       logln("The previous formula is satisfiable."); flushLog();

@@ -48,6 +48,7 @@ import gov.nasa.jpf.symbc.bytecode.BytecodeUtils;
 import gov.nasa.jpf.symbc.numeric.Expression;
 import gov.nasa.jpf.symbc.numeric.PathCondition;
 import gov.nasa.jpf.symbc.numeric.PCChoiceGenerator;
+import gov.nasa.jpf.jvm.LocalVarInfo;
 
 
 /**
@@ -131,6 +132,11 @@ public class EncoverListener extends SymbolicListener {
   private long time_mcmasModelVerification_start = 0;
   private long time_mcmasModelVerification_end = 0;
 
+  private Map<String,EE_Variable> pseudo2Var = new HashMap();
+
+  private String activePolicy;
+  private boolean policyChanged = false;
+
   /**
    * Constructor for ENCoVer listeners.
    * Automatically calls the constructor for SymbolicListener using
@@ -175,10 +181,15 @@ public class EncoverListener extends SymbolicListener {
     selectedByProducts = EncoverConfiguration.get_selectedByProducts();
 
     inputDomains =  EncoverConfiguration.get_inputDomains();
-    leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions();
-    harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions();
-    	
-    encoverOutFileName = GENERIC_OUT_FILE_NAME.replaceAll("%s", formattedTestName);
+    //leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(null);
+    //harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(null);
+
+    /////////////////////////////////////////////////////////////////////////////////
+    // Temp chage to make outputs file name fixed
+    
+    //encoverOutFileName = GENERIC_OUT_FILE_NAME.replaceAll("%s", formattedTestName);
+    encoverOutFileName = "output.out";
+    /////////////////////////////////////////////////////////////////////////////////
     PrintWriter tmpPW = null;
     try {
       FileWriter fw = new FileWriter(encoverOutFileName);
@@ -212,14 +223,20 @@ public class EncoverListener extends SymbolicListener {
       InvokeInstruction invInstr = (InvokeInstruction) instr;
       MethodInfo methInfo = invInstr.getInvokedMethod();
       String invokedMethodBaseName = methInfo.getBaseName();
-      
-      // if (log.DEBUG_MODE) {
-      //   log.println("execute InvokeInstruction");
-      //   log.println("  invokedMethodBaseName = " + invokedMethodBaseName);
-      //   log.println("  symbolicTestSignature = " + symbolicTestSignature);
-      //   log.flush();
-      // }
-      
+
+
+      // If a setPolicy method was called.
+      if (methInfo.getName().equals("setPolicy"))
+      {
+        //harboredInputExpressions = EncoverConfiguration.set_harboredInputExpressions("secret, pp");
+        //System.out.println("\n\n\n");
+        int obsPos = observablePosInCall[0];
+        Object obsVal = JPFHelper.getArgumentAtPosition(vm, invInstr, obsPos);
+        activePolicy = JPFHelper.symbolicStateValue2eExpression(obsVal).toString();
+        policyChanged = true;
+        //System.out.println("---> " + newPolicy + " <---");
+        //System.out.println("\n\n\n");
+      }
 
       if ( testStartMethodBaseName.startsWith(invokedMethodBaseName) ) {
         if (log.DEBUG_MODE) log.println("Calling " + invokedMethodBaseName);
@@ -232,7 +249,16 @@ public class EncoverListener extends SymbolicListener {
         
         doOn_TestedMethodInvocation(vm);
         doOn_codeAnalysisStart(vm);
-      
+
+        // Load the initial policy here
+        ////////////////// Find a better place for this /////////////////////
+        ///////////////////////////////////////////////////////
+        pseudo2Var = generatePseudo2Var(invInstr.getInvokedMethod());
+        harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(pseudo2Var);
+        leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(pseudo2Var);
+        ///////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
+
         if (log.DEBUG_MODE) log.println();
       }
 
@@ -276,7 +302,7 @@ public class EncoverListener extends SymbolicListener {
             if (matchArguments) {
               int obsPos = observablePosInCall[groupIndex - 1];
               Object obsVal = JPFHelper.getArgumentAtPosition(vm, invInstr, obsPos);
-              doOn_ObservableEvent(vm, obsVal);
+              doOn_ObservableEvent(vm, obsVal, activePolicy);
             }
           }
         }
@@ -333,7 +359,7 @@ public class EncoverListener extends SymbolicListener {
             // if (log.DEBUG_MODE) log.println("  retInstr.getReturnAttr(threadInfo) is: " + retInstr.getReturnAttr(threadInfo));
             // if (log.DEBUG_MODE) log.println("  retInstr.getReturnValue(threadInfo) is: " + retInstr.getReturnValue(threadInfo));
 
-            doOn_ObservableEvent(vm, obsVal);
+            doOn_ObservableEvent(vm, obsVal, activePolicy);
           }
         }
       }
@@ -547,6 +573,7 @@ public class EncoverListener extends SymbolicListener {
    * @param search Instance of the search process
    */
   public void searchFinished(Search search) {
+    
     if (log.DEBUG_MODE) 
       log.println("Notification \"searchFinished\" for state "
                          + search.getStateId() + " ["
@@ -556,7 +583,7 @@ public class EncoverListener extends SymbolicListener {
     doOn_codeAnalysisEnd(search.getVM());
 
     super.searchFinished(search);
-
+    
     if (log.DEBUG_MODE) log.println();
   }
 
@@ -724,10 +751,15 @@ public class EncoverListener extends SymbolicListener {
     if ( askFor_itfFml || askFor_sitfFml || askFor_smtSolving ) {
       /** START INTERFERENCE FORMULA GENERATION **/
       time_interfFmlGeneration_start = System.nanoTime();
+
       interferenceFormula =
         OFG_Handler.generateInterferenceFormula(ofg, inputDomains, leakedInputExpressions, harboredInputExpressions);
       time_interfFmlGeneration_end = System.nanoTime();
       /** END INTERFERENCE FORMULA GENERATION **/
+
+      //System.out.println("\n\n\n");
+      //System.out.println("---> " + leakedInputExpressions + " <---");
+      //System.out.println("\n\n\n");
 
       if ( askFor_itfFml ) {
         encoverOut.println("INTERFERENCE FORMULA:");
@@ -929,6 +961,7 @@ public class EncoverListener extends SymbolicListener {
     time_modelExtraction_end = System.nanoTime();
 
     isCodeAnalysisRunning = false;
+
     if ( EncoverConfiguration.askForOfgSimplification() )
       OFG_Handler.simplifyOFG(ofg, solver);
     this.unifyVariables();
@@ -1067,7 +1100,7 @@ public class EncoverListener extends SymbolicListener {
       if (log.DEBUG_MODE) log.println(outputExpr + " [[ IFF " + pcF + " ]]");
       if (log.DEBUG_MODE) jeg.advanceToEvent(vm, JEG_Vertex.Type.OUTPUT, outputExpr.toString());
       
-      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF);
+      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, null);
       // if (log.DEBUG_MODE) log.println(" created OFG vertex " + v.getId());
 
       if (log.DEBUG_MODE) log.println();
@@ -1081,17 +1114,25 @@ public class EncoverListener extends SymbolicListener {
    *
    * @param vm Current instance of the JPF virtual machine
    * @param obsVal The object reflecting the value that will be observed.
+   * @param plc Current active policy
    */
-  private void doOn_ObservableEvent(JVM vm, Object obsVal) {
-
+  private void doOn_ObservableEvent(JVM vm, Object obsVal, String plc) 
+  {
     EExpression outputExpr = JPFHelper.symbolicStateValue2eExpression(obsVal);
-    
     EFormula pcF = JPFHelper.vm2pcFormula(vm);
 
     if (log.DEBUG_MODE) log.println(outputExpr + " [[ IFF " + pcF + " ]]");
     if (log.DEBUG_MODE) jeg.advanceToEvent(vm, JEG_Vertex.Type.OUTPUT, outputExpr.toString());
-      
-    OFG_Vertex v = ofg.registerOutput(outputExpr, pcF);
+    
+    if (policyChanged)
+    {
+      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, plc);
+      policyChanged = false;
+    }
+    else
+    {
+      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, null);
+    }
     // if (log.DEBUG_MODE) log.println(" created OFG vertex " + v.getId());
     
     if (log.DEBUG_MODE) log.println();
@@ -1165,6 +1206,51 @@ public class EncoverListener extends SymbolicListener {
     }
 
     if (log.DEBUG_MODE) log.println();
+  }
+
+  ///////////////////////////// Helper Methods //////////////////////
+  /**
+   * TODO
+   *
+   * @param methodInfo TODO
+   * @return TODO
+   */
+  Map<String,EE_Variable> generatePseudo2Var(MethodInfo methodInfo) 
+  {
+    Map<String,EE_Variable> pseudo2Var = new HashMap();
+
+    for (LocalVarInfo localVar : methodInfo.getLocalVars()) 
+    {
+      EE_Variable temp;
+      if (localVar.getType().equals("int")) 
+      {
+        temp = new EE_Variable(EExpression.Type.INT, localVar.getName());
+      }
+      else if (localVar.getType().equals("boolean"))
+      {
+        temp = new EE_Variable(EExpression.Type.BOOL, localVar.getName());
+      }
+      else if (localVar.getType().equals("java.lang.String"))
+      {
+        temp = new EE_Variable(EExpression.Type.STR, localVar.getName());
+      }
+      else if (localVar.getType().equals("float"))
+      {
+        temp = new EE_Variable(EExpression.Type.REAL, localVar.getName());
+      }
+      else if (localVar.getType().equals("double"))
+      {
+        temp = new EE_Variable(EExpression.Type.REAL, localVar.getName());
+      }
+      else
+      {
+        temp = new EE_Variable(EExpression.Type.UNKNOWN, localVar.getName());
+      }
+      pseudo2Var.put(localVar.getName(), temp);
+    }
+
+    //System.out.println("---> " + pseudo2Var + " <---");
+    return pseudo2Var;
   }
 
 }

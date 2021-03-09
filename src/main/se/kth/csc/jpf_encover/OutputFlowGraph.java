@@ -55,8 +55,9 @@ public interface OutputFlowGraph {
    *
    * @param output The output generated at this point.
    * @param pc The path condition to reach this node.
+   * @param policy Active policy at this node.
    */
-  public OFG_Vertex registerOutput(EExpression output, EFormula pc);
+  public OFG_Vertex registerOutput(EExpression output, EFormula pc, String policy);
 
   /**
    * Register that the node at the current position in the OFG can be the last

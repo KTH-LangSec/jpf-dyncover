@@ -29,32 +29,46 @@ package NewTests;
 
 import java.util.*;
 
-public class Simple {
-  public static void main(String[] args) {
-    String[] params = args[0].split(" ");
+public class Simple 
+{
+    public static void main(String[] args) 
+    {
+        String[] params = args[0].split(" ");
 
-    int testNb = 1;
-    try { testNb = Integer.parseInt(params[0]); }
-    catch(Exception e) { System.out.println(e); }
+        int testNb = 1;
+        try { testNb = Integer.parseInt(params[0]); }
+        catch(Exception e) { System.out.println(e); }
 
-    Simple.leak(0,1);
-  }
+        Simple.leak(0,1);
+    }
 
-  /******************************************************/
+    /******************************************************/
 
-  public static void leak(int secret, int pp) {
-	  System.out.println(1);
-	  if (pp > 0) 
-	  {
-		  System.out.println(secret);
-	  }
-	  if (pp <= 0) 
-	  {
-		  System.out.println(secret);
-	  }
-	  System.out.println(3);
-  }
+    public static void leak(int secret1, int secret2) 
+    {
+        //int pp = 0;
+        //String a = "test";
+        //float b = 1.0f;
+        //double c = 1.0;
+        // if (pp > 0) 
+        // {
+            //   System.out.println(secret);
+        // }
+        // if (pp <= 0) 
+        // {
+            //   System.out.println(secret);
+        // }
+        //System.out.println(secret1 < secret2);
+        setPolicy("secret1");
+        //System.out.println("policy");
+        System.out.println(secret1);
+        System.out.println(secret1);
 
+        setPolicy("secret1, secret2");
+        System.out.println(secret2);
+    }
+
+    static void setPolicy(String policy) {};
 }
 
 // Local Variables: 
