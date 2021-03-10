@@ -24,6 +24,7 @@ package se.kth.csc.jpf_encover;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import java.util.ArrayList;
 
 import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;
@@ -752,13 +753,43 @@ public class EncoverListener extends SymbolicListener {
       /** START INTERFERENCE FORMULA GENERATION **/
       time_interfFmlGeneration_start = System.nanoTime();
 
+      System.out.println("\n\n");
+      System.out.println("---> OGF <---");
+      
+      //Iterator<OFG_Vertex> iter = ofg.depthFirstTaversal().iterator();
+      //OFG_Vertex v = iter.next();
+      //System.out.println(verticies.get(6));
+      //ofg.removeChildren(verticies.get(6));
+      
+      // while (iter.hasNext()) 
+      // { 
+      //   OFG_Vertex v = iter.next();
+      //   System.out.println(v);
+      //   //OutputFlowGraph new_ofg = ofg.clone();
+      //   //System.out.println(ofg.getSuccessorsOf(v));
+      // }
+
+      ArrayList<OFG_Vertex> verticies = ofg.depthFirstTaversal();
+      System.out.println(verticies.get(0));
+      ofg.markChildrenInvalid(verticies.get(0));
+      ofg.display();
+
+      //ofg.clearInvalid();
+      //ofg.display();
+      //System.out.println(ofg.depthFirstTaversal());
+      //ofg.display();
+
+      System.out.println("\n\n");
+
+      
+
       interferenceFormula =
         OFG_Handler.generateInterferenceFormula(ofg, inputDomains, leakedInputExpressions, harboredInputExpressions);
       time_interfFmlGeneration_end = System.nanoTime();
       /** END INTERFERENCE FORMULA GENERATION **/
 
       //System.out.println("\n\n\n");
-      //System.out.println("---> " + leakedInputExpressions + " <---");
+      //System.out.println("---> " + interferenceFormula + " <---");
       //System.out.println("\n\n\n");
 
       if ( askFor_itfFml ) {
@@ -1100,7 +1131,7 @@ public class EncoverListener extends SymbolicListener {
       if (log.DEBUG_MODE) log.println(outputExpr + " [[ IFF " + pcF + " ]]");
       if (log.DEBUG_MODE) jeg.advanceToEvent(vm, JEG_Vertex.Type.OUTPUT, outputExpr.toString());
       
-      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, null);
+      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, activePolicy, policyChanged);
       // if (log.DEBUG_MODE) log.println(" created OFG vertex " + v.getId());
 
       if (log.DEBUG_MODE) log.println();
@@ -1123,16 +1154,10 @@ public class EncoverListener extends SymbolicListener {
 
     if (log.DEBUG_MODE) log.println(outputExpr + " [[ IFF " + pcF + " ]]");
     if (log.DEBUG_MODE) jeg.advanceToEvent(vm, JEG_Vertex.Type.OUTPUT, outputExpr.toString());
-    
-    if (policyChanged)
-    {
-      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, plc);
-      policyChanged = false;
-    }
-    else
-    {
-      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, null);
-    }
+
+    OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, plc, policyChanged);
+    policyChanged = false;
+
     // if (log.DEBUG_MODE) log.println(" created OFG vertex " + v.getId());
     
     if (log.DEBUG_MODE) log.println();

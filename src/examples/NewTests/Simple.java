@@ -46,26 +46,30 @@ public class Simple
 
     public static void leak(int secret1, int secret2) 
     {
-        //int pp = 0;
-        //String a = "test";
-        //float b = 1.0f;
-        //double c = 1.0;
-        // if (pp > 0) 
-        // {
-            //   System.out.println(secret);
-        // }
-        // if (pp <= 0) 
-        // {
-            //   System.out.println(secret);
-        // }
-        //System.out.println(secret1 < secret2);
         setPolicy("secret1");
+        // if (secret1 > 0) 
+        // {
+        //       System.out.println(1);
+        //       System.out.println(3);
+        //       System.out.println(4);
+        // }
+        // else if (secret1 == 0)
+        // {
+        //     System.out.println(3);
+        //     System.out.println(4);
+        // }
+        // else
+        // {
+        //       System.out.println(1);
+        // }
+        // System.out.println(2);
+        
         //System.out.println("policy");
         System.out.println(secret1);
-        System.out.println(secret1);
-
-        setPolicy("secret1, secret2");
         System.out.println(secret2);
+
+        //setPolicy("secret1, secret2");
+        //System.out.println(secret2);
     }
 
     static void setPolicy(String policy) {};

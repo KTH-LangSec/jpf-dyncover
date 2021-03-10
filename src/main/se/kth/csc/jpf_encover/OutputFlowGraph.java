@@ -22,6 +22,9 @@
 package se.kth.csc.jpf_encover;
 
 import java.util.Set;
+import java.util.ArrayList;
+
+import org.jgrapht.DirectedGraph;
 
 // import gov.nasa.jpf.symbc.numeric.PathCondition;
 
@@ -42,6 +45,19 @@ public interface OutputFlowGraph {
   public void registerBacktrackablePoint(String id);
 
   /**
+   * Merkes all of the children of a given vertex as invalid
+   *
+   * @param vertex all of the children of this vertex will be marked as invalid
+   */
+  public void markChildrenInvalid(OFG_Vertex vertex);
+
+  /**
+   * Makes all of the invalid verticies valid.
+   *
+   */
+  public void clearInvalid();
+
+  /**
    * Backtrack to the specified node.
    *
    * @param id Identifier of the point to backtrack to.
@@ -56,8 +72,9 @@ public interface OutputFlowGraph {
    * @param output The output generated at this point.
    * @param pc The path condition to reach this node.
    * @param policy Active policy at this node.
+   * @param policyChanged Is this the first output node after a policy change? (used to check policy inconsistensy).
    */
-  public OFG_Vertex registerOutput(EExpression output, EFormula pc, String policy);
+  public OFG_Vertex registerOutput(EExpression output, EFormula pc, String policy, boolean policyChanged);
 
   /**
    * Register that the node at the current position in the OFG can be the last
@@ -152,6 +169,15 @@ public interface OutputFlowGraph {
    * @return The width of this output flow graph.
    */
   public int getWidth();
+
+
+  /**
+   * Returns a vertex set of the verticies in this OFG
+   *
+   * @return The set of verticies.
+   */
+  public ArrayList<OFG_Vertex> depthFirstTaversal();
+
 
   /**
    * Display the OFG in a window.

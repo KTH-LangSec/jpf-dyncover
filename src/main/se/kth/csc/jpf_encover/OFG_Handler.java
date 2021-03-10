@@ -333,8 +333,6 @@ public class OFG_Handler {
 
     EF_Disjunction bigOuter = new EF_Disjunction();
 
-    System.out.println(ofg);
-
     Iterator<OFG_Vertex> vIte1 = vertices.iterator();
     while ( vIte1.hasNext() ) {
       OFG_Vertex v1 = vIte1.next();

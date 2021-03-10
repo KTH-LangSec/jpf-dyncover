@@ -58,9 +58,6 @@ public class ISPL_Handler {
   private static final String STEPS="   nstep: 0..100; \n    ";
   
   
-  
-  
-  
   private static void processOutput(EExpression o, ISPL_Interface ispl) throws TranslationException{
     
      if(o.getType()==EExpression.Type.INT){

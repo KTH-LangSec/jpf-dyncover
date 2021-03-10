@@ -27,12 +27,15 @@ import java.util.*;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import java.util.ArrayList;
 
 // import gov.nasa.jpf.symbc.numeric.PathCondition;
 
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.GraphIterator;
 
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.swing.mxGraphComponent;
@@ -74,6 +77,46 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   }
 
   /**
+   * Merkes all of the children of a given vertex as invalid
+   *
+   * @param vertex all of the children of this vertex will be marked as invalid
+   */
+  public void markChildrenInvalid(OFG_Vertex vertex) 
+  {
+    Set<DefaultEdge> outEdges = graph.outgoingEdgesOf(vertex);
+    Set<OFG_Vertex> res = new HashSet();
+    Iterator<DefaultEdge> ite = outEdges.iterator();
+    while (ite.hasNext()) 
+    {
+      OFG_Vertex v = graph.getEdgeTarget(ite.next());
+      if (v != root && v != end)
+      {
+        this.markChildrenInvalid(v);
+        res.add(v);
+      }
+    }
+
+    Iterator<OFG_Vertex> ite2 = res.iterator();
+    while ( ite2.hasNext() ) 
+    {
+      ite2.next().setValid(false);
+    }
+  }
+
+  /**
+   * Makes all of the invalid verticies valid.
+   *
+   */
+  public void clearInvalid() 
+  {
+    Iterator<OFG_Vertex> ite = graph.vertexSet().iterator();
+    while (ite.hasNext()) 
+    {
+        ite.next().setValid(true);
+    }
+  }
+
+  /**
    * Update the internal data structure to prepare futur potential backtracks.
    *
    * @param id Identifier of a potential future backtrack destination
@@ -110,12 +153,13 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    * @param output The "value" outputted
    * @param pc The path condition to reach this output
    * @param policy Active policy at this node.
+   * @param policyChanged Is this the first output node after a policy change? (used to check policy inconsistensy).
    * @return The node add to the OFG to represent this output
    */
-  public OFG_Vertex registerOutput(EExpression output, EFormula pc, String policy) {
+  public OFG_Vertex registerOutput(EExpression output, EFormula pc, String policy, boolean policyChanged) {
     if ( pc == null ) { throw new Error("The PC must not be null"); }
 
-    OFG_Vertex newPos = new OutputVertex(output, pc, policy);
+    OFG_Vertex newPos = new OutputVertex(output, pc, policy, policyChanged);
     graph.addVertex(newPos);
     graph.addEdge(currentPosition, newPos);
     currentPosition = newPos;
@@ -132,7 +176,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   }
 
   /**
-   * Returns all the (non-internal) vertices/nodes in the OFG.
+   * Returns all the valid (non-internal) vertices/nodes in the OFG.
    * In particular, in this implementation there are internal nodes root and end
    * which are not returned by this method.
    *
@@ -142,6 +186,20 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     Set<OFG_Vertex> res = new HashSet(graph.vertexSet());
     res.remove(root);
     res.remove(end);
+
+    Set<OFG_Vertex> invalidVertices = new HashSet();
+    Iterator<OFG_Vertex> ite = res.iterator();
+    while ( ite.hasNext() ) 
+    {
+      OFG_Vertex v = ite.next();
+      if (!v.isValid())
+      {
+        invalidVertices.add(v);
+      }
+    }
+
+    res.removeAll(invalidVertices);
+
     return res;
   }
 
@@ -327,6 +385,28 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   }
 
   /**
+   * Returns a vertex list of the verticies in this OFG
+   *
+   * @return The list of verticies.
+   */
+  public ArrayList<OFG_Vertex> depthFirstTaversal() 
+  {
+    ArrayList<OFG_Vertex> verticies = new ArrayList<OFG_Vertex>();
+    //Iterator<OFG_Vertex> ite = graph.vertexSet().iterator();
+    GraphIterator<OFG_Vertex, DefaultEdge> ite = new DepthFirstIterator<OFG_Vertex, DefaultEdge>(graph);
+    while ( ite.hasNext() ) 
+    {
+      OFG_Vertex v = ite.next();
+      if (v instanceof OutputVertex) 
+      {
+        //res += v.getId() + " = " + v.getTextualDescription() + "\n";
+        verticies.add(v);
+      }
+    }
+    return verticies;
+  }
+
+  /**
    * Display the OFG on the screen in an other window.
    */
   public void display() {
@@ -341,7 +421,16 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       while ( vIte.hasNext() ) {
         OFG_Vertex v = vIte.next();
         String vId = v.getId();
-        Object displayVertex = mxGraph.insertVertex(rootCell, vId, vId, 0, 0, 80, 30);
+
+        Object displayVertex;
+        if (v.isValid())
+        {
+          displayVertex = mxGraph.insertVertex(rootCell, vId, vId, 0, 0, 80, 30, "ROUNDED;fillColor=green");
+        }
+        else
+        {
+          displayVertex = mxGraph.insertVertex(rootCell, vId, vId, 0, 0, 80, 30, "ROUNDED;fillColor=red");
+        }        
         vId2dv.put(vId, displayVertex);
       }
 
@@ -383,9 +472,15 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public EExpression getOutput() { throw new Error("StructuralVertices do not have an output."); }
     public EFormula getPathCondition() { throw new Error("StructuralVertices do not have path conditions."); }
     public EFormula getOtherProperties() { throw new Error("StructuralVertices do not have properties."); }
+    public String getPolicy() { throw new Error("StructuralVertices do not have policy."); }
+    public Boolean getPolicyChanged() { throw new Error("StructuralVertices do not have policy changed."); }
+    public Boolean isValid() { throw new Error("StructuralVertices do not have validity."); }
     public void setOutput(EExpression exp) { throw new Error("StructuralVertices do not have an output."); }
     public void setPathCondition(EFormula path) { throw new Error("StructuralVertices do not have path conditions."); }
     public void setOtherProperties(EFormula prop) { throw new Error("StructuralVertices do not have properties."); }
+    public void setPolicy(String plc) { throw new Error("StructuralVertices do not have policy."); }
+    public void setPolicyChanged(boolean plcChanged) { throw new Error("StructuralVertices do not have policy changed."); }
+    public void setValid(boolean vld) { throw new Error("StructuralVertices do not have validity."); }
     public String getTextualDescription() {return getId();}
     public String toString() {return getId();}
   }
@@ -395,7 +490,9 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    */
   private class RootVertex extends StructuralVertex {
     private RootVertex() {}
-    public String getId() {return "root";}
+    public String getId() { return "root";}
+    public Boolean isValid() { return true; }
+    public void setValid(boolean vld) {};
   }
 
   /**
@@ -403,7 +500,9 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    */
   private class EndVertex extends StructuralVertex {
     private EndVertex() {}
-    public String getId() {return "end";}
+    public String getId() { return "end";}
+    public Boolean isValid() { return true; }
+    public void setValid(boolean vld) {};
   }
 
   /**
@@ -415,6 +514,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     private EFormula pathCondition;
     private EFormula otherProperties;
     private String policy;
+    private boolean policyChanged;
+    private boolean valid;
 
     /**
      * Constructor of output vertices.
@@ -428,6 +529,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       pathCondition = pc;
       otherProperties = new EF_Conjunction();
       policy = null;
+      policyChanged = false;
+      valid = true;
     }
 
     /**
@@ -435,15 +538,18 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @param out The "value" outputted.
      * @param pc The path condition to reach this output.
-     * @param plc The path condition to reach this output.
+     * @param plc Active policy at this output.
+     * @param plcChanged Is this the first output after a policy change?.
      */
-    private OutputVertex(EExpression out, EFormula pc, String plc) 
+    private OutputVertex(EExpression out, EFormula pc, String plc, boolean plcChanged) 
     {
       id = vertexCounter++;
       output = out;
       pathCondition = pc;
       otherProperties = new EF_Conjunction();
       policy = plc;
+      policyChanged = plcChanged;
+      valid = true;
     }
 
     /**
@@ -493,6 +599,24 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     }
 
     /**
+     * Retrieves the policy changed boolean of this vertex.
+     *
+     * @return Is this a new output after a policy change?.
+     */
+    public Boolean getPolicyChanged() {
+      return policyChanged;
+    }
+
+    /**
+     * Retrieves the valid boolean of this vertex.
+     *
+     * @return Should this vertex be ignored?.
+     */
+    public Boolean isValid() {
+      return valid;
+    }
+
+    /**
      * Sets the output generated by this vertex.
      *
      * @param exp Expression representing the ouptut.
@@ -524,8 +648,26 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @param plc The properties holding at this vertex.
      */
-    public void setOtherProperties(String plc) {
+    public void setPolicy(String plc) {
       policy = plc;
+    }
+
+    /**
+     * Sets the policy changed boolean at this vertex.
+     *
+     * @param plcChanged Is this vertex after a policy change.
+     */
+    public void setPolicyChanged(boolean plcChanged) {
+      policyChanged = plcChanged;
+    }
+
+    /**
+     * Sets the valid boolean at this vertex.
+     *
+     * @param vld input boolean.
+     */
+    public void setValid(boolean vld) {
+      valid = vld;
     }
 
     /**
@@ -536,7 +678,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public String getTextualDescription() {
       String retVal;
       if ( output == null ) { retVal = "null"; }
-      else { retVal = output + ", [[ Policy: " + policy + " ]]" + ", [[ IFF " + pathCondition + " ]]" + ", [[ UTC " + otherProperties + " ]]"; }
+      else { retVal = output + ", [[ Policy: " + policy + " ]]" + ", [[ New policy: " + policyChanged + " ]]"  + ", [[ Valid?: " + valid + " ]]"  + ", [[ IFF " + pathCondition + " ]]" + ", [[ UTC " + otherProperties + " ]]"; }
       return retVal;
     }
 
