@@ -104,6 +104,33 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   }
 
   /**
+  * Merkes all of the children of a given vertex as Valid
+  *
+  * @param vertex All of the children of this vertex will be marked as Valid
+  */
+  public void markChildrenValid(OFG_Vertex vertex) 
+  {
+    Set<DefaultEdge> outEdges = graph.outgoingEdgesOf(vertex);
+    Set<OFG_Vertex> res = new HashSet();
+    Iterator<DefaultEdge> ite = outEdges.iterator();
+    while (ite.hasNext()) 
+    {
+      OFG_Vertex v = graph.getEdgeTarget(ite.next());
+      if (v != root && v != end)
+      {
+        this.markChildrenValid(v);
+        res.add(v);
+      }
+    }
+
+    Iterator<OFG_Vertex> ite2 = res.iterator();
+    while ( ite2.hasNext() ) 
+    {
+      ite2.next().setValid(true);
+    }
+  }
+
+  /**
    * Makes all of the invalid verticies valid.
    *
    */

@@ -52,9 +52,16 @@ public interface OutputFlowGraph {
   public void markChildrenInvalid(OFG_Vertex vertex);
 
   /**
-   * Makes all of the invalid verticies valid.
-   *
-   */
+  * Merkes all of the children of a given vertex as Valid
+  *
+  * @param vertex All of the children of this vertex will be marked as Valid
+  */
+  public void markChildrenValid(OFG_Vertex vertex);
+
+  /**
+  * Makes all of the invalid verticies valid.
+  *
+  */
   public void clearInvalid();
 
   /**

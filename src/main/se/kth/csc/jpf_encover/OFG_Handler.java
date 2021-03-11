@@ -378,6 +378,155 @@ public class OFG_Handler {
 
 
   /**
+   * Generates a formula that is satisfiable iff the provided output flow graph
+   * corresponds to an interfering program.
+   *
+   * @param ofg The output flow graph for which the interference formula has to
+   *   be generated.
+   * @param leaked A set of expressions corresponding to the initialy leaked information.
+   * @param harbored A set of expressions corresponding to the harbored information.
+   * @return An interference formula for the provided OFG.
+   */
+  public static EFormula generateInterferenceFormula(
+      OutputFlowGraph ofg, 
+      OFG_Vertex vertex,
+      Map<EE_Variable,List<EE_Constant>> domains,
+      Set<EExpression> leaked, 
+      Set<EExpression> harbored
+    ) 
+    {
+
+    //ofg.markChildrenInvalid(vertex);
+
+    //ofg.display();
+
+    Set<OFG_Vertex> vertices = ofg.getAllVertices();
+    Set<EE_Variable> variables = ofg.getVariables();
+
+    variables.addAll(domains.keySet());
+
+    Iterator<EExpression> leakedIte = leaked.iterator();
+    while ( leakedIte.hasNext() ) variables.addAll(leakedIte.next().getVariables());
+
+    Iterator<EExpression> harboredIte = harbored.iterator();
+    while ( harboredIte.hasNext() ) variables.addAll(harboredIte.next().getVariables());
+
+    Map<EE_Variable,EE_Variable> renaming = new HashMap();
+    Iterator<EE_Variable> varIte = variables.iterator();
+    while ( varIte.hasNext() ) {
+      EE_Variable var = varIte.next();
+      EE_Variable newVar = var.clone("_bis");
+      renaming.put(var, newVar);
+    }
+
+    EF_Conjunction interferenceFml = new EF_Conjunction();
+
+    EF_Conjunction domainsConj = new EF_Conjunction();
+    Iterator<Map.Entry<EE_Variable,List<EE_Constant>>> domIte =
+      domains.entrySet().iterator();
+    while ( domIte.hasNext() ) {
+      Map.Entry<EE_Variable,List<EE_Constant>> dom = domIte.next();
+      EE_Variable var = dom.getKey();
+      List<EE_Constant> boundaries = dom.getValue();
+      EE_Constant min = boundaries.get(0);
+      EE_Constant max = boundaries.get(1);
+
+      EE_BinaryOperation lowerBound = new EE_BinaryOperation.LE();
+      lowerBound.setLeftHandSide(min);
+      lowerBound.setRightHandSide(var);
+      domainsConj.append(new EF_Valuation(lowerBound));
+      EE_BinaryOperation upperBound = new EE_BinaryOperation.LE();
+      upperBound.setLeftHandSide(var);
+      upperBound.setRightHandSide(max);
+      domainsConj.append(new EF_Valuation(upperBound));
+
+      EE_BinaryOperation lowerBound_bis = new EE_BinaryOperation.LE();
+      lowerBound_bis.setLeftHandSide(min);
+      lowerBound_bis.setRightHandSide(var.clone(renaming));
+      domainsConj.append(new EF_Valuation(lowerBound_bis));
+      EE_BinaryOperation upperBound_bis = new EE_BinaryOperation.LE();
+      upperBound_bis.setLeftHandSide(var.clone(renaming));
+      upperBound_bis.setRightHandSide(max);
+      domainsConj.append(new EF_Valuation(upperBound_bis));
+    }
+    interferenceFml.append(domainsConj);
+
+    EF_Conjunction leakedConj = new EF_Conjunction();
+    leakedIte = leaked.iterator();
+    while ( leakedIte.hasNext() ) {
+      EExpression leakedExp = leakedIte.next();
+      EE_BinaryOperation equalExp = new EE_BinaryOperation.EQ();
+      equalExp.setLeftHandSide(leakedExp);
+      equalExp.setRightHandSide(leakedExp.clone(renaming));
+      leakedConj.append(new EF_Valuation(equalExp));
+    }
+    interferenceFml.append(leakedConj);
+
+    EF_Disjunction harboredDisj = new EF_Disjunction();
+    harboredIte = harbored.iterator();
+    while ( harboredIte.hasNext() ) {
+      EExpression harboredExp = harboredIte.next();
+      EE_BinaryOperation diffExp = new EE_BinaryOperation.NE();
+      diffExp.setLeftHandSide(harboredExp);
+      diffExp.setRightHandSide(harboredExp.clone(renaming));
+      harboredDisj.append(new EF_Valuation(diffExp));
+    }
+    interferenceFml.append(harboredDisj);
+
+    EF_Disjunction bigOuter = new EF_Disjunction();
+
+    Iterator<OFG_Vertex> vIte1 = vertices.iterator();
+    while ( vIte1.hasNext() ) 
+    {
+      OFG_Vertex v1 = vIte1.next();
+
+      if (v1 != vertex) continue;
+
+      EFormula pc1 = v1.getPathCondition();
+
+      List<EExpression> o1 = OFG_Handler.getOutputSequence(ofg, v1);
+
+      EF_Conjunction v1Formula = new EF_Conjunction();
+      v1Formula.append(v1.getPathCondition());
+      
+      EF_Conjunction bigInner = new EF_Conjunction();
+
+      Iterator<OFG_Vertex> vIte2 = vertices.iterator();
+      while ( vIte2.hasNext() ) 
+      {
+        OFG_Vertex v2 = vIte2.next();
+        EFormula pc2 = v2.getPathCondition();
+        List<EExpression> o2 = OFG_Handler.getOutputSequence(ofg, v2);
+
+        if ( o1.size() == o2.size() ) 
+        {
+          EF_Conjunction v1v2Formula = new EF_Conjunction();
+          v1v2Formula.append(v2.getPathCondition().clone(renaming));
+          for (int i = 0; i < o1.size(); i++) 
+          {
+            EE_BinaryOperation equalOut = new EE_BinaryOperation.EQ();
+            equalOut.setLeftHandSide(o2.get(i).clone(renaming));
+            equalOut.setRightHandSide(o1.get(i));
+            v1v2Formula.append(new EF_Valuation(equalOut));
+          }
+          bigInner.append(new EF_Negation(v1v2Formula));
+        }
+      }
+
+      v1Formula.append(bigInner);
+      bigOuter.append(v1Formula);
+    }
+
+    interferenceFml.append(bigOuter);
+
+    //ofg.markChildrenValid(vertex);
+
+    return interferenceFml;
+  }
+
+
+
+  /**
    * Loads the OFG in the file {@code args[0]} and display information about it.
    * If {@code args[1]} is {@code "printGraphLegend"} then display the legend of
    * this OFG; otherwise display the whole OFG in another window.

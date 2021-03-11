@@ -432,7 +432,7 @@ public class Z3_Handler extends SolverHandler {
     EE_Variable.PseudonymPolicy oldPPolicy = EE_Variable.getPseudonymPolicy();
     EE_Variable.setPseudonymPolicy(pPolicyToUse);
 
-    System.out.println("---> " + formula + " <---");
+    //System.out.println("---> " + formula + " <---");
 
     try { satisfyingAssignment = checkSatisfiability_internals(formula); }
     catch(Throwable t) { pendingThrowable = t; }
