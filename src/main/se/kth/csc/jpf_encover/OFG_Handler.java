@@ -277,6 +277,8 @@ public class OFG_Handler {
       renaming.put(var, newVar);
     }
 
+    
+
     EF_Conjunction interferenceFml = new EF_Conjunction();
 
     EF_Conjunction domainsConj = new EF_Conjunction();

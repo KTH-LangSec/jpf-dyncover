@@ -81,7 +81,19 @@ public class EE_Variable extends EExpression implements Comparable<EE_Variable> 
    * @param suffix The suffix to append to the variable name.
    * @return The clone.
    */
-  public EE_Variable clone(String suffix) {
+  public EE_Variable clone(String suffix) 
+  {
+    if (variableExists(this.getType(), this.getName() + suffix))
+    {
+      for (EE_Variable var : name2vars.get(this.getName() + suffix)) 
+      {
+        if (var.getType() == this.getType())
+        {
+          return var;
+        }
+      }
+    }
+    
     return new EE_Variable(this.getType(), this.getName() + suffix);
   }
 
@@ -179,16 +191,21 @@ public class EE_Variable extends EExpression implements Comparable<EE_Variable> 
    * @return True iff this variable has been added. Otherwise, this variable was
    *   probably already registered.
    */
-  public boolean registerVariable() {
+  public boolean registerVariable() 
+  {
     boolean added = false;
     Integer Id = new Integer(getId());
-    if ( ! id2var.containsKey(Id) ) {
+    if ( !id2var.containsKey(Id) ) 
+    {
       id2var.put(Id, this);
       String name = getName();
       Set<EE_Variable> vars;
-      if ( name2vars.containsKey(name) ) {
+      if ( name2vars.containsKey(name) ) 
+      {
         vars = name2vars.get(name);
-      } else {
+      } 
+      else 
+      {
         vars = new HashSet();
       }
       vars.add(this);
@@ -222,6 +239,31 @@ public class EE_Variable extends EExpression implements Comparable<EE_Variable> 
       vars = new HashSet();
     }
     return vars;
+  }
+
+
+  /**
+  * Checks if a variable with this type and name already exists
+  *
+  * @param t The type of of the existing variables to look for.
+  * @param name The name of the existing variables to look for.
+  * @return Does such variable exists?
+  */
+  public static boolean variableExists(EExpression.Type t, String name) 
+  {
+    boolean result = false;
+    if ( name2vars.containsKey(name) ) 
+    {
+      for (EE_Variable var : name2vars.get(name)) 
+      {
+        if (var.getType() == t)
+        {
+          result = true;
+          break;
+        }
+      }
+    } 
+    return result;
   }
 
   /**

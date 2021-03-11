@@ -234,8 +234,9 @@ public class EncoverListener extends SymbolicListener {
         int obsPos = observablePosInCall[0];
         Object obsVal = JPFHelper.getArgumentAtPosition(vm, invInstr, obsPos);
         activePolicy = JPFHelper.symbolicStateValue2eExpression(obsVal).toString();
+        activePolicy = activePolicy.substring(1, activePolicy.length()-1); // removing " from string
         policyChanged = true;
-        //System.out.println("---> " + newPolicy + " <---");
+        //System.out.println("---> " + activePolicy + " <---");
         //System.out.println("\n\n\n");
       }
 
@@ -754,29 +755,40 @@ public class EncoverListener extends SymbolicListener {
       time_interfFmlGeneration_start = System.nanoTime();
 
       System.out.println("\n\n");
-      System.out.println("---> OGF <---");
+      System.out.println("---> Testing <---");
       
-      //Iterator<OFG_Vertex> iter = ofg.depthFirstTaversal().iterator();
-      //OFG_Vertex v = iter.next();
-      //System.out.println(verticies.get(6));
-      //ofg.removeChildren(verticies.get(6));
-      
-      // while (iter.hasNext()) 
-      // { 
-      //   OFG_Vertex v = iter.next();
-      //   System.out.println(v);
-      //   //OutputFlowGraph new_ofg = ofg.clone();
-      //   //System.out.println(ofg.getSuccessorsOf(v));
-      // }
+      Iterator<OFG_Vertex> iter = ofg.depthFirstTaversal().iterator();
+      while (iter.hasNext()) 
+      { 
+        OFG_Vertex vertex = iter.next();
+        System.out.println(vertex);
+        ofg.markChildrenInvalid(vertex);
 
-      ArrayList<OFG_Vertex> verticies = ofg.depthFirstTaversal();
-      System.out.println(verticies.get(0));
-      ofg.markChildrenInvalid(verticies.get(0));
-      ofg.display();
+        if (vertex.getPolicyChanged())
+        {
+          //Policy consistency check
+        }
 
-      //ofg.clearInvalid();
-      //ofg.display();
-      //System.out.println(ofg.depthFirstTaversal());
+        // Security check
+
+        harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(vertex.getPolicy(), pseudo2Var);
+        leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(vertex.getPolicy(), pseudo2Var);
+
+        EE_Variable.PseudonymPolicy pPolicyToUse = EE_Variable.PseudonymPolicy.COMBINED;
+        EE_Variable.PseudonymPolicy oldPPolicy = EE_Variable.getPseudonymPolicy();
+        EE_Variable.setPseudonymPolicy(pPolicyToUse);
+
+        System.out.println("---> " + harboredInputExpressions + " <---");
+        System.out.println("---> " + leakedInputExpressions + " <---");
+
+        EE_Variable.setPseudonymPolicy(oldPPolicy);
+
+        break;
+        //interferenceFormula =
+        //OFG_Handler.generateInterferenceFormula(ofg, inputDomains, leakedInputExpressions, harboredInputExpressions);
+
+      }
+
       //ofg.display();
 
       System.out.println("\n\n");

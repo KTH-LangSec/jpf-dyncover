@@ -279,14 +279,30 @@ public class JPFHelper extends LoggerStaticUser {
       res = symbcName2eevar.get(symbcName);
       if ( res == null ) {
 
-        if (exp instanceof StringSymbolic) {
+        if (exp instanceof StringSymbolic) 
+        {
           EExpression strLgth = sExpression2eExpression(((StringSymbolic) exp).___length());
           logln("Translating StringVariable with name '"
                 + ((StringSymbolic) exp).getName()
                 + "' and length " + strLgth);
           res = new EE_StringVariable(varName, strLgth);
-        } else {
-          res = new EE_Variable(t, varName);
+        } 
+        else 
+        {
+          if (EE_Variable.variableExists(t, varName))
+          {
+            for (EE_Variable var : EE_Variable.getExistingVariablesWithName(varName)) 
+            {
+              if (var.getType() == t)
+              {
+                res = var;
+              }
+            }
+          }
+          else
+          {
+            res = new EE_Variable(t, varName);
+          }          
         }
         symbcName2eevar.put(symbcName, (EE_Variable) res);
 

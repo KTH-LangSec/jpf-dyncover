@@ -158,6 +158,7 @@ class EncoverConfiguration {
         }
       }
     }
+    
     return domains;
   }
 
@@ -188,10 +189,68 @@ class EncoverConfiguration {
         log.logln("EncoverConfiguration", "parsedLie = " + parsedLie);
         log.flush();
 
-        //System.out.println("---> " + pseudo2Var.get("secret1") + " <---");
         leakedInputExpressions.add(parsedLie);
       }
     }
+    return leakedInputExpressions;
+  }
+
+  /**
+   * Based on the input string returns the names of the leaked inputs.
+   *
+   * @param plcList A string containing the policy in the form "harboredExpressions | leakedExpressions"
+   * @param pseudo2Var pseudonym mapping that is passed to the parser
+   * @return A set containing the names of the leaked inputs.
+   */
+  static HashSet<EExpression> get_leakedInputExpressions(String plcList, Map<String,EE_Variable> pseudo2Var) {
+    HashSet<EExpression> leakedInputExpressions = new HashSet<EExpression>();
+
+    HashSet<EExpression> harboredInputExpressions = get_harboredInputExpressions(plcList, pseudo2Var);
+    
+    for (String lie : pseudo2Var.keySet()) {
+      lie = lie.trim();
+      if ( ! lie.isEmpty() ) {
+        EExpression parsedLie = null;
+        try { parsedLie = Smt2Parser.parse(lie, pseudo2Var); }
+        catch(ParseException e) {
+          log.println("Exception while parsing: " + lie);
+          log.flush();
+          throw new Error(e);
+        }
+
+        log.logln("EncoverConfiguration", "parsedLie = " + parsedLie);
+        log.flush();
+
+        if (!harboredInputExpressions.contains(parsedLie))
+        {
+          leakedInputExpressions.add(parsedLie);
+        }
+      }
+    }
+
+    String[] policyList = plcList.split("\\|");
+    if (policyList.length > 1)
+    {
+      String[] lieList = policyList[1].split(",");
+      for (String lie : lieList) {
+        lie = lie.trim();
+        if ( ! lie.isEmpty() ) {
+          EExpression parsedLie = null;
+          try { parsedLie = Smt2Parser.parse(lie, pseudo2Var); }
+          catch(ParseException e) {
+            log.println("Exception while parsing: " + lie);
+            log.flush();
+            throw new Error(e);
+          }
+
+          log.logln("EncoverConfiguration", "parsedLie = " + parsedLie);
+          log.flush();
+
+          leakedInputExpressions.add(parsedLie);
+        }
+      }
+    }
+
     return leakedInputExpressions;
   }
 
@@ -226,15 +285,16 @@ class EncoverConfiguration {
   }
 
   /**
-   * Based on the input string returns a set of names of the harbored inputs.
+   * Based on the input string returns the names of the harbored inputs.
    *
-   * @param policyList A string containing the name of harbored inputs
+   * @param plcList A string containing the policy in the form "harboredExpressions | leakedExpressions"
    * @param pseudo2Var pseudonym mapping that is passed to the parser
    * @return A set containing the names of the harbored inputs.
    */
-  static HashSet<EExpression> get_harboredInputExpressions(String policyList, Map<String,EE_Variable> pseudo2Var) {
+  static HashSet<EExpression> get_harboredInputExpressions(String plcList, Map<String,EE_Variable> pseudo2Var) {
     HashSet<EExpression> harboredInputExpressions = new HashSet<EExpression>();
-    String[] hieList = policyList.split(",");
+    String[] policyList = plcList.split("\\|");
+    String[] hieList = policyList[0].split(",");
 
     for (String hie : hieList) {
       hie = hie.trim();
