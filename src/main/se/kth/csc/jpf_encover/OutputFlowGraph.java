@@ -78,10 +78,16 @@ public interface OutputFlowGraph {
    *
    * @param output The output generated at this point.
    * @param pc The path condition to reach this node.
-   * @param policy Active policy at this node.
-   * @param policyChanged Is this the first output node after a policy change? (used to check policy inconsistensy).
+   * @return The node add to the OFG to represent this output
    */
-  public OFG_Vertex registerOutput(EExpression output, EFormula pc, String policy, boolean policyChanged);
+  public OFG_Vertex registerOutput(EExpression output, EFormula pc);
+
+  /**
+   * Sets the active policy
+   *
+   * @param plc input policy
+   */
+  public void setActivePolicy(String plc);
 
   /**
    * Register that the node at the current position in the OFG can be the last

@@ -135,8 +135,7 @@ public class EncoverListener extends SymbolicListener {
 
   private Map<String,EE_Variable> pseudo2Var = new HashMap();
 
-  private String activePolicy;
-  private boolean policyChanged = false;
+  private String activePolicy = "";
 
   /**
    * Constructor for ENCoVer listeners.
@@ -229,15 +228,11 @@ public class EncoverListener extends SymbolicListener {
       // If a setPolicy method was called.
       if (methInfo.getName().equals("setPolicy"))
       {
-        //harboredInputExpressions = EncoverConfiguration.set_harboredInputExpressions("secret, pp");
-        //System.out.println("\n\n\n");
         int obsPos = observablePosInCall[0];
         Object obsVal = JPFHelper.getArgumentAtPosition(vm, invInstr, obsPos);
         activePolicy = JPFHelper.symbolicStateValue2eExpression(obsVal).toString();
         activePolicy = activePolicy.substring(1, activePolicy.length()-1); // removing " from string
-        policyChanged = true;
-        //System.out.println("---> " + activePolicy + " <---");
-        //System.out.println("\n\n\n");
+        ofg.setActivePolicy(activePolicy);
       }
 
       if ( testStartMethodBaseName.startsWith(invokedMethodBaseName) ) {
@@ -304,7 +299,7 @@ public class EncoverListener extends SymbolicListener {
             if (matchArguments) {
               int obsPos = observablePosInCall[groupIndex - 1];
               Object obsVal = JPFHelper.getArgumentAtPosition(vm, invInstr, obsPos);
-              doOn_ObservableEvent(vm, obsVal, activePolicy);
+              doOn_ObservableEvent(vm, obsVal);
             }
           }
         }
@@ -357,11 +352,7 @@ public class EncoverListener extends SymbolicListener {
               obsVal = retInstr.getReturnValue(threadInfo);
             }
 
-            // if (log.DEBUG_MODE) log.println(" observable value is: " + obsVal);
-            // if (log.DEBUG_MODE) log.println("  retInstr.getReturnAttr(threadInfo) is: " + retInstr.getReturnAttr(threadInfo));
-            // if (log.DEBUG_MODE) log.println("  retInstr.getReturnValue(threadInfo) is: " + retInstr.getReturnValue(threadInfo));
-
-            doOn_ObservableEvent(vm, obsVal, activePolicy);
+            doOn_ObservableEvent(vm, obsVal);
           }
         }
       }
@@ -752,33 +743,77 @@ public class EncoverListener extends SymbolicListener {
     
     if ( askFor_itfFml || askFor_sitfFml || askFor_smtSolving ) 
     {
-      // TODO: There is a bug in new policy flag, if there is a branch right after the policy change, only one of the vertices gets the true flag.
-
       System.out.println("\n\n");
       System.out.println("---> Checking <---");
-      
-      Boolean isNonInterfering = true;
+
+      //ofg.display();
+
+      boolean isNonInterfering = true;
+      boolean consistentPolicy = true;
       Iterator<OFG_Vertex> iter = ofg.depthFirstTaversal().iterator();
       while (iter.hasNext()) 
       { 
         OFG_Vertex vertex = iter.next();
 
-        if (vertex.getPolicyChanged())
-        {
-          //Policy consistency check
-          OFG_Vertex vertexPre = vertex.getPredecessorsOf()
-        }
-
-        // Security check
         harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(vertex.getPolicy(), pseudo2Var);
         leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(vertex.getPolicy(), pseudo2Var);
-        
+
+        if (vertex.getPolicyChanged())
+        {
+          ////////////////////////////////////////////////////////////
+          ///////////////// Policy consistency check /////////////////
+          ////////////////////////////////////////////////////////////
+          Iterator<OFG_Vertex> verteciesPreIter = ofg.getPredecessorsOf(vertex).iterator();
+
+          while (verteciesPreIter.hasNext())
+          {
+            OFG_Vertex vertexPre = verteciesPreIter.next();
+            interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertexPre, inputDomains, leakedInputExpressions, harboredInputExpressions);
+            System.out.print("Policy consistency check at node: " + vertexPre + ":\n   Interference Formula => " + interferenceFormula);
+
+            /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
+            boolean wasStarted = solver.isStarted();
+            if ( ! wasStarted ) solver.start();
+            try 
+            {
+              SortedMap<EE_Variable,EE_Constant> satisfyingAssignment = solver.checkSatisfiability(interferenceFormula);
+
+              if ( satisfyingAssignment != null ) 
+              {
+                consistentPolicy = false;
+                encoverOut.print("SMT-BASED VERIFICATION: ");
+                encoverOut.println("Policy update at node >> " + vertex + " << was inconsistent");
+                Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
+                while ( satAssignIte.hasNext() ) 
+                {
+                  Map.Entry<EE_Variable,EE_Constant> entry = satAssignIte.next();
+                  EE_Variable var = entry.getKey();
+                  EE_Constant val = entry.getValue();
+                  encoverOut.println("  " + var + " -> " + val);
+                }
+                encoverOut.println("");
+                break;
+              }
+            } 
+            catch (Error e) 
+            {
+              log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
+            }
+
+            System.out.println("   ===>   Unsat\n");
+            if ( ! wasStarted ) solver.stop();
+            /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
+          }
+        }
+
+        //////////////////////////////////////////////////
+        ///////////////// Security check /////////////////
+        //////////////////////////////////////////////////
         interferenceFormula =
         OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions);
       
-        System.out.println("Node " + vertex + " ==> Interference Formula: " + interferenceFormula);
+        System.out.print("Security check at Node " + vertex + ":\n   Interference Formula => " + interferenceFormula);
 
-        //break;
         /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
         boolean wasStarted = solver.isStarted();
         if ( ! wasStarted ) solver.start();
@@ -790,7 +825,7 @@ public class EncoverListener extends SymbolicListener {
           {
             isNonInterfering = false;
             encoverOut.print("SMT-BASED VERIFICATION: ");
-            encoverOut.println("The program is interfering.");
+            encoverOut.println("The program is insecure.");
             Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
             while ( satAssignIte.hasNext() ) 
             {
@@ -808,7 +843,8 @@ public class EncoverListener extends SymbolicListener {
           log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
         }
 
-        System.out.println("Unsat\n");
+        System.out.println("   ===>   Unsat");
+        System.out.println("-----------------------------------------------");
 
         if ( ! wasStarted ) solver.stop();
         /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
@@ -816,7 +852,7 @@ public class EncoverListener extends SymbolicListener {
 
       System.out.println("\n\n");
 
-      if ( isNonInterfering ) 
+      if ( consistentPolicy && isNonInterfering ) 
       {
         encoverOut.print("SMT-BASED VERIFICATION: ");
         encoverOut.println("The program is noninterfering.");
@@ -1171,7 +1207,7 @@ public class EncoverListener extends SymbolicListener {
       if (log.DEBUG_MODE) log.println(outputExpr + " [[ IFF " + pcF + " ]]");
       if (log.DEBUG_MODE) jeg.advanceToEvent(vm, JEG_Vertex.Type.OUTPUT, outputExpr.toString());
       
-      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, activePolicy, policyChanged);
+      OFG_Vertex v = ofg.registerOutput(outputExpr, pcF);
       // if (log.DEBUG_MODE) log.println(" created OFG vertex " + v.getId());
 
       if (log.DEBUG_MODE) log.println();
@@ -1187,7 +1223,7 @@ public class EncoverListener extends SymbolicListener {
    * @param obsVal The object reflecting the value that will be observed.
    * @param plc Current active policy
    */
-  private void doOn_ObservableEvent(JVM vm, Object obsVal, String plc) 
+  private void doOn_ObservableEvent(JVM vm, Object obsVal) 
   {
     EExpression outputExpr = JPFHelper.symbolicStateValue2eExpression(obsVal);
     EFormula pcF = JPFHelper.vm2pcFormula(vm);
@@ -1195,8 +1231,7 @@ public class EncoverListener extends SymbolicListener {
     if (log.DEBUG_MODE) log.println(outputExpr + " [[ IFF " + pcF + " ]]");
     if (log.DEBUG_MODE) jeg.advanceToEvent(vm, JEG_Vertex.Type.OUTPUT, outputExpr.toString());
 
-    OFG_Vertex v = ofg.registerOutput(outputExpr, pcF, plc, policyChanged);
-    policyChanged = false;
+    OFG_Vertex v = ofg.registerOutput(outputExpr, pcF);
 
     // if (log.DEBUG_MODE) log.println(" created OFG vertex " + v.getId());
     

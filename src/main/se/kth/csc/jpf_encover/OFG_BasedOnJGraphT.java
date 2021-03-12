@@ -57,10 +57,14 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
 
   private DirectedGraph<OFG_Vertex, DefaultEdge> graph;
   private Map<String, OFG_Vertex> backtrackablePointId2vertex;
+  private Map<String, String> backtrackablePointId2policy;
+  private Map<String, Boolean> backtrackablePointId2policyChanged;
   private int vertexCounter = 0;
   private OFG_Vertex root;
   private OFG_Vertex end;
   private OFG_Vertex currentPosition;
+  private String currentPolicy;
+  private Boolean currentPolicyChanged;
 
   /**
    * Default constructor.
@@ -69,11 +73,15 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   public OFG_BasedOnJGraphT() {
     graph = new DefaultDirectedGraph(DefaultEdge.class);
     backtrackablePointId2vertex = new HashMap();
+    backtrackablePointId2policy = new HashMap();
+    backtrackablePointId2policyChanged = new HashMap();
     root = new RootVertex();
     graph.addVertex(root);
     end = new EndVertex();
     graph.addVertex(end);
     currentPosition = root;
+    currentPolicy = "";
+    currentPolicyChanged = false;
   }
 
   /**
@@ -148,15 +156,20 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    *
    * @param id Identifier of a potential future backtrack destination
    */
-  public void registerBacktrackablePoint(String id) {
-    if ( backtrackablePointId2vertex.containsKey(id)  ) {
+  public void registerBacktrackablePoint(String id) 
+  {
+    if ( backtrackablePointId2vertex.containsKey(id)  ) 
+    {
       OFG_Vertex registeredPos = backtrackablePointId2vertex.get(id);
-      if ( currentPosition != registeredPos) {
+      if ( currentPosition != registeredPos) 
+      {
         String errorDescr = "ERROR: a different OFG position is already registered for " + id + ".";
         throw new Error(errorDescr);
       }
     }
     backtrackablePointId2vertex.put(id, currentPosition);
+    backtrackablePointId2policy.put(id, currentPolicy);
+    backtrackablePointId2policyChanged.put(id, currentPolicyChanged);
   }
 
   /**
@@ -164,14 +177,19 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    *
    * @param id Identifier of the destination of the backtrack.
    */
-  public void backtrackTo(String id) {
+  public void backtrackTo(String id) 
+  {
     OFG_Vertex newPos = backtrackablePointId2vertex.get(id);
-    if ( newPos == null ) {
+    if ( newPos == null ) 
+    {
       Set<String> keys = backtrackablePointId2vertex.keySet() ;
       String errorDescr = "There is no backtrackable point registered for " + id + " in " + keys + ".";
       throw new Error(errorDescr);
     }
     currentPosition = newPos;
+    currentPolicy = backtrackablePointId2policy.get(id);
+    currentPolicyChanged = backtrackablePointId2policyChanged.get(id);
+    //System.out.println("==============>>>" + currentPosition);
   }
 
   /**
@@ -179,18 +197,28 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    *
    * @param output The "value" outputted
    * @param pc The path condition to reach this output
-   * @param policy Active policy at this node.
-   * @param policyChanged Is this the first output node after a policy change? (used to check policy inconsistensy).
    * @return The node add to the OFG to represent this output
    */
-  public OFG_Vertex registerOutput(EExpression output, EFormula pc, String policy, boolean policyChanged) {
+  public OFG_Vertex registerOutput(EExpression output, EFormula pc) {
     if ( pc == null ) { throw new Error("The PC must not be null"); }
 
-    OFG_Vertex newPos = new OutputVertex(output, pc, policy, policyChanged);
+    OFG_Vertex newPos = new OutputVertex(output, pc, currentPolicy, currentPolicyChanged);
     graph.addVertex(newPos);
     graph.addEdge(currentPosition, newPos);
     currentPosition = newPos;
+    currentPolicyChanged = false;
     return newPos;
+  }
+
+  /**
+   * Sets the active policy
+   *
+   * @param plc input policy
+   */
+  public void setActivePolicy(String plc) 
+  {
+    currentPolicy = plc;
+    currentPolicyChanged = true;
   }
 
   /**
@@ -520,6 +548,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public String getId() { return "root";}
     public Boolean isValid() { return true; }
     public void setValid(boolean vld) {};
+    public String getPolicy() { return ""; }
+    public Boolean getPolicyChanged() { return false; }
   }
 
   /**
@@ -530,6 +560,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public String getId() { return "end";}
     public Boolean isValid() { return true; }
     public void setValid(boolean vld) {};
+    public String getPolicy() { return ""; }
+    public Boolean getPolicyChanged() { return false; }
   }
 
   /**
