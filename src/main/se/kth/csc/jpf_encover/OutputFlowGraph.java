@@ -59,6 +59,13 @@ public interface OutputFlowGraph {
   public void markChildrenValid(OFG_Vertex vertex);
 
   /**
+  * Invalidates all vertecies with numberOfPolicyChanges less that npc 
+  *
+  * @param npc all vertecies with numberOfPolicyChanges less than this will become invalid.
+  */
+  public void invalidateNPC(int npc);
+
+  /**
   * Makes all of the invalid verticies valid.
   *
   */
@@ -81,6 +88,7 @@ public interface OutputFlowGraph {
    * @return The node add to the OFG to represent this output
    */
   public OFG_Vertex registerOutput(EExpression output, EFormula pc);
+
 
   /**
    * Sets the active policy

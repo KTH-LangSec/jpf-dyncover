@@ -48,16 +48,13 @@ public class Simple
     {
         setPolicy(" ");
         System.out.println(secret1);
-        if (secret1 > 0) 
-        {
-            System.out.println(1);
-        }
-        else
-        {
-            System.out.println(1);
-        }
+        // if (secret1 > 0) 
+        // {
+        //      System.out.println(1);
+        //      setPolicy("secret1");
+        // }
         setPolicy("secret1");
-        System.out.println(11);
+        System.out.println(secret1);
         
         //int aa = 1;
         //int bb = 2;

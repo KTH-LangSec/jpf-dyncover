@@ -75,6 +75,13 @@ public class EncoverListener extends SymbolicListener {
   // static final boolean DEBUG_MODE_ENABLED = true;
   // final boolean DEBUG_MODE;
 
+  /////////////////////////////////
+  // TODO: change this later //////
+  /////////////////////////////////
+  // attacker types can be perfect recall, forgetful, and bounded memory
+  public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL}
+  private static AttackerType attackerType = AttackerType.FORGETFUL;
+
   static final String GENERIC_LOG_FILE_NAME = "run__%s.log";
   private static final String GENERIC_OUT_FILE_NAME = "run__%s.out";
   private static final String GENERIC_OFG_FILE_NAME = "run__%s.ofg";
@@ -758,59 +765,62 @@ public class EncoverListener extends SymbolicListener {
         harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(vertex.getPolicy(), pseudo2Var);
         leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(vertex.getPolicy(), pseudo2Var);
 
-        if (vertex.getPolicyChanged())
+        if (attackerType != AttackerType.FORGETFUL)
         {
-          ////////////////////////////////////////////////////////////
-          ///////////////// Policy consistency check /////////////////
-          ////////////////////////////////////////////////////////////
-          Iterator<OFG_Vertex> verteciesPreIter = ofg.getPredecessorsOf(vertex).iterator();
-
-          while (verteciesPreIter.hasNext())
+          if (vertex.getPolicyChanged())
           {
-            OFG_Vertex vertexPre = verteciesPreIter.next();
-            interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertexPre, inputDomains, leakedInputExpressions, harboredInputExpressions);
-            System.out.print("Policy consistency check at node: " + vertexPre + ":\n   Interference Formula => " + interferenceFormula);
+            ////////////////////////////////////////////////////////////
+            ///////////////// Policy consistency check /////////////////
+            ////////////////////////////////////////////////////////////
+            Iterator<OFG_Vertex> verteciesPreIter = ofg.getPredecessorsOf(vertex).iterator();
 
-            /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
-            boolean wasStarted = solver.isStarted();
-            if ( ! wasStarted ) solver.start();
-            try 
+            while (verteciesPreIter.hasNext())
             {
-              SortedMap<EE_Variable,EE_Constant> satisfyingAssignment = solver.checkSatisfiability(interferenceFormula);
+              OFG_Vertex vertexPre = verteciesPreIter.next();
+              interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertexPre, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType);
+              System.out.print("Policy consistency check at node: " + vertexPre + ":\n   Interference Formula => " + interferenceFormula);
 
-              if ( satisfyingAssignment != null ) 
+              /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
+              boolean wasStarted = solver.isStarted();
+              if ( ! wasStarted ) solver.start();
+              try 
               {
-                consistentPolicy = false;
-                encoverOut.print("SMT-BASED VERIFICATION: ");
-                encoverOut.println("Policy update at node >> " + vertex + " << was inconsistent");
-                Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
-                while ( satAssignIte.hasNext() ) 
-                {
-                  Map.Entry<EE_Variable,EE_Constant> entry = satAssignIte.next();
-                  EE_Variable var = entry.getKey();
-                  EE_Constant val = entry.getValue();
-                  encoverOut.println("  " + var + " -> " + val);
-                }
-                encoverOut.println("");
-                break;
-              }
-            } 
-            catch (Error e) 
-            {
-              log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
-            }
+                SortedMap<EE_Variable,EE_Constant> satisfyingAssignment = solver.checkSatisfiability(interferenceFormula);
 
-            System.out.println("   ===>   Unsat\n");
-            if ( ! wasStarted ) solver.stop();
-            /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
+                if ( satisfyingAssignment != null ) 
+                {
+                  consistentPolicy = false;
+                  encoverOut.print("SMT-BASED VERIFICATION: ");
+                  encoverOut.println("Policy update at node >> " + vertex + " << was inconsistent");
+                  Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
+                  while ( satAssignIte.hasNext() ) 
+                  {
+                    Map.Entry<EE_Variable,EE_Constant> entry = satAssignIte.next();
+                    EE_Variable var = entry.getKey();
+                    EE_Constant val = entry.getValue();
+                    encoverOut.println("  " + var + " -> " + val);
+                  }
+                  encoverOut.println("");
+                  break;
+                }
+              } 
+              catch (Error e) 
+              {
+                log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
+              }
+
+              System.out.println("   ===>   Unsat\n");
+              if ( ! wasStarted ) solver.stop();
+              /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
+            }
           }
         }
+
 
         //////////////////////////////////////////////////
         ///////////////// Security check /////////////////
         //////////////////////////////////////////////////
-        interferenceFormula =
-        OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions);
+        interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType);
       
         System.out.print("Security check at Node " + vertex + ":\n   Interference Formula => " + interferenceFormula);
 
@@ -855,7 +865,7 @@ public class EncoverListener extends SymbolicListener {
       if ( consistentPolicy && isNonInterfering ) 
       {
         encoverOut.print("SMT-BASED VERIFICATION: ");
-        encoverOut.println("The program is noninterfering.");
+        encoverOut.println("The program is secure.");
         encoverOut.println("");
       } 
       

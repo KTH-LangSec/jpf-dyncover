@@ -26,6 +26,8 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import se.kth.csc.jpf_encover.EncoverListener.AttackerType;
+
 
 /**
  * This class implements static methods to manipulate OFG objects.
@@ -224,7 +226,8 @@ public class OFG_Handler {
    * @param v The destination of the path.
    * @return The output sequence collected.
    */
-  public static List<EExpression> getOutputSequence(OutputFlowGraph ofg, OFG_Vertex v) {
+  public static List<EExpression> getOutputSequence(OutputFlowGraph ofg, OFG_Vertex v) 
+  {
     List<EExpression> outputSequence = new ArrayList();
     EExpression vOutput = v.getOutput();
 
@@ -237,7 +240,10 @@ public class OFG_Handler {
       outputSequence = new ArrayList();
     }
 
-    outputSequence.add(vOutput);
+    if (v.isValid())
+    {
+      outputSequence.add(vOutput);
+    }
 
     return outputSequence;
   }
@@ -383,8 +389,11 @@ public class OFG_Handler {
    *
    * @param ofg The output flow graph for which the interference formula has to
    *   be generated.
+   * @param vertex The vertex from which the interference formula has to
+   *   be generated.
    * @param leaked A set of expressions corresponding to the initialy leaked information.
    * @param harbored A set of expressions corresponding to the harbored information.
+   * @param attackerType The type of the attacker, against which the program is being checked.
    * @return An interference formula for the provided OFG.
    */
   public static EFormula generateInterferenceFormula(
@@ -392,11 +401,23 @@ public class OFG_Handler {
       OFG_Vertex vertex,
       Map<EE_Variable,List<EE_Constant>> domains,
       Set<EExpression> leaked, 
-      Set<EExpression> harbored
-    ) 
+      Set<EExpression> harbored,
+      AttackerType attackerType) 
     {
 
-    //ofg.markChildrenInvalid(vertex);
+    switch(attackerType) 
+    {
+      case PERFECT:
+        //ofg.markChildrenInvalid(vertex);
+        break;
+      case BOUNDED:
+        // code block
+        break;
+      case FORGETFUL:
+        ofg.invalidateNPC(vertex.getNumberOfPolicyChanges());
+        break;
+    }
+    
 
     //ofg.display();
 
@@ -519,7 +540,18 @@ public class OFG_Handler {
 
     interferenceFml.append(bigOuter);
 
-    //ofg.markChildrenValid(vertex);
+    switch(attackerType) 
+    {
+      case PERFECT:
+        //ofg.markChildrenValid(vertex);
+        break;
+      case BOUNDED:
+        // code block
+        break;
+      case FORGETFUL:
+        ofg.clearInvalid();
+        break;
+    }
 
     return interferenceFml;
   }

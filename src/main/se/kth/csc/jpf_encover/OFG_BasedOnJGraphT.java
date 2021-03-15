@@ -59,12 +59,14 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   private Map<String, OFG_Vertex> backtrackablePointId2vertex;
   private Map<String, String> backtrackablePointId2policy;
   private Map<String, Boolean> backtrackablePointId2policyChanged;
+  private Map<String, Integer> backtrackablePointId2numberOfPolicyChanges;
   private int vertexCounter = 0;
   private OFG_Vertex root;
   private OFG_Vertex end;
   private OFG_Vertex currentPosition;
   private String currentPolicy;
   private Boolean currentPolicyChanged;
+  private int currentNumberOfPolicyChanges;
 
   /**
    * Default constructor.
@@ -75,6 +77,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     backtrackablePointId2vertex = new HashMap();
     backtrackablePointId2policy = new HashMap();
     backtrackablePointId2policyChanged = new HashMap();
+    backtrackablePointId2numberOfPolicyChanges = new HashMap();
     root = new RootVertex();
     graph.addVertex(root);
     end = new EndVertex();
@@ -82,6 +85,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     currentPosition = root;
     currentPolicy = "";
     currentPolicyChanged = false;
+    currentNumberOfPolicyChanges = 0;
   }
 
   /**
@@ -139,6 +143,24 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   }
 
   /**
+  * Invalidates all vertecies with numberOfPolicyChanges less that npc 
+  *
+  * @param npc all vertecies with numberOfPolicyChanges less than this will become invalid.
+  */
+  public void invalidateNPC(int npc) 
+  {
+    Iterator<OFG_Vertex> iter = this.depthFirstTaversal().iterator();
+    while (iter.hasNext()) 
+    {
+      OFG_Vertex v = iter.next();
+      if (v.getNumberOfPolicyChanges() < npc)
+      {
+        v.setValid(false);
+      }
+    }
+  }
+
+  /**
    * Makes all of the invalid verticies valid.
    *
    */
@@ -170,6 +192,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     backtrackablePointId2vertex.put(id, currentPosition);
     backtrackablePointId2policy.put(id, currentPolicy);
     backtrackablePointId2policyChanged.put(id, currentPolicyChanged);
+    backtrackablePointId2numberOfPolicyChanges.put(id, currentNumberOfPolicyChanges);
   }
 
   /**
@@ -189,7 +212,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     currentPosition = newPos;
     currentPolicy = backtrackablePointId2policy.get(id);
     currentPolicyChanged = backtrackablePointId2policyChanged.get(id);
-    //System.out.println("==============>>>" + currentPosition);
+    currentNumberOfPolicyChanges = backtrackablePointId2numberOfPolicyChanges.get(id);
   }
 
   /**
@@ -199,14 +222,15 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    * @param pc The path condition to reach this output
    * @return The node add to the OFG to represent this output
    */
-  public OFG_Vertex registerOutput(EExpression output, EFormula pc) {
+  public OFG_Vertex registerOutput(EExpression output, EFormula pc) 
+  {
     if ( pc == null ) { throw new Error("The PC must not be null"); }
 
-    OFG_Vertex newPos = new OutputVertex(output, pc, currentPolicy, currentPolicyChanged);
+    OFG_Vertex newPos = new OutputVertex(output, pc, currentPolicy, currentPolicyChanged, currentNumberOfPolicyChanges);
     graph.addVertex(newPos);
     graph.addEdge(currentPosition, newPos);
-    currentPosition = newPos;
     currentPolicyChanged = false;
+    currentPosition = newPos;
     return newPos;
   }
 
@@ -219,6 +243,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   {
     currentPolicy = plc;
     currentPolicyChanged = true;
+    currentNumberOfPolicyChanges += 1;
   }
 
   /**
@@ -237,7 +262,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    *
    * @return The set of vertices belonging to this OFG.
    */
-  public Set<OFG_Vertex> getAllVertices() {
+  public Set<OFG_Vertex> getAllVertices() 
+  {
     Set<OFG_Vertex> res = new HashSet(graph.vertexSet());
     res.remove(root);
     res.remove(end);
@@ -263,7 +289,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    *
    * @return The set of vertices starting an output sequence.
    */
-  public Set<OFG_Vertex> getInitialVertices() {
+  public Set<OFG_Vertex> getInitialVertices() 
+  {
     return getSuccessorsOf(root);
   }
 
@@ -273,11 +300,13 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    * @param vertex The vertex whose predecessors are to be retrieved.
    * @return The set of predecessors of {@code vertex}.
    */
-  public Set<OFG_Vertex> getPredecessorsOf(OFG_Vertex vertex) {
+  public Set<OFG_Vertex> getPredecessorsOf(OFG_Vertex vertex) 
+  {
     Set<DefaultEdge> inEdges = graph.incomingEdgesOf(vertex);
     Set<OFG_Vertex> res = new HashSet();
     Iterator<DefaultEdge> ite = inEdges.iterator();
-    while ( ite.hasNext() ) {
+    while ( ite.hasNext() ) 
+    {
       res.add(graph.getEdgeSource(ite.next()));
     }
     res.remove(root);
@@ -291,11 +320,13 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    * @param vertex The vertex whose successors are to be retrieved.
    * @return The set of successors of {@code vertex}.
    */
-  public Set<OFG_Vertex> getSuccessorsOf(OFG_Vertex vertex) {
+  public Set<OFG_Vertex> getSuccessorsOf(OFG_Vertex vertex) 
+  {
     Set<DefaultEdge> outEdges = graph.outgoingEdgesOf(vertex);
     Set<OFG_Vertex> res = new HashSet();
     Iterator<DefaultEdge> ite = outEdges.iterator();
-    while ( ite.hasNext() ) {
+    while ( ite.hasNext() ) 
+    {
       res.add(graph.getEdgeTarget(ite.next()));
     }
     res.remove(root);
@@ -309,7 +340,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    * @param vertex The vertex to test.
    * @return True iff there is an output sequence for which {@code vertex} is the starting state.
    */
-  public boolean isPotentialStartOfOutputSequence(OFG_Vertex vertex) {
+  public boolean isPotentialStartOfOutputSequence(OFG_Vertex vertex) 
+  {
     return graph.containsEdge(root, vertex);
   }
 
@@ -319,7 +351,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    * @param vertex The vertex to test.
    * @return True iff there is an output sequence for which {@code vertex} is the ending state.
    */
-  public boolean isPotentialEndOfOutputSequence(OFG_Vertex vertex) {
+  public boolean isPotentialEndOfOutputSequence(OFG_Vertex vertex) 
+  {
     return graph.containsEdge(vertex, end);
   }
 
@@ -328,10 +361,12 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    *
    * @return The set of variables occuring in this output flow graph.
    */
-  public Set<EE_Variable> getVariables() {
+  public Set<EE_Variable> getVariables() 
+  {
     Set<EE_Variable> res = new HashSet();
     Iterator<OFG_Vertex> ite = getAllVertices().iterator();
-    while ( ite.hasNext() ) {
+    while ( ite.hasNext() ) 
+    {
       OFG_Vertex v = ite.next();
       res.addAll(v.getOutput().getVariables());
       res.addAll(v.getPathCondition().getVariables());
@@ -345,7 +380,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    *
    * @return The number of nodes in this output flow graph.
    */
-  public int getNbNodes() {
+  public int getNbNodes() 
+  {
     return this.getAllVertices().size();
   }
 
@@ -354,10 +390,12 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
    *
    * @return The number of edges in this output flow graph.
    */
-  public int getNbEdges() {
+  public int getNbEdges() 
+  {
     int res = 0;
     Iterator<DefaultEdge> eIte = graph.edgeSet().iterator();
-    while ( eIte.hasNext() ) {
+    while ( eIte.hasNext() ) 
+    {
       DefaultEdge e = eIte.next();
       if ( graph.getEdgeSource(e) != root && graph.getEdgeTarget(e) != end )
         res++;
@@ -447,14 +485,12 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   public ArrayList<OFG_Vertex> depthFirstTaversal() 
   {
     ArrayList<OFG_Vertex> verticies = new ArrayList<OFG_Vertex>();
-    //Iterator<OFG_Vertex> ite = graph.vertexSet().iterator();
     GraphIterator<OFG_Vertex, DefaultEdge> ite = new DepthFirstIterator<OFG_Vertex, DefaultEdge>(graph);
     while ( ite.hasNext() ) 
     {
       OFG_Vertex v = ite.next();
       if (v instanceof OutputVertex) 
       {
-        //res += v.getId() + " = " + v.getTextualDescription() + "\n";
         verticies.add(v);
       }
     }
@@ -530,12 +566,14 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public String getPolicy() { throw new Error("StructuralVertices do not have policy."); }
     public Boolean getPolicyChanged() { throw new Error("StructuralVertices do not have policy changed."); }
     public Boolean isValid() { throw new Error("StructuralVertices do not have validity."); }
+    public int getNumberOfPolicyChanges() { throw new Error("StructuralVertices do not have number of policy changes."); }
     public void setOutput(EExpression exp) { throw new Error("StructuralVertices do not have an output."); }
     public void setPathCondition(EFormula path) { throw new Error("StructuralVertices do not have path conditions."); }
     public void setOtherProperties(EFormula prop) { throw new Error("StructuralVertices do not have properties."); }
     public void setPolicy(String plc) { throw new Error("StructuralVertices do not have policy."); }
     public void setPolicyChanged(boolean plcChanged) { throw new Error("StructuralVertices do not have policy changed."); }
     public void setValid(boolean vld) { throw new Error("StructuralVertices do not have validity."); }
+    public void setNumberOfPolicyChanges(int npc) { throw new Error("StructuralVertices do not have number fo policy changes."); }
     public String getTextualDescription() {return getId();}
     public String toString() {return getId();}
   }
@@ -550,6 +588,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public void setValid(boolean vld) {};
     public String getPolicy() { return ""; }
     public Boolean getPolicyChanged() { return false; }
+    public void setNumberOfPolicyChanges(int npc) {};
+    public int getNumberOfPolicyChanges() {return 0;};
   }
 
   /**
@@ -562,6 +602,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public void setValid(boolean vld) {};
     public String getPolicy() { return ""; }
     public Boolean getPolicyChanged() { return false; }
+    public void setNumberOfPolicyChanges(int npc) {};
+    public int getNumberOfPolicyChanges() {return 0;};
   }
 
   /**
@@ -575,6 +617,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     private String policy;
     private boolean policyChanged;
     private boolean valid;
+    private int numberOfPolicyChanges;
 
     /**
      * Constructor of output vertices.
@@ -590,6 +633,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       policy = null;
       policyChanged = false;
       valid = true;
+      numberOfPolicyChanges = 0;
     }
 
     /**
@@ -600,7 +644,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      * @param plc Active policy at this output.
      * @param plcChanged Is this the first output after a policy change?.
      */
-    private OutputVertex(EExpression out, EFormula pc, String plc, boolean plcChanged) 
+    private OutputVertex(EExpression out, EFormula pc, String plc, boolean plcChanged, int npc) 
     {
       id = vertexCounter++;
       output = out;
@@ -609,6 +653,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       policy = plc;
       policyChanged = plcChanged;
       valid = true;
+      numberOfPolicyChanges = npc;
     }
 
     /**
@@ -676,6 +721,16 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     }
 
     /**
+    * Gets the number of policy changes from root up to this vertex.
+    *
+    * @return The number of policy changes.
+    */
+    public int getNumberOfPolicyChanges()
+    {
+      return numberOfPolicyChanges;
+    }
+
+    /**
      * Sets the output generated by this vertex.
      *
      * @param exp Expression representing the ouptut.
@@ -698,7 +753,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @param prop The properties holding at this vertex.
      */
-    public void setOtherProperties(EFormula prop) {
+    public void setOtherProperties(EFormula prop) 
+    {
       otherProperties = prop;
     }
 
@@ -707,7 +763,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @param plc The properties holding at this vertex.
      */
-    public void setPolicy(String plc) {
+    public void setPolicy(String plc) 
+    {
       policy = plc;
     }
 
@@ -716,7 +773,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @param plcChanged Is this vertex after a policy change.
      */
-    public void setPolicyChanged(boolean plcChanged) {
+    public void setPolicyChanged(boolean plcChanged) 
+    {
       policyChanged = plcChanged;
     }
 
@@ -725,8 +783,19 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @param vld input boolean.
      */
-    public void setValid(boolean vld) {
+    public void setValid(boolean vld) 
+    {
       valid = vld;
+    }
+
+    /**
+    * Sets the number of policy changes from root up to this vertex.
+    *
+    * @param npc The number of policy changes.
+    */
+    public void setNumberOfPolicyChanges(int npc)
+    {
+      numberOfPolicyChanges = npc;
     }
 
     /**
@@ -737,7 +806,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public String getTextualDescription() {
       String retVal;
       if ( output == null ) { retVal = "null"; }
-      else { retVal = output + ", [[ Policy: " + policy + " ]]" + ", [[ New policy: " + policyChanged + " ]]"  + ", [[ Valid?: " + valid + " ]]"  + ", [[ IFF " + pathCondition + " ]]" + ", [[ UTC " + otherProperties + " ]]"; }
+      else { retVal = output + ", [[ Policy: " + policy + " ]]" + ", [[ New policy: " + policyChanged + " ]]"  + ", [[ is Valid?: " + valid + " ]]"  + ", [[ NPC: " + numberOfPolicyChanges + " ]]"  + ", [[ IFF " + pathCondition + " ]]" + ", [[ UTC " + otherProperties + " ]]"; }
       return retVal;
     }
 
