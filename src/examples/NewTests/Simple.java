@@ -47,14 +47,18 @@ public class Simple
     public static void leak(int secret1, int secret2) 
     {
         setPolicy(" ");
-        System.out.println(secret1);
-        // if (secret1 > 0) 
-        // {
-        //      System.out.println(1);
-        //      setPolicy("secret1");
-        // }
+        //System.out.println(secret1);
+        if (secret1 > 0) 
+        {
+             System.out.println(1);
+             System.out.println(1);
+        }
+        else
+        {
+            System.out.println(1);
+        }
         setPolicy("secret1");
-        System.out.println(secret1);
+        System.out.println(1);
         
         //int aa = 1;
         //int bb = 2;

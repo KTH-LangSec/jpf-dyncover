@@ -244,6 +244,10 @@ public class OFG_Handler {
     {
       outputSequence.add(vOutput);
     }
+    else
+    {
+      outputSequence.add(new EE_Constant.TRUE());
+    }
 
     return outputSequence;
   }
