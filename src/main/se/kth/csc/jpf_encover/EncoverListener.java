@@ -75,14 +75,14 @@ public class EncoverListener extends SymbolicListener {
   // static final boolean DEBUG_MODE_ENABLED = true;
   // final boolean DEBUG_MODE;
 
-  /////////////////////////////////
-  // TODO: change this later //////
-  /////////////////////////////////
-  // attacker types can be perfect recall, forgetful, and bounded memory
+  ////////////////////////////////////////////////////////////////
+  ///////////////////  ATTACKER DEFINITIONS  /////////////////////
+  /////////////////// TODO: change this later ////////////////////
+  ////////////////////////////////////////////////////////////////
   public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL}
   private static AttackerType attackerType = AttackerType.BOUNDED;
-  private int attackerMemoryCapacity = 1;
-
+  private static int attackerMemoryCapacity = 2; //only used when attacker is bounded
+  ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
 
   static final String GENERIC_LOG_FILE_NAME = "run__%s.log";
