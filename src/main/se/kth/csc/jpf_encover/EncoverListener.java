@@ -80,7 +80,10 @@ public class EncoverListener extends SymbolicListener {
   /////////////////////////////////
   // attacker types can be perfect recall, forgetful, and bounded memory
   public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL}
-  private static AttackerType attackerType = AttackerType.FORGETFUL;
+  private static AttackerType attackerType = AttackerType.BOUNDED;
+  private int attackerMemoryCapacity = 1;
+
+  ////////////////////////////////////////////////////////////////
 
   static final String GENERIC_LOG_FILE_NAME = "run__%s.log";
   private static final String GENERIC_OUT_FILE_NAME = "run__%s.out";
@@ -755,7 +758,7 @@ public class EncoverListener extends SymbolicListener {
 
       //ofg.display();
 
-      boolean isNonInterfering = true;
+      boolean isSecure = true;
       boolean consistentPolicy = true;
       Iterator<OFG_Vertex> iter = ofg.depthFirstTaversal().iterator();
       while (iter.hasNext()) 
@@ -777,7 +780,7 @@ public class EncoverListener extends SymbolicListener {
             while (verteciesPreIter.hasNext())
             {
               OFG_Vertex vertexPre = verteciesPreIter.next();
-              interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertexPre, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType);
+              interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertexPre, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
               System.out.print("Policy consistency check at node: " + vertexPre + ":\n   Interference Formula => " + interferenceFormula);
 
               /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
@@ -820,8 +823,9 @@ public class EncoverListener extends SymbolicListener {
         //////////////////////////////////////////////////
         ///////////////// Security check /////////////////
         //////////////////////////////////////////////////
-        interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType);
+        interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
       
+        //System.out.println(OFG_Handler.getOutputSequence(ofg, vertex, attackerMemoryCapacity));
         System.out.print("Security check at Node " + vertex + ":\n   Interference Formula => " + interferenceFormula);
 
         /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
@@ -833,7 +837,7 @@ public class EncoverListener extends SymbolicListener {
 
           if ( satisfyingAssignment != null ) 
           {
-            isNonInterfering = false;
+            isSecure = false;
             encoverOut.print("SMT-BASED VERIFICATION: ");
             encoverOut.println("The program is insecure.");
             Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
@@ -862,10 +866,10 @@ public class EncoverListener extends SymbolicListener {
 
       //ofg.display();
       System.out.println("\n\n");
-      System.out.println(ofg);
-      System.out.println("\n\n");
+      //System.out.println(ofg);
+      //System.out.println("\n\n");
 
-      if ( consistentPolicy && isNonInterfering ) 
+      if ( consistentPolicy && isSecure ) 
       {
         encoverOut.print("SMT-BASED VERIFICATION: ");
         encoverOut.println("The program is secure.");
