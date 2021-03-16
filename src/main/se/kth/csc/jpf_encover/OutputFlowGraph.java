@@ -59,11 +59,11 @@ public interface OutputFlowGraph {
   public void markChildrenValid(OFG_Vertex vertex);
 
   /**
-  * Invalidates all vertecies with numberOfPolicyChanges less that npc 
+  * Invalidates all vertecies with numberOfPolicyChanges less that vertex's npc, which are on a different depth.
   *
-  * @param npc all vertecies with numberOfPolicyChanges less than this will become invalid.
+  * @param vertex all vertecies with numberOfPolicyChanges less than this vertex will become invalid.
   */
-  public void invalidateNPC(int npc);
+  public void invalidateNPC(OFG_Vertex vertex);
 
   /**
   * Makes all of the invalid verticies valid.

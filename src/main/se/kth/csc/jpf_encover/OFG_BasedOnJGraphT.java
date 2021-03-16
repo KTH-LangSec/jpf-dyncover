@@ -60,6 +60,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   private Map<String, String> backtrackablePointId2policy;
   private Map<String, Boolean> backtrackablePointId2policyChanged;
   private Map<String, Integer> backtrackablePointId2numberOfPolicyChanges;
+  private Map<String, Integer> backtrackablePointId2depth;
   private int vertexCounter = 0;
   private OFG_Vertex root;
   private OFG_Vertex end;
@@ -67,6 +68,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   private String currentPolicy;
   private Boolean currentPolicyChanged;
   private int currentNumberOfPolicyChanges;
+  private int currentDepth;
 
   /**
    * Default constructor.
@@ -78,6 +80,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     backtrackablePointId2policy = new HashMap();
     backtrackablePointId2policyChanged = new HashMap();
     backtrackablePointId2numberOfPolicyChanges = new HashMap();
+    backtrackablePointId2depth = new HashMap();
     root = new RootVertex();
     graph.addVertex(root);
     end = new EndVertex();
@@ -86,6 +89,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     currentPolicy = "";
     currentPolicyChanged = false;
     currentNumberOfPolicyChanges = 0;
+    currentDepth = 0;
   }
 
   /**
@@ -143,17 +147,20 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   }
 
   /**
-  * Invalidates all vertecies with numberOfPolicyChanges less that npc 
+  * Invalidates all vertecies with numberOfPolicyChanges less that vertex's npc, which are on a different depth.
   *
-  * @param npc all vertecies with numberOfPolicyChanges less than this will become invalid.
+  * @param vertex all vertecies with numberOfPolicyChanges less than this vertex will become invalid.
   */
-  public void invalidateNPC(int npc) 
+  public void invalidateNPC(OFG_Vertex vertex) 
   {
+    int npc = vertex.getNumberOfPolicyChanges();
+    int depth = vertex.getDepth();
+
     Iterator<OFG_Vertex> iter = this.depthFirstTaversal().iterator();
     while (iter.hasNext()) 
     {
       OFG_Vertex v = iter.next();
-      if (v.getNumberOfPolicyChanges() < npc)
+      if (v.getNumberOfPolicyChanges() < npc && v.getDepth() != depth)
       {
         v.setValid(false);
       }
@@ -193,6 +200,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     backtrackablePointId2policy.put(id, currentPolicy);
     backtrackablePointId2policyChanged.put(id, currentPolicyChanged);
     backtrackablePointId2numberOfPolicyChanges.put(id, currentNumberOfPolicyChanges);
+    backtrackablePointId2depth.put(id, currentDepth);
   }
 
   /**
@@ -213,6 +221,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     currentPolicy = backtrackablePointId2policy.get(id);
     currentPolicyChanged = backtrackablePointId2policyChanged.get(id);
     currentNumberOfPolicyChanges = backtrackablePointId2numberOfPolicyChanges.get(id);
+    currentDepth = backtrackablePointId2depth.get(id);
   }
 
   /**
@@ -226,7 +235,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   {
     if ( pc == null ) { throw new Error("The PC must not be null"); }
 
-    OFG_Vertex newPos = new OutputVertex(output, pc, currentPolicy, currentPolicyChanged, currentNumberOfPolicyChanges);
+    currentDepth += 1;
+    OFG_Vertex newPos = new OutputVertex(output, pc, currentPolicy, currentPolicyChanged, currentNumberOfPolicyChanges, currentDepth);
     graph.addVertex(newPos);
     graph.addEdge(currentPosition, newPos);
     currentPolicyChanged = false;
@@ -428,6 +438,21 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     return (depth + 1);
   }
 
+  //   public int getVertexDepth(OFG_Vertex v) 
+  //   {
+  //   int depth = 0;
+  //   Iterator<OFG_Vertex> succIte = this.getPredecessorsOf(v).iterator();
+  //   if ( succIte.hasNext() ) 
+  //   {
+  //     depth += this.getVertexDepth(succIte.next());
+  //   }
+  //   else
+  //   {
+  //     depth = 1;
+  //   }
+  //   return depth+1;
+  // }
+
   /**
    * Retrieves the width of this output flow graph. It corresponds to the maximum
    * number of nodes at any level.
@@ -567,13 +592,15 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public Boolean getPolicyChanged() { throw new Error("StructuralVertices do not have policy changed."); }
     public Boolean isValid() { throw new Error("StructuralVertices do not have validity."); }
     public int getNumberOfPolicyChanges() { throw new Error("StructuralVertices do not have number of policy changes."); }
+    public int getDepth() { throw new Error("StructuralVertices do not have depth."); }
     public void setOutput(EExpression exp) { throw new Error("StructuralVertices do not have an output."); }
     public void setPathCondition(EFormula path) { throw new Error("StructuralVertices do not have path conditions."); }
     public void setOtherProperties(EFormula prop) { throw new Error("StructuralVertices do not have properties."); }
     public void setPolicy(String plc) { throw new Error("StructuralVertices do not have policy."); }
     public void setPolicyChanged(boolean plcChanged) { throw new Error("StructuralVertices do not have policy changed."); }
     public void setValid(boolean vld) { throw new Error("StructuralVertices do not have validity."); }
-    public void setNumberOfPolicyChanges(int npc) { throw new Error("StructuralVertices do not have number fo policy changes."); }
+    public void setNumberOfPolicyChanges(int npc) { throw new Error("StructuralVertices do not have number of policy changes."); }
+    public void setDepth(int depth) { throw new Error("StructuralVertices do not have depth."); }
     public String getTextualDescription() {return getId();}
     public String toString() {return getId();}
   }
@@ -590,6 +617,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public Boolean getPolicyChanged() { return false; }
     public void setNumberOfPolicyChanges(int npc) {};
     public int getNumberOfPolicyChanges() {return 0;};
+    public int getDepth() { return 0; }
+    public void setDepth(int depth) { }
   }
 
   /**
@@ -604,6 +633,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public Boolean getPolicyChanged() { return false; }
     public void setNumberOfPolicyChanges(int npc) {};
     public int getNumberOfPolicyChanges() {return 0;};
+    public int getDepth() { return 0; }
+    public void setDepth(int depth) { }
   }
 
   /**
@@ -618,6 +649,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     private boolean policyChanged;
     private boolean valid;
     private int numberOfPolicyChanges;
+    private int depth;
 
     /**
      * Constructor of output vertices.
@@ -634,6 +666,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       policyChanged = false;
       valid = true;
       numberOfPolicyChanges = 0;
+      depth = 0;
     }
 
     /**
@@ -643,8 +676,10 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      * @param pc The path condition to reach this output.
      * @param plc Active policy at this output.
      * @param plcChanged Is this the first output after a policy change?.
+     * @param npc Number of policy changes up to this vertex.
+     * @param dep The depth of this vertex.
      */
-    private OutputVertex(EExpression out, EFormula pc, String plc, boolean plcChanged, int npc) 
+    private OutputVertex(EExpression out, EFormula pc, String plc, boolean plcChanged, int npc, int dep) 
     {
       id = vertexCounter++;
       output = out;
@@ -654,6 +689,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       policyChanged = plcChanged;
       valid = true;
       numberOfPolicyChanges = npc;
+      depth = dep;
     }
 
     /**
@@ -731,6 +767,16 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     }
 
     /**
+    * Returns the depth of this vertex.
+    *
+    * @return The depth.
+    */
+    public int getDepth()
+    {
+      return depth;
+    }
+
+    /**
      * Sets the output generated by this vertex.
      *
      * @param exp Expression representing the ouptut.
@@ -799,6 +845,16 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     }
 
     /**
+    * Sets the depth of this vertex.
+    *
+    * @param dep The depth.
+    */
+    public void setDepth(int dep)
+    {
+      depth = dep;
+    }
+
+    /**
      * Retrieve a textual description of this vertex.
      *
      * @return A textual description of this vertex.
@@ -806,7 +862,14 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public String getTextualDescription() {
       String retVal;
       if ( output == null ) { retVal = "null"; }
-      else { retVal = output + ", [[ Policy: " + policy + " ]]" + ", [[ New policy: " + policyChanged + " ]]"  + ", [[ is Valid?: " + valid + " ]]"  + ", [[ NPC: " + numberOfPolicyChanges + " ]]"  + ", [[ IFF " + pathCondition + " ]]" + ", [[ UTC " + otherProperties + " ]]"; }
+      else { retVal = output + 
+        ", [[ Policy: " + policy + 
+        ", New policy: " + policyChanged + 
+        ", isValid: " + valid + 
+        ", NPC: " + numberOfPolicyChanges +
+        ", Depth: " + depth +
+        ", IFF: " + pathCondition +
+        ", UTC: " + otherProperties + " ]]"; }
       return retVal;
     }
 

@@ -860,6 +860,9 @@ public class EncoverListener extends SymbolicListener {
         /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
       }
 
+      //ofg.display();
+      System.out.println("\n\n");
+      System.out.println(ofg);
       System.out.println("\n\n");
 
       if ( consistentPolicy && isNonInterfering ) 
