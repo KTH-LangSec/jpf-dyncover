@@ -45,33 +45,6 @@ public interface OutputFlowGraph {
   public void registerBacktrackablePoint(String id);
 
   /**
-   * Merkes all of the children of a given vertex as invalid
-   *
-   * @param vertex all of the children of this vertex will be marked as invalid
-   */
-  public void markChildrenInvalid(OFG_Vertex vertex);
-
-  /**
-  * Merkes all of the children of a given vertex as Valid
-  *
-  * @param vertex All of the children of this vertex will be marked as Valid
-  */
-  public void markChildrenValid(OFG_Vertex vertex);
-
-  /**
-  * Invalidates all vertecies with numberOfPolicyChanges less that vertex's npc, which are on a different depth.
-  *
-  * @param vertex all vertecies with numberOfPolicyChanges less than this vertex will become invalid.
-  */
-  public void invalidateNPC(OFG_Vertex vertex);
-
-  /**
-  * Makes all of the invalid verticies valid.
-  *
-  */
-  public void clearInvalid();
-
-  /**
    * Backtrack to the specified node.
    *
    * @param id Identifier of the point to backtrack to.
@@ -109,6 +82,17 @@ public interface OutputFlowGraph {
    * @return All vertices.
    */
   public Set<OFG_Vertex> getAllVertices();
+
+  /**
+   * Returns all the (non-internal) vertices/nodes in the OFG which are valid w.r.t the npc and depth.
+   * In particular, in this implementation there are internal nodes root and end
+   * which are not returned by this method.
+   *
+   * @param npc Number of policy changes of the vertex from which we want to get all the vertices.
+   * @param depth Depth of the vertex from which we want to get all the vertices.
+   * @return The set of vertices belonging to this OFG.
+  */
+  public Set<OFG_Vertex> getAllVertices_Forgetful(int npc, int depth); 
 
   /**
    * Returns all the vertices that represent the start of a potential output
@@ -162,6 +146,13 @@ public interface OutputFlowGraph {
   public Set<EE_Variable> getVariables();
 
   /**
+   * Retrieves the set of variables occuring in this output flow graph w.r.t the forgetful attacker.
+   *
+   * @return The set of variables occuring in this output flow graph w.r.t the forgetful attacker.
+   */
+  public Set<EE_Variable> getVariables_Forgetful(int npc, int depth);
+
+  /**
    * Retrieves the number of nodes in this output flow graph.
    *
    * @return The number of nodes in this output flow graph.
@@ -193,9 +184,9 @@ public interface OutputFlowGraph {
 
 
   /**
-   * Returns a vertex set of the verticies in this OFG
+   * Returns a vertex set of the vertices in this OFG
    *
-   * @return The set of verticies.
+   * @return The set of vertices.
    */
   public ArrayList<OFG_Vertex> depthFirstTaversal();
 

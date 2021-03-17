@@ -74,13 +74,6 @@ public interface OFG_Vertex {
   * @return Is this a new output after a policy change?.
   */
   public Boolean getPolicyChanged();
-
-  /**
-  * Retrieves the valid boolean of this vertex.
-  *
-  * @return Should this vertex be ignored?.
-  */
-  public Boolean isValid();
   
 
   /**
@@ -131,13 +124,6 @@ public interface OFG_Vertex {
   * @param plcChanged Is this vertex after a policy change.
   */
   public void setPolicyChanged(boolean plcChanged);
-
-  /**
-  * Sets the valid boolean at this vertex.
-  *
-  * @param vld input boolean.
-  */
-  public void setValid(boolean vld);
 
   /**
   * Sets the number of policy changes from root up to this vertex.

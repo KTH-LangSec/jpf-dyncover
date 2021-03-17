@@ -93,94 +93,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   }
 
   /**
-   * Merkes all of the children of a given vertex as invalid
-   *
-   * @param vertex all of the children of this vertex will be marked as invalid
-   */
-  public void markChildrenInvalid(OFG_Vertex vertex) 
-  {
-    Set<DefaultEdge> outEdges = graph.outgoingEdgesOf(vertex);
-    Set<OFG_Vertex> res = new HashSet();
-    Iterator<DefaultEdge> ite = outEdges.iterator();
-    while (ite.hasNext()) 
-    {
-      OFG_Vertex v = graph.getEdgeTarget(ite.next());
-      if (v != root && v != end)
-      {
-        this.markChildrenInvalid(v);
-        res.add(v);
-      }
-    }
-
-    Iterator<OFG_Vertex> ite2 = res.iterator();
-    while ( ite2.hasNext() ) 
-    {
-      ite2.next().setValid(false);
-    }
-  }
-
-  /**
-  * Merkes all of the children of a given vertex as Valid
-  *
-  * @param vertex All of the children of this vertex will be marked as Valid
-  */
-  public void markChildrenValid(OFG_Vertex vertex) 
-  {
-    Set<DefaultEdge> outEdges = graph.outgoingEdgesOf(vertex);
-    Set<OFG_Vertex> res = new HashSet();
-    Iterator<DefaultEdge> ite = outEdges.iterator();
-    while (ite.hasNext()) 
-    {
-      OFG_Vertex v = graph.getEdgeTarget(ite.next());
-      if (v != root && v != end)
-      {
-        this.markChildrenValid(v);
-        res.add(v);
-      }
-    }
-
-    Iterator<OFG_Vertex> ite2 = res.iterator();
-    while ( ite2.hasNext() ) 
-    {
-      ite2.next().setValid(true);
-    }
-  }
-
-  /**
-  * Invalidates all vertecies with numberOfPolicyChanges less that vertex's npc, which are on a different depth.
-  *
-  * @param vertex all vertecies with numberOfPolicyChanges less than this vertex will become invalid.
-  */
-  public void invalidateNPC(OFG_Vertex vertex) 
-  {
-    int npc = vertex.getNumberOfPolicyChanges();
-    int depth = vertex.getDepth();
-
-    Iterator<OFG_Vertex> iter = this.depthFirstTaversal().iterator();
-    while (iter.hasNext()) 
-    {
-      OFG_Vertex v = iter.next();
-      if (v.getNumberOfPolicyChanges() < npc && v.getDepth() != depth)
-      {
-        v.setValid(false);
-      }
-    }
-  }
-
-  /**
-   * Makes all of the invalid verticies valid.
-   *
-   */
-  public void clearInvalid() 
-  {
-    Iterator<OFG_Vertex> ite = graph.vertexSet().iterator();
-    while (ite.hasNext()) 
-    {
-        ite.next().setValid(true);
-    }
-  }
-
-  /**
    * Update the internal data structure to prepare futur potential backtracks.
    *
    * @param id Identifier of a potential future backtrack destination
@@ -266,7 +178,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   }
 
   /**
-   * Returns all the valid (non-internal) vertices/nodes in the OFG.
+   * Returns all the vertices/nodes in the OFG.
    * In particular, in this implementation there are internal nodes root and end
    * which are not returned by this method.
    *
@@ -278,12 +190,31 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     res.remove(root);
     res.remove(end);
 
+    return res;
+  }
+
+
+  /**
+   * Returns all the (non-internal) vertices/nodes in the OFG which are valid w.r.t the npc and depth.
+   * In particular, in this implementation there are internal nodes root and end
+   * which are not returned by this method.
+   *
+   * @param npc Number of policy changes of the vertex from which we want to get all the vertices.
+   * @param depth Depth of the vertex from which we want to get all the vertices.
+   * @return The set of vertices belonging to this OFG.
+  */
+  public Set<OFG_Vertex> getAllVertices_Forgetful(int npc, int depth) 
+  {
+    Set<OFG_Vertex> res = new HashSet(graph.vertexSet());
+    res.remove(root);
+    res.remove(end);
+
     Set<OFG_Vertex> invalidVertices = new HashSet();
     Iterator<OFG_Vertex> ite = res.iterator();
     while ( ite.hasNext() ) 
     {
       OFG_Vertex v = ite.next();
-      if (!v.isValid())
+      if (v.getNumberOfPolicyChanges() < npc && v.getDepth() != depth)
       {
         invalidVertices.add(v);
       }
@@ -375,6 +306,25 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   {
     Set<EE_Variable> res = new HashSet();
     Iterator<OFG_Vertex> ite = getAllVertices().iterator();
+    while ( ite.hasNext() ) 
+    {
+      OFG_Vertex v = ite.next();
+      res.addAll(v.getOutput().getVariables());
+      res.addAll(v.getPathCondition().getVariables());
+      res.addAll(v.getOtherProperties().getVariables());
+    }
+    return res;
+  }
+
+  /**
+   * Retrieves the set of variables occuring in this output flow graph w.r.t the forgetful attacker.
+   *
+   * @return The set of variables occuring in this output flow graph w.r.t the forgetful attacker.
+   */
+  public Set<EE_Variable> getVariables_Forgetful(int npc, int depth) 
+  {
+    Set<EE_Variable> res = new HashSet();
+    Iterator<OFG_Vertex> ite = getAllVertices_Forgetful(npc, depth).iterator();
     while ( ite.hasNext() ) 
     {
       OFG_Vertex v = ite.next();
@@ -503,23 +453,23 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   }
 
   /**
-   * Returns a vertex list of the verticies in this OFG
+   * Returns a vertex list of the vertices in this OFG
    *
-   * @return The list of verticies.
+   * @return The list of vertices.
    */
   public ArrayList<OFG_Vertex> depthFirstTaversal() 
   {
-    ArrayList<OFG_Vertex> verticies = new ArrayList<OFG_Vertex>();
+    ArrayList<OFG_Vertex> vertices = new ArrayList<OFG_Vertex>();
     GraphIterator<OFG_Vertex, DefaultEdge> ite = new DepthFirstIterator<OFG_Vertex, DefaultEdge>(graph);
     while ( ite.hasNext() ) 
     {
       OFG_Vertex v = ite.next();
       if (v instanceof OutputVertex) 
       {
-        verticies.add(v);
+        vertices.add(v);
       }
     }
-    return verticies;
+    return vertices;
   }
 
   /**
@@ -538,15 +488,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
         OFG_Vertex v = vIte.next();
         String vId = v.getId();
 
-        Object displayVertex;
-        if (v.isValid())
-        {
-          displayVertex = mxGraph.insertVertex(rootCell, vId, vId, 0, 0, 80, 30, "ROUNDED;fillColor=green");
-        }
-        else
-        {
-          displayVertex = mxGraph.insertVertex(rootCell, vId, vId, 0, 0, 80, 30, "ROUNDED;fillColor=red");
-        }        
+        Object displayVertex = mxGraph.insertVertex(rootCell, vId, vId, 0, 0, 80, 30, "ROUNDED;fillColor=green");       
         vId2dv.put(vId, displayVertex);
       }
 
@@ -590,7 +532,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public EFormula getOtherProperties() { throw new Error("StructuralVertices do not have properties."); }
     public String getPolicy() { throw new Error("StructuralVertices do not have policy."); }
     public Boolean getPolicyChanged() { throw new Error("StructuralVertices do not have policy changed."); }
-    public Boolean isValid() { throw new Error("StructuralVertices do not have validity."); }
     public int getNumberOfPolicyChanges() { throw new Error("StructuralVertices do not have number of policy changes."); }
     public int getDepth() { throw new Error("StructuralVertices do not have depth."); }
     public void setOutput(EExpression exp) { throw new Error("StructuralVertices do not have an output."); }
@@ -598,7 +539,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public void setOtherProperties(EFormula prop) { throw new Error("StructuralVertices do not have properties."); }
     public void setPolicy(String plc) { throw new Error("StructuralVertices do not have policy."); }
     public void setPolicyChanged(boolean plcChanged) { throw new Error("StructuralVertices do not have policy changed."); }
-    public void setValid(boolean vld) { throw new Error("StructuralVertices do not have validity."); }
     public void setNumberOfPolicyChanges(int npc) { throw new Error("StructuralVertices do not have number of policy changes."); }
     public void setDepth(int depth) { throw new Error("StructuralVertices do not have depth."); }
     public String getTextualDescription() {return getId();}
@@ -611,8 +551,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   private class RootVertex extends StructuralVertex {
     private RootVertex() {}
     public String getId() { return "root";}
-    public Boolean isValid() { return true; }
-    public void setValid(boolean vld) {};
     public String getPolicy() { return ""; }
     public Boolean getPolicyChanged() { return false; }
     public void setNumberOfPolicyChanges(int npc) {};
@@ -627,8 +565,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
   private class EndVertex extends StructuralVertex {
     private EndVertex() {}
     public String getId() { return "end";}
-    public Boolean isValid() { return true; }
-    public void setValid(boolean vld) {};
     public String getPolicy() { return ""; }
     public Boolean getPolicyChanged() { return false; }
     public void setNumberOfPolicyChanges(int npc) {};
@@ -647,7 +583,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     private EFormula otherProperties;
     private String policy;
     private boolean policyChanged;
-    private boolean valid;
     private int numberOfPolicyChanges;
     private int depth;
 
@@ -664,7 +599,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       otherProperties = new EF_Conjunction();
       policy = null;
       policyChanged = false;
-      valid = true;
       numberOfPolicyChanges = 0;
       depth = 0;
     }
@@ -687,7 +621,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       otherProperties = new EF_Conjunction();
       policy = plc;
       policyChanged = plcChanged;
-      valid = true;
       numberOfPolicyChanges = npc;
       depth = dep;
     }
@@ -745,15 +678,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      */
     public Boolean getPolicyChanged() {
       return policyChanged;
-    }
-
-    /**
-     * Retrieves the valid boolean of this vertex.
-     *
-     * @return Should this vertex be ignored?.
-     */
-    public Boolean isValid() {
-      return valid;
     }
 
     /**
@@ -825,16 +749,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     }
 
     /**
-     * Sets the valid boolean at this vertex.
-     *
-     * @param vld input boolean.
-     */
-    public void setValid(boolean vld) 
-    {
-      valid = vld;
-    }
-
-    /**
     * Sets the number of policy changes from root up to this vertex.
     *
     * @param npc The number of policy changes.
@@ -865,7 +779,6 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       else { retVal = output + 
         ", [[ Policy: " + policy + 
         ", New policy: " + policyChanged + 
-        ", isValid: " + valid + 
         ", NPC: " + numberOfPolicyChanges +
         ", Depth: " + depth +
         ", IFF: " + pathCondition +
