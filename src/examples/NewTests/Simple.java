@@ -46,18 +46,22 @@ public class Simple
 
     public static void leak(int secret1, int secret2) 
     {
-        setPolicy(" ");
+        setPolicy("secret2");
+        System.out.println(secret1);
         System.out.println(1);
-        if (secret1 > 0) 
-        {
-            System.out.println(2);
-        }
-        setPolicy("secret1");
-        if (secret1 <= 0) 
-        {
-            System.out.println(3);
-        }
-        System.out.println(3);
+        System.out.println(1);
+
+        int p = secret1;
+        
+        //setPolicy("secret1");
+        System.out.println(p+1);
+
+        doSomeProcess(p);
+
+        int q = rename(secret2);
+
+        System.out.println(q);
+
         // setPolicy(" ");
         // System.out.println(1);
         // if (secret1 > 0) 
@@ -73,6 +77,20 @@ public class Simple
     }
 
     static void setPolicy(String policy) {};
+
+    static void doSomeProcess(int temp)
+    {
+        int l = 2;
+        temp = temp + l;
+
+        System.out.println(temp);
+    }
+
+    static int rename(int temp)
+    {
+        int l = temp;
+        return l;
+    }
 }
 
 // Local Variables: 

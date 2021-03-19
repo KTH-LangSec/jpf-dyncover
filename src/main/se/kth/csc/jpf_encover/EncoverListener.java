@@ -80,8 +80,11 @@ public class EncoverListener extends SymbolicListener {
   /////////////////// TODO: change this later ////////////////////
   ////////////////////////////////////////////////////////////////
   public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL}
-  private static AttackerType attackerType = AttackerType.FORGETFUL;
-  private static int attackerMemoryCapacity = 2; //only used when attacker is bounded
+  private static AttackerType attackerType = AttackerType.BOUNDED;
+  private static int attackerMemoryCapacity = 4; //only used when attacker is bounded
+
+  public static enum PolicyConsistency {REJECT, ACCEPT}
+  private static PolicyConsistency inconsistentPolicy = PolicyConsistency.REJECT; 
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
 
@@ -792,19 +795,27 @@ public class EncoverListener extends SymbolicListener {
 
                 if ( satisfyingAssignment != null ) 
                 {
-                  consistentPolicy = false;
-                  encoverOut.print("SMT-BASED VERIFICATION: ");
-                  encoverOut.println("Policy update at node >> " + vertex + " << was inconsistent");
-                  Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
-                  while ( satAssignIte.hasNext() ) 
+                  if (inconsistentPolicy == PolicyConsistency.REJECT)
                   {
-                    Map.Entry<EE_Variable,EE_Constant> entry = satAssignIte.next();
-                    EE_Variable var = entry.getKey();
-                    EE_Constant val = entry.getValue();
-                    encoverOut.println("  " + var + " -> " + val);
+                    consistentPolicy = false;
+                    encoverOut.print("SMT-BASED VERIFICATION: ");
+                    encoverOut.println("Policy update at node >> " + vertex + " << was inconsistent");
+                    Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
+                    while ( satAssignIte.hasNext() ) 
+                    {
+                      Map.Entry<EE_Variable,EE_Constant> entry = satAssignIte.next();
+                      EE_Variable var = entry.getKey();
+                      EE_Constant val = entry.getValue();
+                      encoverOut.println("  " + var + " -> " + val);
+                    }
+                    encoverOut.println("");
+                    break;
                   }
-                  encoverOut.println("");
-                  break;
+                  else
+                  {
+                    System.out.println("\n\n Policy update at node >> " + vertex + " << was inconsistent");
+                    System.out.println(" ============ TODO ============\n\n");
+                  }
                 }
               } 
               catch (Error e) 
@@ -825,7 +836,6 @@ public class EncoverListener extends SymbolicListener {
         //////////////////////////////////////////////////
         interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
       
-        //System.out.println(OFG_Handler.getOutputSequence(ofg, vertex, attackerMemoryCapacity));
         System.out.print("Security check at Node " + vertex + ":\n   Interference Formula => " + interferenceFormula);
 
         /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
@@ -865,9 +875,8 @@ public class EncoverListener extends SymbolicListener {
       }
 
       //ofg.display();
-      System.out.println("\n\n");
       //System.out.println(ofg);
-      //System.out.println("\n\n");
+      System.out.println("\n\n");
 
       if ( consistentPolicy && isSecure ) 
       {
@@ -1327,18 +1336,20 @@ public class EncoverListener extends SymbolicListener {
 
   ///////////////////////////// Helper Methods //////////////////////
   /**
-   * TODO
+   * Generates EE_Variable from all of the arguments of the invoked method
    *
-   * @param methodInfo TODO
-   * @return TODO
+   * @param methodInfo Invoked mathod info
+   * @return A mapping from the name of arguments to their corresponding EE_Variable
    */
-  Map<String,EE_Variable> generatePseudo2Var(MethodInfo methodInfo) 
+  private Map<String,EE_Variable> generatePseudo2Var(MethodInfo methodInfo) 
   {
     Map<String,EE_Variable> pseudo2Var = new HashMap();
 
-    for (LocalVarInfo localVar : methodInfo.getLocalVars()) 
+    for (int i = 0; i < methodInfo.getNumberOfArguments(); i++) 
     {
+      LocalVarInfo localVar = methodInfo.getLocalVars()[i];
       EE_Variable temp;
+
       if (localVar.getType().equals("int")) 
       {
         temp = new EE_Variable(EExpression.Type.INT, localVar.getName());
@@ -1363,6 +1374,7 @@ public class EncoverListener extends SymbolicListener {
       {
         temp = new EE_Variable(EExpression.Type.UNKNOWN, localVar.getName());
       }
+
       pseudo2Var.put(localVar.getName(), temp);
     }
 
