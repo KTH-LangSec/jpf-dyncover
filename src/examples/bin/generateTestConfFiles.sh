@@ -34,8 +34,7 @@ do
     args=$(echo $(echo ${line} | cut -d '|' -f 3));
     method=$(echo $(echo ${line} | cut -d '|' -f 4));
     agent=$(echo $(echo ${line} | cut -d '|' -f 5));
-    leaked=$(echo $(echo ${line} | cut -d '|' -f 6));
-    harbored=$(echo $(echo ${line} | cut -d '|' -f 7));
+	attackerType=$(echo $(echo ${line} | cut -d '|' -f 6));
     methodName=$(echo ${method} | sed 's/^[^(]*\.//g; s/(.*$//');
     inputDomains=$(echo $(grep "${methodName}" ${domainsFile} | sed 's/^[^|]*|//'));
     observable=$(echo $(grep "${agent}" ${observablesFile} | sed 's/^[^|]*|//'));
@@ -58,9 +57,8 @@ do
 	| sed "s/\[symbolic\.method\]/${method}/" \
 	| sed "s/\[encover\.testNameSuffix\]/${testName}/" \
 	| sed "s/\[encover\.inputDomains\]/${inputDomains}/" \
-	| sed "s/\[encover\.leakedInputs\]/${leaked}/" \
-	| sed "s/\[encover\.harboredInputs\]/${harbored}/" \
 	| sed "s/\[encover\.observable\]/${observable}/" \
+	| sed "s/\[encover\.attackerType\]/${attackerType}/" \
 	> ${testConfFileName};
 
     minInt=;

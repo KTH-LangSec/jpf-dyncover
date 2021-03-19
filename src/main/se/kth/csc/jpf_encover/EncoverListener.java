@@ -51,6 +51,8 @@ import gov.nasa.jpf.symbc.numeric.PathCondition;
 import gov.nasa.jpf.symbc.numeric.PCChoiceGenerator;
 import gov.nasa.jpf.jvm.LocalVarInfo;
 
+import se.kth.csc.jpf_encover.EncoverConfiguration.AttackerType;
+
 
 /**
  * This is the main class of ENCoVer.
@@ -79,9 +81,9 @@ public class EncoverListener extends SymbolicListener {
   ///////////////////  ATTACKER DEFINITIONS  /////////////////////
   /////////////////// TODO: change this later ////////////////////
   ////////////////////////////////////////////////////////////////
-  public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL}
-  private static AttackerType attackerType = AttackerType.PERFECT;
-  private static int attackerMemoryCapacity = 4; //only used when attacker is bounded
+
+  private static AttackerType attackerType;
+  private static int attackerMemoryCapacity;
 
   public static enum PolicyConsistency {REJECT, ACCEPT}
   private static PolicyConsistency inconsistentPolicy = PolicyConsistency.REJECT; 
@@ -118,8 +120,8 @@ public class EncoverListener extends SymbolicListener {
   private final Set<EncoverConfiguration.ByProduct> selectedByProducts;
 
   private Map<EE_Variable,List<EE_Constant>> inputDomains;
-  private Set<EExpression> leakedInputExpressions;
-  private Set<EExpression> harboredInputExpressions;
+  private Set<EExpression> leakedInputExpressions = new HashSet<EExpression>();
+  private Set<EExpression> harboredInputExpressions = new HashSet<EExpression>();
 
   /** true only during code analysis */
   private boolean isCodeAnalysisRunning = false;
@@ -194,8 +196,8 @@ public class EncoverListener extends SymbolicListener {
     selectedByProducts = EncoverConfiguration.get_selectedByProducts();
 
     inputDomains =  EncoverConfiguration.get_inputDomains();
-    //leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(null);
-    //harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(null);
+    attackerType = EncoverConfiguration.get_AttackerType();
+    attackerMemoryCapacity = EncoverConfiguration.get_AttackerMemoryCapacity();
 
     /////////////////////////////////////////////////////////////////////////////////
     // Temp chage to make outputs file name fixed
@@ -264,8 +266,8 @@ public class EncoverListener extends SymbolicListener {
         ////////////////// Find a better place for this /////////////////////
         ///////////////////////////////////////////////////////
         pseudo2Var = generatePseudo2Var(invInstr.getInvokedMethod());
-        harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(pseudo2Var);
-        leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(pseudo2Var);
+        //harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(pseudo2Var);
+        //leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(pseudo2Var);
         ///////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////
 

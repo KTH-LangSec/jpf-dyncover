@@ -36,6 +36,8 @@ import gov.nasa.jpf.Config;
  */
 class EncoverConfiguration {
 
+  public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL}
+
   static enum Verifier { SMT_COUNTEREXAMPLE_GENERATION, EPISTEMIC_MODEL_CHECKING };
   static enum Output { CONFIG, OFG, INTFERENCE_FML, SIMPLIFIED_INTFERENCE_FML, TIMINGS, METRICS };
   static enum ByProduct { OFG, ISPL };
@@ -163,36 +165,54 @@ class EncoverConfiguration {
   }
 
   /**
-   * Returns the names of the leaked inputs.
+   * Returns the type of the attacker (it can be perfect, bounded, or forgetful).
    *
-   * @param pseudo2Var pseudonym mapping that is passed to the parser
-   * @return A set containing the leaked inputs.
+   * @return The type of the attacker
    */
-  static HashSet<EExpression> get_leakedInputExpressions(Map<String,EE_Variable> pseudo2Var) {
-    HashSet<EExpression> leakedInputExpressions = new HashSet<EExpression>();
-    String[] lieList = conf.getString("encover.leakedInputs","").split(",");
+  static AttackerType get_AttackerType()
+  {
+    AttackerType attackerType = AttackerType.PERFECT;
+    String[] attackerTypeList = conf.getString("encover.attackerType","").split(",");
 
-    log.logln("EncoverConfiguration", "encover.leakedInputs = " + Arrays.toString(lieList));
-    log.flush();
+    if (attackerTypeList[0].equals("forgetful")) 
+    {
+      attackerType = AttackerType.FORGETFUL;
+    }
+    else if (attackerTypeList[0].equals("bounded"))
+    {
+      attackerType = AttackerType.BOUNDED;
+    }
+    else
+    {
+      attackerType = AttackerType.PERFECT;
+    }
 
-    for (String lie : lieList) {
-      lie = lie.trim();
-      if ( ! lie.isEmpty() ) {
-        EExpression parsedLie = null;
-        try { parsedLie = Smt2Parser.parse(lie, pseudo2Var); }
-        catch(ParseException e) {
-          log.println("Exception while parsing: " + lie);
-          log.flush();
-          throw new Error(e);
-        }
+    return attackerType;
+  }
 
-        log.logln("EncoverConfiguration", "parsedLie = " + parsedLie);
-        log.flush();
+  /**
+   * Returns the capacity of the forgetful attacker's memory.
+   *
+   * @return The capacity of the forgetful attacker's memory.
+  */
+  static int get_AttackerMemoryCapacity()
+  {
+    int attackerMemoryCapacity = 0;
+    String[] attackerTypeList = conf.getString("encover.attackerType","").split(",");
 
-        leakedInputExpressions.add(parsedLie);
+    if (attackerTypeList[0].equals("bounded"))
+    {
+      try 
+      {
+        attackerMemoryCapacity = Integer.parseInt(attackerTypeList[1]);
+      }
+      catch (Exception e)
+      {
+        attackerMemoryCapacity = 0;
       }
     }
-    return leakedInputExpressions;
+
+    return attackerMemoryCapacity;
   }
 
   /**
@@ -219,40 +239,11 @@ class EncoverConfiguration {
           log.flush();
           throw new Error(e);
         }
+
         leakedInputExpressions.add(parsedLie);
       }
     }
     return leakedInputExpressions;
-  }
-
-  /**
-   * Returns the names of the harbored inputs.
-   *
-   * @param pseudo2Var pseudonym mapping that is passed to the parser
-   * @return A set containing the harbored inputs.
-   */
-  static HashSet<EExpression> get_harboredInputExpressions(Map<String,EE_Variable> pseudo2Var) {
-    HashSet<EExpression> harboredInputExpressions = new HashSet<EExpression>();
-    String[] hieList = conf.getString("encover.harboredInputs","").split(",");
-
-    // log.logln("EncoverConfiguration", "encover.harboredInputs = " + Arrays.toString(hieList));
-    // log.flush();
-
-    for (String hie : hieList) {
-      hie = hie.trim();
-      if ( ! hie.isEmpty() ) {
-        EExpression parsedHie = null;
-        try { parsedHie = Smt2Parser.parse(hie, pseudo2Var); }
-        catch(ParseException e) {
-          log.println("Exception while parsing: " + hie);
-          log.flush();
-          throw new Error(e);
-        }
-        //System.out.println("\n\n" + parsedHie.getType() + "\n\n");
-        harboredInputExpressions.add(parsedHie);
-      }
-    }
-    return harboredInputExpressions;
   }
 
   /**

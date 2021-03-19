@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import se.kth.csc.jpf_encover.EncoverListener.AttackerType;
+import se.kth.csc.jpf_encover.EncoverConfiguration.AttackerType;
 
 
 /**
