@@ -80,7 +80,7 @@ public class EncoverListener extends SymbolicListener {
   /////////////////// TODO: change this later ////////////////////
   ////////////////////////////////////////////////////////////////
   public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL}
-  private static AttackerType attackerType = AttackerType.BOUNDED;
+  private static AttackerType attackerType = AttackerType.PERFECT;
   private static int attackerMemoryCapacity = 4; //only used when attacker is bounded
 
   public static enum PolicyConsistency {REJECT, ACCEPT}

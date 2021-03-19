@@ -46,8 +46,8 @@ public class Simple
 
     public static void leak(int secret1, int secret2) 
     {
-        setPolicy("secret2");
-        System.out.println(secret1);
+        setPolicy("secret2, secret1");
+        System.out.println(secret2);
         System.out.println(1);
         System.out.println(1);
 
@@ -58,6 +58,7 @@ public class Simple
 
         doSomeProcess(p);
 
+        setPolicy("secret1");
         int q = rename(secret2);
 
         System.out.println(q);

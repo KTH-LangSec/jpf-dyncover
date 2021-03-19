@@ -166,7 +166,7 @@ class EncoverConfiguration {
    * Returns the names of the leaked inputs.
    *
    * @param pseudo2Var pseudonym mapping that is passed to the parser
-   * @return A set containing the names of the leaked inputs.
+   * @return A set containing the leaked inputs.
    */
   static HashSet<EExpression> get_leakedInputExpressions(Map<String,EE_Variable> pseudo2Var) {
     HashSet<EExpression> leakedInputExpressions = new HashSet<EExpression>();
@@ -198,59 +198,30 @@ class EncoverConfiguration {
   /**
    * Based on the input string returns the names of the leaked inputs.
    *
-   * @param plcList A string containing the policy in the form "harboredExpressions | leakedExpressions"
+   * @param plcList A string containing the policy
    * @param pseudo2Var pseudonym mapping that is passed to the parser
-   * @return A set containing the names of the leaked inputs.
+   * @return A set containing the leaked inputs.
    */
   static HashSet<EExpression> get_leakedInputExpressions(String plcList, Map<String,EE_Variable> pseudo2Var) {
     HashSet<EExpression> leakedInputExpressions = new HashSet<EExpression>();
+    String[] lieList = plcList.split(",");
 
-    HashSet<EExpression> harboredInputExpressions = get_harboredInputExpressions(plcList, pseudo2Var);
-    
-    for (String lie : pseudo2Var.keySet()) {
+    for (String lie : lieList) 
+    {
       lie = lie.trim();
-      if ( ! lie.isEmpty() ) {
+      if ( ! lie.isEmpty() ) 
+      {
         EExpression parsedLie = null;
         try { parsedLie = Smt2Parser.parse(lie, pseudo2Var); }
-        catch(ParseException e) {
+        catch(ParseException e) 
+        {
           log.println("Exception while parsing: " + lie);
           log.flush();
           throw new Error(e);
         }
-
-        log.logln("EncoverConfiguration", "parsedLie = " + parsedLie);
-        log.flush();
-
-        if (!harboredInputExpressions.contains(parsedLie))
-        {
-          leakedInputExpressions.add(parsedLie);
-        }
+        leakedInputExpressions.add(parsedLie);
       }
     }
-
-    String[] policyList = plcList.split("\\|");
-    if (policyList.length > 1)
-    {
-      String[] lieList = policyList[1].split(",");
-      for (String lie : lieList) {
-        lie = lie.trim();
-        if ( ! lie.isEmpty() ) {
-          EExpression parsedLie = null;
-          try { parsedLie = Smt2Parser.parse(lie, pseudo2Var); }
-          catch(ParseException e) {
-            log.println("Exception while parsing: " + lie);
-            log.flush();
-            throw new Error(e);
-          }
-
-          log.logln("EncoverConfiguration", "parsedLie = " + parsedLie);
-          log.flush();
-
-          leakedInputExpressions.add(parsedLie);
-        }
-      }
-    }
-
     return leakedInputExpressions;
   }
 
@@ -258,7 +229,7 @@ class EncoverConfiguration {
    * Returns the names of the harbored inputs.
    *
    * @param pseudo2Var pseudonym mapping that is passed to the parser
-   * @return A set containing the names of the harbored inputs.
+   * @return A set containing the harbored inputs.
    */
   static HashSet<EExpression> get_harboredInputExpressions(Map<String,EE_Variable> pseudo2Var) {
     HashSet<EExpression> harboredInputExpressions = new HashSet<EExpression>();
@@ -287,18 +258,19 @@ class EncoverConfiguration {
   /**
    * Based on the input string returns the names of the harbored inputs.
    *
-   * @param plcList A string containing the policy in the form "harboredExpressions | leakedExpressions"
+   * @param plcList A string containing the policy
    * @param pseudo2Var pseudonym mapping that is passed to the parser
-   * @return A set containing the names of the harbored inputs.
+   * @return A set containing the harbored inputs.
    */
   static HashSet<EExpression> get_harboredInputExpressions(String plcList, Map<String,EE_Variable> pseudo2Var) {
     HashSet<EExpression> harboredInputExpressions = new HashSet<EExpression>();
-    String[] policyList = plcList.split("\\|");
-    String[] hieList = policyList[0].split(",");
-
-    for (String hie : hieList) {
+    HashSet<EExpression> leakedInputExpressions = get_leakedInputExpressions(plcList, pseudo2Var);
+    
+    for (String hie : pseudo2Var.keySet()) 
+    {
       hie = hie.trim();
-      if ( ! hie.isEmpty() ) {
+      if ( ! hie.isEmpty() ) 
+      {
         EExpression parsedHie = null;
         try { parsedHie = Smt2Parser.parse(hie, pseudo2Var); }
         catch(ParseException e) {
@@ -306,10 +278,17 @@ class EncoverConfiguration {
           log.flush();
           throw new Error(e);
         }
-        //System.out.println("---> " + parsedHie + " <---");
-        harboredInputExpressions.add(parsedHie);
+
+        log.logln("EncoverConfiguration", "parsedHie = " + parsedHie);
+        log.flush();
+
+        if (!leakedInputExpressions.contains(parsedHie))
+        {
+          harboredInputExpressions.add(parsedHie);
+        }
       }
     }
+
     return harboredInputExpressions;
   }
 
