@@ -1,4 +1,13 @@
-leak         | NewTests.Simple | 5 | NewTests.Simple.leak(sym#sym) | print | bounded,2
+bounded     | NewTests.Sample | 1 | NewTests.Sample.bounded(sym#sym)  | print | bounded,1
+bug         | NewTests.Sample | 1 | NewTests.Sample.bug(sym)          | print | perfect
+pcTest      | NewTests.Sample | 1 | NewTests.Sample.pcTest(sym#sym)   | print | perfect
+leakSum     | NewTests.Sample | 1 | NewTests.Sample.leakSum(sym#sym)  | print | perfect
+program5    | NewTests.Sample | 1 | NewTests.Sample.program5(sym#sym) | print | perfect
+program6    | NewTests.Sample | 1 | NewTests.Sample.program6(sym)     | print | perfect
+program7    | NewTests.Sample | 1 | NewTests.Sample.program7(sym)     | print | perfect
+program8    | NewTests.Sample | 1 | NewTests.Sample.program8(sym#sym) | print | perfect
+program9    | NewTests.Sample | 1 | NewTests.Sample.program9(sym#sym) | print | perfect
+program10   | NewTests.Sample | 1 | NewTests.Sample.program10(sym)    | print | perfect
 
 
 

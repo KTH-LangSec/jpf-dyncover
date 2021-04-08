@@ -32,7 +32,7 @@ import java.util.*;
  * @version 0.1
  */
 public class Z3_Handler extends SolverHandler {
-    
+
   private Process z3 = null;
   private PrintWriter z3_in = null;
   private BufferedReader z3_out  = null;
@@ -98,6 +98,7 @@ public class Z3_Handler extends SolverHandler {
     flushLog();
 
     z3_in.println("(exit)");
+
     z3_in.flush();
     z3_in.close();
     try {
@@ -371,6 +372,7 @@ public class Z3_Handler extends SolverHandler {
       return formula;
     }
 
+
     logln("  -> translating formula"); flushLog();
 
     String smt2Formula = null;
@@ -431,8 +433,6 @@ public class Z3_Handler extends SolverHandler {
     EE_Variable.PseudonymPolicy pPolicyToUse = EE_Variable.PseudonymPolicy.COMBINED;
     EE_Variable.PseudonymPolicy oldPPolicy = EE_Variable.getPseudonymPolicy();
     EE_Variable.setPseudonymPolicy(pPolicyToUse);
-
-    System.out.println("\n\n---> " + formula + " <---");
 
     try { satisfyingAssignment = checkSatisfiability_internals(formula); }
     catch(Throwable t) { pendingThrowable = t; }

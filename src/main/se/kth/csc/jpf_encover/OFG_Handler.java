@@ -27,6 +27,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import se.kth.csc.jpf_encover.EncoverConfiguration.AttackerType;
+import se.kth.csc.jpf_encover.EFormula.StrEncoding;
+
 
 
 /**
@@ -37,6 +39,222 @@ import se.kth.csc.jpf_encover.EncoverConfiguration.AttackerType;
  */
 public class OFG_Handler {
   private static final boolean legendDotFile = false;
+
+  /**
+   * Generates a new consistent policy for the given vertex based on the leaked PCs and outputs of
+   * its parents. There is no return value, because the newly generated policy will be stored in vertex.
+   *
+   * @param ofg the programs OFG.
+   * @param vertex the consistent policy will be generated based on the observations of this vertex.
+   */
+  public static void consistentPolicyGeneration(
+    OutputFlowGraph ofg, 
+    OFG_Vertex vertex)
+  {
+    Set<EFormula> leaked = new HashSet();
+
+    Iterator<OFG_Vertex> iter = getPathToRoot(ofg, vertex).iterator();
+    while (iter.hasNext())
+    {
+      OFG_Vertex v = iter.next();
+
+      if (v.getOutput().getVariables().size() != 0)
+      {
+        EFormula temp = new EF_Valuation(v.getOutput());
+        leaked.add(temp);
+      }
+
+      if (v.getLeakedPC() != null)
+      {
+        leaked.add(v.getLeakedPC());
+      }
+    }
+
+    String consistentPolicy = vertex.getPolicy();
+    for (EFormula ef : leaked)
+    {
+      try
+      {
+        String temp = ef.toString(StrEncoding.SMT2);
+        if (consistentPolicy.trim().equals(""))
+        {
+          consistentPolicy = temp;
+        }
+        else
+        {
+          consistentPolicy += "," + temp;
+        }
+      }
+      catch (TranslationException e)
+      {}
+    }
+    
+    Iterator<OFG_Vertex> verticesIter = getEffectedVertices(ofg, vertex).iterator();
+    while (verticesIter.hasNext())
+    {
+      verticesIter.next().setPolicy(consistentPolicy);
+    }
+
+    System.out.println("    ---> New Consistent Policy: "+ consistentPolicy +"  <---");
+  }
+
+
+  /**
+   * Returns a set of vertecies representing the parents of a given vertex up to root
+   *
+   * @param ofg the programs OFG.
+   * @param vertex input vertex whose parents will get returned.
+   *
+   * @return set of parents of vertex up to root
+   */
+  public static Set<OFG_Vertex> getPathToRoot(OutputFlowGraph ofg, OFG_Vertex vertex)
+  {
+    Set<OFG_Vertex> res = new HashSet();
+
+    Iterator<OFG_Vertex> parentIter = ofg.getPredecessorsOf(vertex).iterator();
+    if (parentIter.hasNext())
+    {
+      OFG_Vertex v = parentIter.next();
+      res.add(v);
+      res.addAll(getPathToRoot(ofg, v));
+    }
+
+    return res;
+  }
+
+
+  /**
+   * Returns a set of children of a given vertex, a newly generated consistent policy should also 
+   * be applied to them. Which is the list of children of given vertex that have similar policy to it.
+   *
+   * @param ofg the programs OFG.
+   * @param vertex input vertex whose effected children will get returned.
+   *
+   * @return the set of children of input vertex who have similar policy to it.
+   */
+  public static Set<OFG_Vertex> getEffectedVertices(OutputFlowGraph ofg, OFG_Vertex vertex)
+  {
+    Set<OFG_Vertex> res = new HashSet();
+    res.add(vertex);
+
+    Iterator<OFG_Vertex> childrenIter = ofg.getSuccessorsOf(vertex).iterator();
+    while (childrenIter.hasNext())
+    {
+      OFG_Vertex v = childrenIter.next();
+
+      if (!v.getPolicyChanged())
+      {
+        res.add(v);
+        res.addAll(getEffectedVertices(ofg, v));
+      }
+    }
+
+    return res;
+  }
+
+
+  /**
+   * Finds out if the given vertex leaks anything through the new part of its PC, 
+   * if so, adds that new PC to the leakedPC of the given vertex.
+   *
+   * @param ofg the programs OFG.
+   * @param vertex input vertex whose NEW pc will get checked.
+   * @param domains domains used in generating the inference formula
+   * @param pseudo2Var pseudonym mapping that is passed to the parser
+   * @param solver An instance of the SMT solver.
+   */
+  public static void generateLeakingPC(
+    OutputFlowGraph ofg, 
+    OFG_Vertex vertex,
+    Map<EE_Variable,List<EE_Constant>> domains,
+    Map<String,EE_Variable> pseudo2Var,
+    SolverHandler solver) 
+  {
+
+    Iterator<OFG_Vertex> verteciesPreIter = ofg.getPredecessorsOf(vertex).iterator();
+    EFormula newPC;
+
+    if (verteciesPreIter.hasNext())
+    {
+      OFG_Vertex parent = verteciesPreIter.next();
+      
+      if (!parent.getPathCondition().toString().equals(vertex.getPathCondition().toString()))
+      {
+        List<EFormula> listOfPcSubFormulas = new ArrayList<EFormula>(vertex.getPathCondition().getSubFormulas()); 
+        int sizeOfParentPC = parent.getPathCondition().getSubFormulas().size();
+        listOfPcSubFormulas.subList(listOfPcSubFormulas.size() - sizeOfParentPC, listOfPcSubFormulas.size()).clear();
+
+        EF_Conjunction newPC_Formula = new EF_Conjunction();
+
+        for (EFormula formula : listOfPcSubFormulas)
+        {
+            newPC_Formula.append(formula);
+        }
+        newPC = newPC_Formula;
+      }
+      else
+      {
+        newPC = null;
+      }
+    }
+    else
+    {
+      newPC = vertex.getPathCondition();
+    }
+
+    if (newPC != null)
+    {
+      Set<EE_Variable> pcVariables = newPC.getVariables();
+
+      HashSet<EExpression> leakedInputExpressions = new HashSet<EExpression>();
+      HashSet<EExpression> harboredInputExpressions = new HashSet<EExpression>();
+
+      for (EE_Variable variable: pcVariables)
+      {
+        harboredInputExpressions.add(variable);
+      }
+
+      for (String lie : pseudo2Var.keySet()) 
+      {
+        lie = lie.trim();
+        if ( ! lie.isEmpty() ) 
+        {
+          EExpression parsedLie = null;
+          try { parsedLie = Smt2Parser.parse(lie, pseudo2Var); }
+          catch(ParseException e) {
+            throw new Error(e);
+          }
+
+          if (!pcVariables.contains(parsedLie))
+          {
+            leakedInputExpressions.add(parsedLie);
+          }
+        }
+      }
+
+      EFormula interferenceFormula = generateInterferenceFormula(ofg, vertex, domains, leakedInputExpressions, harboredInputExpressions, AttackerType.BOUNDED, 1);
+      boolean wasStarted = solver.isStarted();
+      if ( ! wasStarted ) solver.start();
+      try 
+      {
+        SortedMap<EE_Variable,EE_Constant> satisfyingAssignment = solver.checkSatisfiability(interferenceFormula);
+
+        if ( satisfyingAssignment != null ) 
+        {
+            vertex.setLeakedPC(newPC);
+        }
+      } 
+      catch (Error e) 
+      {
+        /System.out.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
+      }
+      
+      if ( ! wasStarted ) solver.stop();
+
+    }
+  }
+
+
 
   /**
    * Save the OFG into a file in the dot format. To be processed by the dot
@@ -264,7 +482,7 @@ public class OFG_Handler {
    * @param memory The capacity of the attacker's memory, so is the lenth of output secquence.
    * @return The output sequence collected.
    */
-  public static List<EExpression> getOutputSequence_Bounded(OutputFlowGraph ofg, OFG_Vertex v, int memory) 
+  public static List<EExpression> getOutputSequence_Bounded(OutputFlowGraph ofg, OFG_Vertex v, int memory ) 
   {
     List<EExpression> outputSequence = new ArrayList();
     EExpression vOutput = v.getOutput();
@@ -272,9 +490,12 @@ public class OFG_Handler {
     Set<OFG_Vertex> predecessors = ofg.getPredecessorsOf(v);
     if ( predecessors.size() > 1 )
       throw new Error("OFG_Handler.getOutputSequences(OutputFlowGraph, Vertex) works only for trees!");
-    if ( predecessors.size() == 1 ) {
+    if ( predecessors.size() == 1 ) 
+    {
       outputSequence = getOutputSequence_Bounded(ofg, predecessors.iterator().next(), memory-1);
-    } else {
+    } 
+    else 
+    {
       outputSequence = new ArrayList();
     }
 
@@ -286,32 +507,32 @@ public class OFG_Handler {
     return outputSequence;
   }
 
-  // /**
-  //  * Returns the output sequence generated by the path going from the start of
-  //  * {@code ofg} to {@code v} include.
-  //  *
-  //  * @param ofg The output flow graph in which to find the path.
-  //  * @param v The destination of the path.
-  //  * @return The output sequence collected.
-  //  */
-  // public static List<EExpression> getOutputSequence(OutputFlowGraph ofg, OFG_Vertex v) 
-  // {
-  //   List<EExpression> outputSequence = new ArrayList();
-  //   EExpression vOutput = v.getOutput();
+  /**
+   * Returns the output sequence generated by the path going from the start of
+   * {@code ofg} to {@code v} include.
+   *
+   * @param ofg The output flow graph in which to find the path.
+   * @param v The destination of the path.
+   * @return The output sequence collected.
+   */
+  public static List<EExpression> getOutputSequence_Perfect(OutputFlowGraph ofg, OFG_Vertex v) 
+  {
+    List<EExpression> outputSequence = new ArrayList();
+    EExpression vOutput = v.getOutput();
 
-  //   Set<OFG_Vertex> predecessors = ofg.getPredecessorsOf(v);
-  //   if ( predecessors.size() > 1 )
-  //     throw new Error("OFG_Handler.getOutputSequences(OutputFlowGraph, Vertex) works only for trees!");
-  //   if ( predecessors.size() == 1 ) {
-  //     outputSequence = getOutputSequence(ofg, predecessors.iterator().next());
-  //   } else {
-  //     outputSequence = new ArrayList();
-  //   }
+    Set<OFG_Vertex> predecessors = ofg.getPredecessorsOf(v);
+    if ( predecessors.size() > 1 )
+      throw new Error("OFG_Handler.getOutputSequences(OutputFlowGraph, Vertex) works only for trees!");
+    if ( predecessors.size() == 1 ) {
+      outputSequence = getOutputSequence_Perfect(ofg, predecessors.iterator().next());
+    } else {
+      outputSequence = new ArrayList();
+    }
 
-  //   outputSequence.add(vOutput);
+    outputSequence.add(vOutput);
 
-  //   return outputSequence;
-  // }
+    return outputSequence;
+  }
 
 
   // /**
@@ -574,6 +795,7 @@ public class OFG_Handler {
 
     EF_Disjunction bigOuter = new EF_Disjunction();
 
+    //TODO ------ Should remove the first while, we don't need it anymore
     Iterator<OFG_Vertex> vIte1 = vertices.iterator();
     while ( vIte1.hasNext() ) 
     {
@@ -590,8 +812,7 @@ public class OFG_Handler {
         switch(attackerType) 
         {
           case PERFECT:
-            //Prefect recall is just a bounded attacker that remembers all of the outputs.
-            o1 = OFG_Handler.getOutputSequence_Bounded(ofg, v1, vertex.getDepth()); 
+            o1 = OFG_Handler.getOutputSequence_Perfect(ofg, v1); 
             break;
           case BOUNDED:
             o1 = OFG_Handler.getOutputSequence_Bounded(ofg, v1, attackerMemoryCapacity);
@@ -610,24 +831,22 @@ public class OFG_Handler {
           EFormula pc2 = v2.getPathCondition();
           List<EExpression> o2 = new ArrayList();
 
-          // Different outputs based on each attacker.
-          switch(attackerType) 
+          if ( v1.getDepth() == v2.getDepth() ) 
           {
-            case PERFECT:
-              //Prefect recall is just a bounded attacker that remembers all of the outputs.
-              o2 = OFG_Handler.getOutputSequence_Bounded(ofg, v2, vertex.getDepth()); 
-              break;
-            case BOUNDED:
-              o2 = OFG_Handler.getOutputSequence_Bounded(ofg, v2, attackerMemoryCapacity);
-              break;
-            case FORGETFUL:
-              o2 = OFG_Handler.getOutputSequence_Forgetful(ofg, v2, vertex.getNumberOfPolicyChanges(), vertex.getDepth());
-              break;
-          }
-          //List<EExpression> o2 = OFG_Handler.getOutputSequence(ofg, v2, memory);
+            // Different outputs based on each attacker.
+            switch(attackerType) 
+            {
+              case PERFECT:
+                o2 = OFG_Handler.getOutputSequence_Perfect(ofg, v2); 
+                break;
+              case BOUNDED:
+                o2 = OFG_Handler.getOutputSequence_Bounded(ofg, v2, attackerMemoryCapacity);
+                break;
+              case FORGETFUL:
+                o2 = OFG_Handler.getOutputSequence_Forgetful(ofg, v2, vertex.getNumberOfPolicyChanges(), vertex.getDepth());
+                break;
+            }
 
-          if ( o1.size() == o2.size() ) 
-          {
             EF_Conjunction v1v2Formula = new EF_Conjunction();
             v1v2Formula.append(v2.getPathCondition().clone(renaming));
             for (int i = 0; i < o1.size(); i++) 

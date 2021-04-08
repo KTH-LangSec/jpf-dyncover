@@ -543,6 +543,9 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public void setDepth(int depth) { throw new Error("StructuralVertices do not have depth."); }
     public String getTextualDescription() {return getId();}
     public String toString() {return getId();}
+
+    public EFormula getLeakedPC() { throw new Error("StructuralVertices do not have leakedPC."); }
+    public void setLeakedPC(EFormula leakedPC) { throw new Error("StructuralVertices do not have leakedPC."); }
   }
 
   /**
@@ -557,6 +560,9 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public int getNumberOfPolicyChanges() {return 0;};
     public int getDepth() { return 0; }
     public void setDepth(int depth) { }
+
+    public EFormula getLeakedPC() { return null; }
+    public void setLeakedPC(EFormula leakedPC) { }
   }
 
   /**
@@ -571,6 +577,9 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     public int getNumberOfPolicyChanges() {return 0;};
     public int getDepth() { return 0; }
     public void setDepth(int depth) { }
+
+    public EFormula getLeakedPC() { return null; }
+    public void setLeakedPC(EFormula leakedPC) { }
   }
 
   /**
@@ -585,6 +594,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     private boolean policyChanged;
     private int numberOfPolicyChanges;
     private int depth;
+
+    private EFormula leakedPC;
 
     /**
      * Constructor of output vertices.
@@ -601,6 +612,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       policyChanged = false;
       numberOfPolicyChanges = 0;
       depth = 0;
+
+      leakedPC = null;
     }
 
     /**
@@ -623,6 +636,28 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
       policyChanged = plcChanged;
       numberOfPolicyChanges = npc;
       depth = dep;
+
+      leakedPC = null;
+    }
+
+    /**
+     * Retrieves the leaking pc of this vertex.
+     *
+     * @return leaking pc of this vertex.
+    */
+    public EFormula getLeakedPC() 
+    { 
+      return leakedPC; 
+    }
+
+    /**
+     * Sets the leaking pc of this vertex.
+     *
+     * @param leakedPC The leaking pc.
+    */
+    public void setLeakedPC(EFormula lpc) 
+    { 
+      leakedPC = lpc; 
     }
 
     /**
@@ -630,7 +665,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @return The unique ID of this vertex.
      */
-    public String getId() {
+    public String getId() 
+    {
       return ("V" + id);
     }
     
@@ -639,7 +675,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @return The output.
      */
-    public EExpression getOutput() {
+    public EExpression getOutput() 
+    {
       return output;
     }
 
@@ -648,7 +685,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @return The path condition.
      */
-    public EFormula getPathCondition() {
+    public EFormula getPathCondition() 
+    {
       return pathCondition;
     }
 
@@ -658,7 +696,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @return Properties holding.
      */
-    public EFormula getOtherProperties() {
+    public EFormula getOtherProperties() 
+    {
       return otherProperties;
     }
 
@@ -667,7 +706,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @return The policy.
      */
-    public String getPolicy() {
+    public String getPolicy() 
+    {
       return policy;
     }
 
@@ -676,7 +716,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @return Is this a new output after a policy change?.
      */
-    public Boolean getPolicyChanged() {
+    public Boolean getPolicyChanged() 
+    {
       return policyChanged;
     }
 
@@ -705,7 +746,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @param exp Expression representing the ouptut.
      */
-    public void setOutput(EExpression exp) {
+    public void setOutput(EExpression exp) 
+    {
       output = exp;
     }
 
@@ -714,7 +756,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @param path The path condition for this vertex.
      */
-    public void setPathCondition(EFormula path) {
+    public void setPathCondition(EFormula path)
+    {
       pathCondition = path;
     }
 
@@ -773,7 +816,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @return A textual description of this vertex.
      */
-    public String getTextualDescription() {
+    public String getTextualDescription() 
+    {
       String retVal;
       if ( output == null ) { retVal = "null"; }
       else { retVal = output + 
@@ -791,7 +835,8 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
      *
      * @return Short string identifying this vertex.
      */
-    public String toString() {
+    public String toString() 
+    {
       return getId();
     }
   }

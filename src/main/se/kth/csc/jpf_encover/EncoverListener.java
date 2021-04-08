@@ -81,14 +81,14 @@ public class EncoverListener extends SymbolicListener {
   ///////////////////  ATTACKER DEFINITIONS  /////////////////////
   /////////////////// TODO: change this later ////////////////////
   ////////////////////////////////////////////////////////////////
+  public static enum PolicyConsistency {REJECT, ACCEPT}
+  private static PolicyConsistency inconsistentPolicy = PolicyConsistency.ACCEPT; 
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+
 
   private static AttackerType attackerType;
   private static int attackerMemoryCapacity;
-
-  public static enum PolicyConsistency {REJECT, ACCEPT}
-  private static PolicyConsistency inconsistentPolicy = PolicyConsistency.REJECT; 
-  ////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////
 
   static final String GENERIC_LOG_FILE_NAME = "run__%s.log";
   private static final String GENERIC_OUT_FILE_NAME = "run__%s.out";
@@ -758,10 +758,21 @@ public class EncoverListener extends SymbolicListener {
     
     if ( askFor_itfFml || askFor_sitfFml || askFor_smtSolving ) 
     {
+      //ofg.display();
+      //System.out.println(ofg);
+
+      if (inconsistentPolicy == PolicyConsistency.ACCEPT)
+      {
+        System.out.println("\n\n---> Preprocess: Determining Leaking Path Conditions <---");
+        Iterator<OFG_Vertex> iterPre = ofg.depthFirstTaversal().iterator();
+        while (iterPre.hasNext()) 
+        { 
+          OFG_Handler.generateLeakingPC(ofg, iterPre.next(), inputDomains, pseudo2Var, solver);
+        }
+      }
+
       System.out.println("\n\n");
       System.out.println("---> Checking <---");
-
-      //ofg.display();
 
       boolean isSecure = true;
       boolean consistentPolicy = true;
@@ -786,14 +797,17 @@ public class EncoverListener extends SymbolicListener {
             {
               OFG_Vertex vertexPre = verteciesPreIter.next();
               interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertexPre, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
-              System.out.print("Policy consistency check at node: " + vertexPre + ":\n   Interference Formula => " + interferenceFormula);
-
-              /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
-              boolean wasStarted = solver.isStarted();
-              if ( ! wasStarted ) solver.start();
+              //System.out.print("Policy consistency check before node: " + vertex + ":\n   Interference Formula => " + interferenceFormula);
+              
               try 
               {
+                /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
+                boolean wasStarted = solver.isStarted();
+                if ( ! wasStarted ) solver.start();
                 SortedMap<EE_Variable,EE_Constant> satisfyingAssignment = solver.checkSatisfiability(interferenceFormula);
+                if ( ! wasStarted ) solver.stop();
+                /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
+
 
                 if ( satisfyingAssignment != null ) 
                 {
@@ -815,8 +829,12 @@ public class EncoverListener extends SymbolicListener {
                   }
                   else
                   {
-                    System.out.println("\n\n Policy update at node >> " + vertex + " << was inconsistent");
-                    System.out.println(" ============ TODO ============\n\n");
+                    System.out.println("Policy update before node >> " + vertex + " << was inconsistent");
+                    System.out.println("    ---> Generating New Consistent Policy <---");
+                    OFG_Handler.consistentPolicyGeneration(ofg, vertex);
+
+                    harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(vertex.getPolicy(), pseudo2Var);
+                    leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(vertex.getPolicy(), pseudo2Var);
                   }
                 }
               } 
@@ -824,21 +842,16 @@ public class EncoverListener extends SymbolicListener {
               {
                 log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
               }
-
-              System.out.println("   ===>   Unsat\n");
-              if ( ! wasStarted ) solver.stop();
-              /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
             }
           }
         }
-
 
         //////////////////////////////////////////////////
         ///////////////// Security check /////////////////
         //////////////////////////////////////////////////
         interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
       
-        System.out.print("Security check at Node " + vertex + ":\n   Interference Formula => " + interferenceFormula);
+        System.out.print("Security check at Node " + vertex + ":\n    Interference Formula => " + interferenceFormula);
 
         /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
         boolean wasStarted = solver.isStarted();
@@ -869,8 +882,8 @@ public class EncoverListener extends SymbolicListener {
           log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
         }
 
-        System.out.println("   ===>   Unsat");
-        System.out.println("-----------------------------------------------");
+        //System.out.println("   ===>   Unsat");
+        System.out.println("\n-----------------------------------------------\n");
 
         if ( ! wasStarted ) solver.stop();
         /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/

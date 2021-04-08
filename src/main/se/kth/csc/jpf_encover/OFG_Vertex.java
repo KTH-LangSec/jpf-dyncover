@@ -152,6 +152,23 @@ public interface OFG_Vertex {
    * @return Short string identifying this vertex.
    */
   public String toString();
+
+
+
+
+  /**
+   * Retrieves the leaking pc of this vertex.
+   *
+   * @return leaking pc of this vertex.
+   */
+  public EFormula getLeakedPC();
+
+  /**
+   * Sets the leaking pc of this vertex.
+   *
+   * @param leakedPC The leaking pc.
+   */
+  public void setLeakedPC(EFormula leakedPC);
 }
 
 

@@ -104,6 +104,13 @@ public abstract class EFormula implements Serializable {
     catch (TranslationException e) { throw new Error(e); }
     return res;
   }
+
+  /**
+   * Returns a list of subformulas (it is only more that one formula in case of NaryOperations)
+   *
+   * @return A list of subformulas.
+   */
+  public abstract List<EFormula> getSubFormulas(); 
 }
 
 
@@ -218,6 +225,17 @@ abstract class EF_NaryOperation extends EFormula {
       res += subformulas.get(i).getNbInstancesCV();
     }
     return res;
+  }
+
+
+  /**
+   * Returns the list of subformulas in this operation
+   *
+   * @return A list of subformulas.
+  */
+  public List<EFormula> getSubFormulas() 
+  {
+    return subformulas;
   }
 
   /**
@@ -360,6 +378,19 @@ class EF_Negation extends EFormula {
   private static final String opStr_MCMAS = "!";
   private static final int precedence = 3;
   private EFormula subformula;
+
+  /**
+   * Returns a list of subformulas (in this case it is only 'this')
+   *
+   * @return A list of subformulas.
+   */
+  public List<EFormula> getSubFormulas()
+  {
+    List<EFormula> subformulas = new ArrayList();
+    subformulas.add(this);
+    return subformulas;
+  }
+  
 
   /**
    * Default constructor for negations.
@@ -526,6 +557,18 @@ class EF_Relation extends EFormula {
   }
 
   /**
+   * Returns a list of subformulas (in this case it is only 'this')
+   *
+   * @return A list of subformulas.
+   */
+  public List<EFormula> getSubFormulas()
+  {
+    List<EFormula> subformulas = new ArrayList();
+    subformulas.add(this);
+    return subformulas;
+  }
+
+  /**
    * Returns a string representing the formula in the desired encoding.
    *
    * @param enc The encoding used for the returned string.
@@ -603,6 +646,18 @@ class EF_Valuation extends EFormula {
 
   public int getNbInstancesCV() {
     return exp.getNbInstancesCV();
+  }
+
+  /**
+   * Returns a list of subformulas (in this case it is only 'this')
+   *
+   * @return A list of subformulas.
+   */
+  public List<EFormula> getSubFormulas()
+  {
+    List<EFormula> subformulas = new ArrayList();
+    subformulas.add(this);
+    return subformulas;
   }
 
   /**
