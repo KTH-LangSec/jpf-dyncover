@@ -246,7 +246,7 @@ public class OFG_Handler {
       } 
       catch (Error e) 
       {
-        /System.out.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
+        System.out.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
       }
       
       if ( ! wasStarted ) solver.stop();
@@ -535,140 +535,6 @@ public class OFG_Handler {
   }
 
 
-  // /**
-  //  * Generates a formula that is satisfiable iff the provided output flow graph
-  //  * corresponds to an interfering program.
-  //  *
-  //  * @param ofg The output flow graph for which the interference formula has to
-  //  *   be generated.
-  //  * @param leaked A set of expressions corresponding to the initialy leaked information.
-  //  * @param harbored A set of expressions corresponding to the harbored information.
-  //  * @return An interference formula for the provided OFG.
-  //  */
-  // public static EFormula generateInterferenceFormula(
-  //     OutputFlowGraph ofg, Map<EE_Variable,List<EE_Constant>> domains,
-  //     Set<EExpression> leaked, Set<EExpression> harbored
-  //   ) {
-
-  //   Set<OFG_Vertex> vertices = ofg.getAllVertices();
-  //   Set<EE_Variable> variables = ofg.getVariables();
-
-  //   variables.addAll(domains.keySet());
-
-  //   Iterator<EExpression> leakedIte = leaked.iterator();
-  //   while ( leakedIte.hasNext() ) variables.addAll(leakedIte.next().getVariables());
-
-  //   Iterator<EExpression> harboredIte = harbored.iterator();
-  //   while ( harboredIte.hasNext() ) variables.addAll(harboredIte.next().getVariables());
-
-  //   Map<EE_Variable,EE_Variable> renaming = new HashMap();
-  //   Iterator<EE_Variable> varIte = variables.iterator();
-  //   while ( varIte.hasNext() ) {
-  //     EE_Variable var = varIte.next();
-  //     EE_Variable newVar = var.clone("_bis");
-  //     renaming.put(var, newVar);
-  //   }
-
-    
-
-  //   EF_Conjunction interferenceFml = new EF_Conjunction();
-
-  //   EF_Conjunction domainsConj = new EF_Conjunction();
-  //   Iterator<Map.Entry<EE_Variable,List<EE_Constant>>> domIte =
-  //     domains.entrySet().iterator();
-  //   while ( domIte.hasNext() ) {
-  //     Map.Entry<EE_Variable,List<EE_Constant>> dom = domIte.next();
-  //     EE_Variable var = dom.getKey();
-  //     List<EE_Constant> boundaries = dom.getValue();
-  //     EE_Constant min = boundaries.get(0);
-  //     EE_Constant max = boundaries.get(1);
-
-  //     EE_BinaryOperation lowerBound = new EE_BinaryOperation.LE();
-  //     lowerBound.setLeftHandSide(min);
-  //     lowerBound.setRightHandSide(var);
-  //     domainsConj.append(new EF_Valuation(lowerBound));
-  //     EE_BinaryOperation upperBound = new EE_BinaryOperation.LE();
-  //     upperBound.setLeftHandSide(var);
-  //     upperBound.setRightHandSide(max);
-  //     domainsConj.append(new EF_Valuation(upperBound));
-
-  //     EE_BinaryOperation lowerBound_bis = new EE_BinaryOperation.LE();
-  //     lowerBound_bis.setLeftHandSide(min);
-  //     lowerBound_bis.setRightHandSide(var.clone(renaming));
-  //     domainsConj.append(new EF_Valuation(lowerBound_bis));
-  //     EE_BinaryOperation upperBound_bis = new EE_BinaryOperation.LE();
-  //     upperBound_bis.setLeftHandSide(var.clone(renaming));
-  //     upperBound_bis.setRightHandSide(max);
-  //     domainsConj.append(new EF_Valuation(upperBound_bis));
-  //   }
-  //   interferenceFml.append(domainsConj);
-
-  //   EF_Conjunction leakedConj = new EF_Conjunction();
-  //   leakedIte = leaked.iterator();
-  //   while ( leakedIte.hasNext() ) {
-  //     EExpression leakedExp = leakedIte.next();
-  //     EE_BinaryOperation equalExp = new EE_BinaryOperation.EQ();
-  //     equalExp.setLeftHandSide(leakedExp);
-  //     equalExp.setRightHandSide(leakedExp.clone(renaming));
-  //     leakedConj.append(new EF_Valuation(equalExp));
-  //   }
-  //   interferenceFml.append(leakedConj);
-
-  //   EF_Disjunction harboredDisj = new EF_Disjunction();
-  //   harboredIte = harbored.iterator();
-  //   while ( harboredIte.hasNext() ) {
-  //     EExpression harboredExp = harboredIte.next();
-  //     EE_BinaryOperation diffExp = new EE_BinaryOperation.NE();
-  //     diffExp.setLeftHandSide(harboredExp);
-  //     diffExp.setRightHandSide(harboredExp.clone(renaming));
-  //     harboredDisj.append(new EF_Valuation(diffExp));
-  //   }
-  //   interferenceFml.append(harboredDisj);
-
-  //   EF_Disjunction bigOuter = new EF_Disjunction();
-
-  //   Iterator<OFG_Vertex> vIte1 = vertices.iterator();
-  //   while ( vIte1.hasNext() ) {
-  //     OFG_Vertex v1 = vIte1.next();
-  //     EFormula pc1 = v1.getPathCondition();
-      
-  //     List<EExpression> o1 = OFG_Handler.getOutputSequence(ofg, v1);
-
-  //     EF_Conjunction v1Formula = new EF_Conjunction();
-  //     v1Formula.append(v1.getPathCondition());
-
-      
-  //     EF_Conjunction bigInner = new EF_Conjunction();
-
-  //     Iterator<OFG_Vertex> vIte2 = vertices.iterator();
-  //     while ( vIte2.hasNext() ) {
-  //       OFG_Vertex v2 = vIte2.next();
-  //       EFormula pc2 = v2.getPathCondition();
-  //       List<EExpression> o2 = OFG_Handler.getOutputSequence(ofg, v2);
-
-  //       if ( o1.size() == o2.size() ) {
-  //         EF_Conjunction v1v2Formula = new EF_Conjunction();
-  //         v1v2Formula.append(v2.getPathCondition().clone(renaming));
-  //         for (int i = 0; i < o1.size(); i++) {
-  //           EE_BinaryOperation equalOut = new EE_BinaryOperation.EQ();
-  //           equalOut.setLeftHandSide(o2.get(i).clone(renaming));
-  //           equalOut.setRightHandSide(o1.get(i));
-  //           v1v2Formula.append(new EF_Valuation(equalOut));
-  //         }
-  //         bigInner.append(new EF_Negation(v1v2Formula));
-  //       }
-  //     }
-
-  //     v1Formula.append(bigInner);
-  //     bigOuter.append(v1Formula);
-  //   }
-
-  //   interferenceFml.append(bigOuter);
-
-  //   return interferenceFml;
-  // }
-
-
   /**
    * Generates a formula that is satisfiable iff the provided output flow graph
    * corresponds to an interfering program.
@@ -793,79 +659,65 @@ public class OFG_Handler {
     }
     interferenceFml.append(harboredDisj);
 
-    EF_Disjunction bigOuter = new EF_Disjunction();
+    EF_Conjunction v1Formula = new EF_Conjunction();
+    EF_Conjunction bigInner = new EF_Conjunction();
+    EFormula pc1 = vertex.getPathCondition();
+    List<EExpression> o1 = new ArrayList();
 
-    //TODO ------ Should remove the first while, we don't need it anymore
-    Iterator<OFG_Vertex> vIte1 = vertices.iterator();
-    while ( vIte1.hasNext() ) 
+    // Different outputs based on each attacker.
+    switch(attackerType) 
     {
-      OFG_Vertex v1 = vIte1.next();
-      EF_Conjunction v1Formula = new EF_Conjunction();
-      EF_Conjunction bigInner = new EF_Conjunction();
+      case PERFECT:
+        o1 = OFG_Handler.getOutputSequence_Perfect(ofg, vertex); 
+        break;
+      case BOUNDED:
+        o1 = OFG_Handler.getOutputSequence_Bounded(ofg, vertex, attackerMemoryCapacity);
+        break;
+      case FORGETFUL:
+        o1 = OFG_Handler.getOutputSequence_Forgetful(ofg, vertex, vertex.getNumberOfPolicyChanges(), vertex.getDepth());
+        break;
+    }
 
-      if (v1 == vertex)
+    v1Formula.append(vertex.getPathCondition());
+    
+    Iterator<OFG_Vertex> vIte2 = vertices.iterator();
+    while ( vIte2.hasNext() ) 
+    {
+      OFG_Vertex v2 = vIte2.next();
+      EFormula pc2 = v2.getPathCondition();
+      List<EExpression> o2 = new ArrayList();
+
+      if ( vertex.getDepth() == v2.getDepth() ) 
       {
-        EFormula pc1 = v1.getPathCondition();
-        List<EExpression> o1 = new ArrayList();
-
         // Different outputs based on each attacker.
         switch(attackerType) 
         {
           case PERFECT:
-            o1 = OFG_Handler.getOutputSequence_Perfect(ofg, v1); 
+            o2 = OFG_Handler.getOutputSequence_Perfect(ofg, v2); 
             break;
           case BOUNDED:
-            o1 = OFG_Handler.getOutputSequence_Bounded(ofg, v1, attackerMemoryCapacity);
+            o2 = OFG_Handler.getOutputSequence_Bounded(ofg, v2, attackerMemoryCapacity);
             break;
           case FORGETFUL:
-            o1 = OFG_Handler.getOutputSequence_Forgetful(ofg, v1, vertex.getNumberOfPolicyChanges(), vertex.getDepth());
+            o2 = OFG_Handler.getOutputSequence_Forgetful(ofg, v2, vertex.getNumberOfPolicyChanges(), vertex.getDepth());
             break;
         }
 
-        v1Formula.append(v1.getPathCondition());
-        
-        Iterator<OFG_Vertex> vIte2 = vertices.iterator();
-        while ( vIte2.hasNext() ) 
+        EF_Conjunction v1v2Formula = new EF_Conjunction();
+        v1v2Formula.append(v2.getPathCondition().clone(renaming));
+        for (int i = 0; i < o1.size(); i++) 
         {
-          OFG_Vertex v2 = vIte2.next();
-          EFormula pc2 = v2.getPathCondition();
-          List<EExpression> o2 = new ArrayList();
-
-          if ( v1.getDepth() == v2.getDepth() ) 
-          {
-            // Different outputs based on each attacker.
-            switch(attackerType) 
-            {
-              case PERFECT:
-                o2 = OFG_Handler.getOutputSequence_Perfect(ofg, v2); 
-                break;
-              case BOUNDED:
-                o2 = OFG_Handler.getOutputSequence_Bounded(ofg, v2, attackerMemoryCapacity);
-                break;
-              case FORGETFUL:
-                o2 = OFG_Handler.getOutputSequence_Forgetful(ofg, v2, vertex.getNumberOfPolicyChanges(), vertex.getDepth());
-                break;
-            }
-
-            EF_Conjunction v1v2Formula = new EF_Conjunction();
-            v1v2Formula.append(v2.getPathCondition().clone(renaming));
-            for (int i = 0; i < o1.size(); i++) 
-            {
-              EE_BinaryOperation equalOut = new EE_BinaryOperation.EQ();
-              equalOut.setLeftHandSide(o2.get(i).clone(renaming));
-              equalOut.setRightHandSide(o1.get(i));
-              v1v2Formula.append(new EF_Valuation(equalOut));
-            }
-            bigInner.append(new EF_Negation(v1v2Formula));
-          }
+          EE_BinaryOperation equalOut = new EE_BinaryOperation.EQ();
+          equalOut.setLeftHandSide(o2.get(i).clone(renaming));
+          equalOut.setRightHandSide(o1.get(i));
+          v1v2Formula.append(new EF_Valuation(equalOut));
         }
-
-        v1Formula.append(bigInner);
-        bigOuter.append(v1Formula);
-        }
+        bigInner.append(new EF_Negation(v1v2Formula));
+      }
     }
 
-    interferenceFml.append(bigOuter);
+    v1Formula.append(bigInner);
+    interferenceFml.append(v1Formula);
 
     return interferenceFml;
   }

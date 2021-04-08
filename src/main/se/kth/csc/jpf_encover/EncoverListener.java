@@ -82,7 +82,7 @@ public class EncoverListener extends SymbolicListener {
   /////////////////// TODO: change this later ////////////////////
   ////////////////////////////////////////////////////////////////
   public static enum PolicyConsistency {REJECT, ACCEPT}
-  private static PolicyConsistency inconsistentPolicy = PolicyConsistency.ACCEPT; 
+  private static PolicyConsistency inconsistentPolicy = PolicyConsistency.REJECT; 
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
 
@@ -808,7 +808,6 @@ public class EncoverListener extends SymbolicListener {
                 if ( ! wasStarted ) solver.stop();
                 /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
 
-
                 if ( satisfyingAssignment != null ) 
                 {
                   if (inconsistentPolicy == PolicyConsistency.REJECT)
@@ -846,47 +845,54 @@ public class EncoverListener extends SymbolicListener {
           }
         }
 
-        //////////////////////////////////////////////////
-        ///////////////// Security check /////////////////
-        //////////////////////////////////////////////////
-        interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
-      
-        System.out.print("Security check at Node " + vertex + ":\n    Interference Formula => " + interferenceFormula);
-
-        /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
-        boolean wasStarted = solver.isStarted();
-        if ( ! wasStarted ) solver.start();
-        try 
+        if (consistentPolicy)
         {
-          SortedMap<EE_Variable,EE_Constant> satisfyingAssignment = solver.checkSatisfiability(interferenceFormula);
+          //////////////////////////////////////////////////
+          ///////////////// Security check /////////////////
+          //////////////////////////////////////////////////
+          interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
+        
+          System.out.print("Security check at Node " + vertex + ":\n    Interference Formula => " + interferenceFormula);
 
-          if ( satisfyingAssignment != null ) 
+          /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
+          boolean wasStarted = solver.isStarted();
+          if ( ! wasStarted ) solver.start();
+
+          try 
           {
-            isSecure = false;
-            encoverOut.print("SMT-BASED VERIFICATION: ");
-            encoverOut.println("The program is insecure.");
-            Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
-            while ( satAssignIte.hasNext() ) 
+            SortedMap<EE_Variable,EE_Constant> satisfyingAssignment = solver.checkSatisfiability(interferenceFormula);
+
+            if ( satisfyingAssignment != null ) 
             {
-              Map.Entry<EE_Variable,EE_Constant> entry = satAssignIte.next();
-              EE_Variable var = entry.getKey();
-              EE_Constant val = entry.getValue();
-              encoverOut.println("  " + var + " -> " + val);
+              isSecure = false;
+              encoverOut.print("SMT-BASED VERIFICATION: ");
+              encoverOut.println("The program is insecure.");
+              Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
+              while ( satAssignIte.hasNext() ) 
+              {
+                Map.Entry<EE_Variable,EE_Constant> entry = satAssignIte.next();
+                EE_Variable var = entry.getKey();
+                EE_Constant val = entry.getValue();
+                encoverOut.println("  " + var + " -> " + val);
+              }
+              encoverOut.println("");
+              break;
             }
-            encoverOut.println("");
-            break;
+          } 
+          catch (Error e) 
+          {
+            log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
           }
-        } 
-        catch (Error e) 
-        {
-          log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
+
+          System.out.println("\n-----------------------------------------------\n");
+
+          if ( ! wasStarted ) solver.stop();
+          /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
         }
-
-        //System.out.println("   ===>   Unsat");
-        System.out.println("\n-----------------------------------------------\n");
-
-        if ( ! wasStarted ) solver.stop();
-        /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
+        else // policy was inconsistent
+        {
+          break;
+        }
       }
 
       //ofg.display();
@@ -898,75 +904,10 @@ public class EncoverListener extends SymbolicListener {
         encoverOut.print("SMT-BASED VERIFICATION: ");
         encoverOut.println("The program is secure.");
         encoverOut.println("");
-      } 
-      
-      /** START INTERFERENCE FORMULA GENERATION **/
-      //time_interfFmlGeneration_start = System.nanoTime();
-      //interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, inputDomains, leakedInputExpressions, harboredInputExpressions);
-      //time_interfFmlGeneration_end = System.nanoTime();
-      /** END INTERFERENCE FORMULA GENERATION **/
-
-      // if ( askFor_itfFml ) 
-      // {
-      //   encoverOut.println("INTERFERENCE FORMULA:");
-      //   encoverOut.println(interferenceFormula);
-      //   encoverOut.println("");
-      // }
-
-      // if ( askFor_sitfFml ) 
-      // {
-      //   /** START INTERFERENCE FORMULA SIMPLIFICATION **/
-      //   boolean wasStarted = solver.isStarted();
-      //   if ( ! wasStarted ) solver.start();
-      //   try {
-      //     EFormula simplifiedInterferenceFormula = solver.simplify(interferenceFormula);
-      //     encoverOut.println("SIMPLIFIED INTERFERENCE FORMULA:");
-      //     encoverOut.println(simplifiedInterferenceFormula);
-      //     encoverOut.println("");
-      //   } catch (Error e) {
-      //     log.println("Impossible to simplify interference formula: " + e.getMessage());
-      //   }
-      //   if ( ! wasStarted ) solver.stop();
-      //   /** END INTERFERENCE FORMULA SIMPLIFICATION **/
-      // }
-
-      // if ( askFor_smtSolving ) 
-      // {
-      //   /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
-      //   boolean wasStarted = solver.isStarted();
-      //   if ( ! wasStarted ) solver.start();
-      //   try {
-
-      //     time_interfFmlSatisfaction_start = System.nanoTime();
-
-      //     SortedMap<EE_Variable,EE_Constant> satisfyingAssignment =
-      //       solver.checkSatisfiability(interferenceFormula);
-
-      //     time_interfFmlSatisfaction_end = System.nanoTime();
-
-      //     encoverOut.print("SMT-BASED VERIFICATION: ");
-      //     if ( satisfyingAssignment == null ) {
-      //       encoverOut.println("The program is noninterfering.");
-      //     } else {
-      //       encoverOut.println("The program is interfering.");
-
-      //       Iterator<Map.Entry<EE_Variable,EE_Constant>> satAssignIte = satisfyingAssignment.entrySet().iterator();
-      //       while ( satAssignIte.hasNext() ) {
-      //         Map.Entry<EE_Variable,EE_Constant> entry = satAssignIte.next();
-      //         EE_Variable var = entry.getKey();
-      //         EE_Constant val = entry.getValue();
-      //         encoverOut.println("  " + var + " -> " + val);
-      //       }
-
-      //     }
-      //     encoverOut.println("");
-      //   } catch (Error e) {
-      //     log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
-      //   }
-      //   if ( ! wasStarted ) solver.stop();
-      //   /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
-      // }
+      }
     }
+
+    
 
     /** PRODUCE AND/OR VERIFY MCMAS MODEL **/
     boolean askFor_isplBP = selectedByProducts.contains(EncoverConfiguration.ByProduct.ISPL);
