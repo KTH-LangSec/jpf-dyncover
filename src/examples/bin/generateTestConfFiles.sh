@@ -35,6 +35,7 @@ do
     method=$(echo $(echo ${line} | cut -d '|' -f 4));
     agent=$(echo $(echo ${line} | cut -d '|' -f 5));
 	attackerType=$(echo $(echo ${line} | cut -d '|' -f 6));
+	inconsistentPolicyMethod=$(echo $(echo ${line} | cut -d '|' -f 7));
     methodName=$(echo ${method} | sed 's/^[^(]*\.//g; s/(.*$//');
     inputDomains=$(echo $(grep "${methodName}" ${domainsFile} | sed 's/^[^|]*|//'));
     observable=$(echo $(grep "${agent}" ${observablesFile} | sed 's/^[^|]*|//'));
@@ -59,6 +60,7 @@ do
 	| sed "s/\[encover\.inputDomains\]/${inputDomains}/" \
 	| sed "s/\[encover\.observable\]/${observable}/" \
 	| sed "s/\[encover\.attackerType\]/${attackerType}/" \
+	| sed "s/\[encover\.inconsistentPolicyMethod\]/${inconsistentPolicyMethod}/" \
 	> ${testConfFileName};
 
     minInt=;

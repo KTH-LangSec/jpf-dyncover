@@ -36,7 +36,8 @@ import gov.nasa.jpf.Config;
  */
 class EncoverConfiguration {
 
-  public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL}
+  public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL};
+  public static enum InconsistentPolicyMethod {REJECT, ACCEPT};
 
   static enum Verifier { SMT_COUNTEREXAMPLE_GENERATION, EPISTEMIC_MODEL_CHECKING };
   static enum Output { CONFIG, OFG, INTFERENCE_FML, SIMPLIFIED_INTFERENCE_FML, TIMINGS, METRICS };
@@ -214,6 +215,29 @@ class EncoverConfiguration {
 
     return attackerMemoryCapacity;
   }
+
+  /**
+   * Returns the method used when facing an inconsistent policy.
+   *
+   * @return REJECT if we want to reject programs with inconsistent policies, and ACCEPT when we 
+   *         want encover to generate a consistent policy and continue.
+  */
+  static InconsistentPolicyMethod get_InconsistentPolicyMethod()
+  {
+    String inconsistentPolicyMethod = conf.getString("encover.inconsistentPolicyMethod","");
+
+    if (inconsistentPolicyMethod.equals("accept"))
+    {
+      return InconsistentPolicyMethod.ACCEPT;
+    }
+    else
+    {
+      return InconsistentPolicyMethod.REJECT;
+    }
+  }
+
+
+
 
   /**
    * Based on the input string returns the names of the leaked inputs.

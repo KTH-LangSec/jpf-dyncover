@@ -52,6 +52,7 @@ import gov.nasa.jpf.symbc.numeric.PCChoiceGenerator;
 import gov.nasa.jpf.jvm.LocalVarInfo;
 
 import se.kth.csc.jpf_encover.EncoverConfiguration.AttackerType;
+import se.kth.csc.jpf_encover.EncoverConfiguration.InconsistentPolicyMethod;
 
 
 /**
@@ -77,18 +78,10 @@ public class EncoverListener extends SymbolicListener {
   // static final boolean DEBUG_MODE_ENABLED = true;
   // final boolean DEBUG_MODE;
 
-  ////////////////////////////////////////////////////////////////
-  ///////////////////  ATTACKER DEFINITIONS  /////////////////////
-  /////////////////// TODO: change this later ////////////////////
-  ////////////////////////////////////////////////////////////////
-  public static enum PolicyConsistency {REJECT, ACCEPT}
-  private static PolicyConsistency inconsistentPolicy = PolicyConsistency.REJECT; 
-  ////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////
-
 
   private static AttackerType attackerType;
   private static int attackerMemoryCapacity;
+  private static InconsistentPolicyMethod inconsistentPolicy;
 
   static final String GENERIC_LOG_FILE_NAME = "run__%s.log";
   private static final String GENERIC_OUT_FILE_NAME = "run__%s.out";
@@ -198,6 +191,7 @@ public class EncoverListener extends SymbolicListener {
     inputDomains =  EncoverConfiguration.get_inputDomains();
     attackerType = EncoverConfiguration.get_AttackerType();
     attackerMemoryCapacity = EncoverConfiguration.get_AttackerMemoryCapacity();
+    inconsistentPolicy = EncoverConfiguration.get_InconsistentPolicyMethod();
 
     /////////////////////////////////////////////////////////////////////////////////
     // Temp chage to make outputs file name fixed
@@ -761,7 +755,7 @@ public class EncoverListener extends SymbolicListener {
       //ofg.display();
       //System.out.println(ofg);
 
-      if (inconsistentPolicy == PolicyConsistency.ACCEPT)
+      if (inconsistentPolicy == InconsistentPolicyMethod.ACCEPT)
       {
         System.out.println("\n\n---> Preprocess: Determining Leaking Path Conditions <---");
         Iterator<OFG_Vertex> iterPre = ofg.depthFirstTaversal().iterator();
@@ -810,7 +804,7 @@ public class EncoverListener extends SymbolicListener {
 
                 if ( satisfyingAssignment != null ) 
                 {
-                  if (inconsistentPolicy == PolicyConsistency.REJECT)
+                  if (inconsistentPolicy == InconsistentPolicyMethod.REJECT)
                   {
                     consistentPolicy = false;
                     encoverOut.print("SMT-BASED VERIFICATION: ");

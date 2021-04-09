@@ -9,9 +9,9 @@ symbolic.maxint = [symbolic.maxint]
 symbolic.undefined = -2147483648
 encover.testNameSuffix = [encover.testNameSuffix]
 encover.inputDomains = [encover.inputDomains]
-encover.leakedInputs = [encover.leakedInputs]
-encover.harboredInputs = [encover.harboredInputs]
 encover.observable = [encover.observable]
+encover.attackerType = [encover.attackerType]
+encover.inconsistentPolicyMethod = [encover.inconsistentPolicyMethod]
 
 ### MAIN JPF CONFIGURATION:
 @using = jpf-symbc
