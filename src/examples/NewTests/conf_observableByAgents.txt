@@ -1,1 +1,2 @@
 print | *.print*(O)
+Alice | *.observableByAgent("Alice", O)

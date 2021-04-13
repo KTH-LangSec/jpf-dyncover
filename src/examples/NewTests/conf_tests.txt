@@ -1,13 +1,16 @@
-bounded     | NewTests.Sample | 1 | NewTests.Sample.bounded(sym#sym)  | print | bounded,1 | reject
-bug         | NewTests.Sample | 1 | NewTests.Sample.bug(sym)          | print | perfect   | reject
-pcTest      | NewTests.Sample | 1 | NewTests.Sample.pcTest(sym#sym)   | print | perfect   | accept
-leakSum     | NewTests.Sample | 1 | NewTests.Sample.leakSum(sym#sym)  | print | perfect   | reject
-program5    | NewTests.Sample | 1 | NewTests.Sample.program5(sym#sym) | print | perfect   | reject
-program6    | NewTests.Sample | 1 | NewTests.Sample.program6(sym)     | print | perfect   | reject
-program7    | NewTests.Sample | 1 | NewTests.Sample.program7(sym)     | print | perfect   | reject
-program8    | NewTests.Sample | 1 | NewTests.Sample.program8(sym#sym) | print | perfect   | reject
-program9    | NewTests.Sample | 1 | NewTests.Sample.program9(sym#sym) | print | perfect   | reject
-program10   | NewTests.Sample | 1 | NewTests.Sample.program10(sym)    | print | perfect   | reject
+simpleReject  | NewTests.Sample | 1 | NewTests.Sample.simpleReject(sym)       | Alice | perfect   | reject
+stringTest    | NewTests.Sample | 1 | NewTests.Sample.stringTest(sym)         | Alice | perfect   | reject
+stringTest2   | NewTests.Sample | 1 | NewTests.Sample.stringTest2(sym#sym)    | print | perfect   | reject
+bounded       | NewTests.Sample | 1 | NewTests.Sample.bounded(sym#sym)        | print | bounded,1 | reject
+bug           | NewTests.Sample | 1 | NewTests.Sample.bug(sym)                | print | perfect   | reject
+pcTest        | NewTests.Sample | 1 | NewTests.Sample.pcTest(sym#sym)         | print | perfect   | accept
+leakSum       | NewTests.Sample | 1 | NewTests.Sample.leakSum(sym#sym)        | print | perfect   | reject
+program5      | NewTests.Sample | 1 | NewTests.Sample.program5(sym#sym)       | print | perfect   | reject
+program6      | NewTests.Sample | 1 | NewTests.Sample.program6(sym)           | print | perfect   | reject
+program7      | NewTests.Sample | 1 | NewTests.Sample.program7(sym)           | print | perfect   | reject
+program8      | NewTests.Sample | 1 | NewTests.Sample.program8(sym#sym)       | print | perfect   | reject
+program9      | NewTests.Sample | 1 | NewTests.Sample.program9(sym#sym)       | print | perfect   | reject
+program10     | NewTests.Sample | 1 | NewTests.Sample.program10(sym)          | print | perfect   | reject
 
 
 

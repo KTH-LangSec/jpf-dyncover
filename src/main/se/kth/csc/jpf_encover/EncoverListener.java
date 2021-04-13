@@ -237,20 +237,21 @@ public class EncoverListener extends SymbolicListener {
       // If a setPolicy method was called.
       if (methInfo.getName().equals("setPolicy"))
       {
-        int obsPos = observablePosInCall[0];
-        Object obsVal = JPFHelper.getArgumentAtPosition(vm, invInstr, obsPos);
+        Object obsVal = JPFHelper.getArgumentAtPosition(vm, invInstr, 0);
         activePolicy = JPFHelper.symbolicStateValue2eExpression(obsVal).toString();
         activePolicy = activePolicy.substring(1, activePolicy.length()-1); // removing " from string
         ofg.setActivePolicy(activePolicy);
+        ofg.setActivePolicy(" ");
       }
 
-      if ( testStartMethodBaseName.startsWith(invokedMethodBaseName) ) {
+      if ( testStartMethodBaseName.startsWith(invokedMethodBaseName) ) 
+      {
         if (log.DEBUG_MODE) log.println("Calling " + invokedMethodBaseName);
-        // if (log.DEBUG_MODE) JPFHelper.log_MethodInfo(log, methInfo, true, false, "  ");
         if (log.DEBUG_MODE) log.println();
       }
       
-      if ( symbolicTestSignature.startsWith(invokedMethodBaseName) ) {
+      if ( symbolicTestSignature.startsWith(invokedMethodBaseName) ) 
+      {
         if (log.DEBUG_MODE) log.println("Calling " + invokedMethodBaseName);
         
         doOn_TestedMethodInvocation(vm);
@@ -260,52 +261,73 @@ public class EncoverListener extends SymbolicListener {
         ////////////////// Find a better place for this /////////////////////
         ///////////////////////////////////////////////////////
         pseudo2Var = generatePseudo2Var(invInstr.getInvokedMethod());
-        //harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(pseudo2Var);
-        //leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(pseudo2Var);
+        //harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(" ", pseudo2Var);
+        //leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(" ", pseudo2Var);
+
         ///////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////
 
         if (log.DEBUG_MODE) log.println();
       }
 
-      if ( isCodeAnalysisRunning ) {
-    	  
-        if ( patternForObservableOnCall != null ) {
+      if ( isCodeAnalysisRunning ) 
+      {
+        if ( patternForObservableOnCall != null ) 
+        {
           Matcher m = patternForObservableOnCall.matcher(methInfo.getFullName());
           
-          if ( m != null && m.matches() ) {
+          if ( m != null && m.matches() ) 
+          {
             if (log.DEBUG_MODE) log.println("Observable on call match: " + methInfo.getFullName());
 
             boolean found = false;
             int groupIndex = 1;
-            while (!found && groupIndex <= m.groupCount()) {
-              if ( m.group(groupIndex) != null ) { found = true; }
-              else { groupIndex++; }
+            while (!found && groupIndex <= m.groupCount()) 
+            {
+              if ( m.group(groupIndex) != null ) 
+              { 
+                found = true; 
+              }
+              else 
+              { 
+                groupIndex++; 
+              }
             }
 
             Boolean matchArguments = true;
-            if ( argPatForObservableOnCall != null ) {
+            if ( argPatForObservableOnCall != null ) 
+            {
               String[] argPatterns = argPatForObservableOnCall[groupIndex - 1];
               
               if ( argPatterns != null )
-                for (int i = 0; matchArguments && i < argPatterns.length; i++) {
+                for (int i = 0; matchArguments && i < argPatterns.length; i++) 
+                {
                   String argPat = argPatterns[i];
-                  if ( argPat != null ) {
+                  if ( argPat != null ) 
+                  {
                     Object argSSV = JPFHelper.getArgumentAtPosition(vm, invInstr, i);
                     EExpression argEE = JPFHelper.symbolicStateValue2eExpression(argSSV);
+                    
                     String argStr = argEE.toString();
-                    if ( argStr.charAt(0) == '“' && argStr.charAt(argStr.length()-1) == '”')
+                    if ( argStr.charAt(0) == '\"' && argStr.charAt(argStr.length()-1) == '\"')
+                    {
                       argStr = argStr.substring(1, argStr.length()-1);
+                    }
                     if (log.DEBUG_MODE) log.println(" " + argStr + " === " + argPat + " ?");
+
                     if ( !  argStr.equals(argPat) )
+                    {
                       matchArguments = false;
+                    }
+                      
                   }
                 }
             }
 
             if (log.DEBUG_MODE) log.println(" matchArguments = " + matchArguments);
             
-            if (matchArguments) {
+            if (matchArguments) 
+            {
               int obsPos = observablePosInCall[groupIndex - 1];
               Object obsVal = JPFHelper.getArgumentAtPosition(vm, invInstr, obsPos);
               doOn_ObservableEvent(vm, obsVal);
@@ -778,6 +800,7 @@ public class EncoverListener extends SymbolicListener {
         harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(vertex.getPolicy(), pseudo2Var);
         leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(vertex.getPolicy(), pseudo2Var);
 
+
         if (attackerType != AttackerType.FORGETFUL)
         {
           if (vertex.getPolicyChanged())
@@ -875,6 +898,7 @@ public class EncoverListener extends SymbolicListener {
           } 
           catch (Error e) 
           {
+            System.out.println(e.getMessage());
             log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
           }
 
@@ -890,7 +914,7 @@ public class EncoverListener extends SymbolicListener {
       }
 
       //ofg.display();
-      //System.out.println(ofg);
+      System.out.println(ofg);
       System.out.println("\n\n");
 
       if ( consistentPolicy && isSecure ) 
@@ -1178,6 +1202,7 @@ public class EncoverListener extends SymbolicListener {
       }
 
       EExpression outputExpr = JPFHelper.symbolicStateValue2eExpression(outputObj);
+
       EFormula pcF = JPFHelper.vm2pcFormula(vm);
 
       if (log.DEBUG_MODE) log.println(outputExpr + " [[ IFF " + pcF + " ]]");

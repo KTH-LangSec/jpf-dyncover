@@ -100,20 +100,32 @@ class EE_Constant<T> extends EExpression {
         res = value.toString();
       }
     } else
-    if ( type == EExpression.Type.REAL ) {
+    if ( type == EExpression.Type.REAL ) 
+    {
       double dblVal = ((Double) value).doubleValue();
-      if ( enc == EFormula.StrEncoding.SMT2 && dblVal < 0) {
+      if ( enc == EFormula.StrEncoding.SMT2 && dblVal < 0) 
+      {
         res = "(- " + (- dblVal) + ")";
-      } else {
+      } 
+      else 
+      {
         res = value.toString();
       }
-    } else if ( type == EExpression.Type.STR ) {
-      if ( enc == EFormula.StrEncoding.MCMAS ) {
+    } 
+    else if ( type == EExpression.Type.STR ) 
+    {
+      if ( enc == EFormula.StrEncoding.MCMAS ) 
+      {
         res = value.toString().trim();
-      } else {
-        res = "“" + value.toString() + "”";
+      } 
+      else 
+      {
+        //res = "“" + value.toString() + "”";
+        res = "\"" + value.toString() + "\"";
       }
-    } else {
+    } 
+    else 
+    {
       res = value.toString();
     }
     return res;

@@ -333,7 +333,8 @@ class EncoverConfiguration {
    * Mapping for methInfo.getFullName()
    *
    */
-  static void init_patternForObservable() {
+  static void init_patternForObservable() 
+  {
     String regex_ret = "(" + OBS_POINTER + ")";
     String regex_class = "([\\.\\*\\w]+)";
     String regex_meth = "([\\*\\w]+)";
@@ -349,11 +350,15 @@ class EncoverConfiguration {
 
     String observablesStr = conf.getString("encover.observable", DEFAULT_OBSERVABLES);
     String[] obsStrings = observablesStr.split(";");
-    for (String obsStr : obsStrings) {
+
+    for (String obsStr : obsStrings) 
+    {
       obsStr = obsStr.trim();
       log.logln("EncoverConfiguration", " observable: " + obsStr);
+
       Matcher m = p.matcher(obsStr);
-      if ( m.matches() ) {
+      if ( m.matches() ) 
+      {
         String retStr = m.group(1);
         String classStr = m.group(2);
         String methStr = m.group(3);
@@ -378,33 +383,54 @@ class EncoverConfiguration {
 
         String[] paramsPat = new String[paramsStr.length];
         boolean containsNonNull = false;
-        for (int i = 0; i < paramsStr.length; i++) {
+        for (int i = 0; i < paramsStr.length; i++) 
+        {
           String param = paramsStr[i];
           if ( param.equals("*") || param.equals("O") )
+          {
             paramsPat[i] = null;
-          else if ( param.charAt(0) == '"' &&  param.charAt(param.length() - 1) == '"' ) {
+          }
+          else if ( param.charAt(0) == '"' &&  param.charAt(param.length() - 1) == '"' ) 
+          {
             paramsPat[i] = param.substring(1, param.length() - 1);
             containsNonNull = true;
-          } else {
+          } 
+          else 
+          {
             paramsPat[i] = param;
             containsNonNull = true;
           }
         }
-        if (! containsNonNull) paramsPat = null;
 
-        if ( retStr != null && retStr.equals(OBS_POINTER) ) {
-          if ( regExpForObservableOnReturn.isEmpty() ) {
+        if (! containsNonNull) 
+        {
+          paramsPat = null;
+        }
+        
+        if ( retStr != null && retStr.equals(OBS_POINTER) ) 
+        {
+          if ( regExpForObservableOnReturn.isEmpty() ) 
+          {
             regExpForObservableOnReturn = "(" + obsRegexp + ")";
-          } else {
+          } 
+          else 
+          {
             regExpForObservableOnReturn += "|(" + obsRegexp + ")";
           }
+
           argPatternInReturn.add(paramsPat);
-        } else {
-          if ( regExpForObservableOnCall.isEmpty() ) {
+        } 
+        else
+        {
+          if ( regExpForObservableOnCall.isEmpty() ) 
+          {
             regExpForObservableOnCall = "(" + obsRegexp + ")";
-          } else {
+          } 
+          else 
+          {
             regExpForObservableOnCall += "|(" + obsRegexp + ")";
           }
+
           argPatternInCall.add(paramsPat);
           int obsPos = Arrays.asList(paramsStr).indexOf(OBS_POINTER);
           obsPosInCall.add(new Integer(obsPos));
@@ -412,28 +438,47 @@ class EncoverConfiguration {
 
         containsNonNull = false;
         for (int i = 0; i < argPatternInCall.size(); i++)
+        {
           if (argPatternInCall.get(i) != null) containsNonNull = true;
-        if (containsNonNull) {
+        }
+          
+        if (containsNonNull) 
+        {
           argPatForObservableOnCall = new String[0][0];
           argPatForObservableOnCall = argPatternInCall.toArray(argPatForObservableOnCall);
         }
-        else argPatForObservableOnCall = null;
+        else 
+        {
+          argPatForObservableOnCall = null;
+        }
 
         observablePosInCall = new int[obsPosInCall.size()];
-        for (int i = 0; i < obsPosInCall.size(); i++) {
+        for (int i = 0; i < obsPosInCall.size(); i++) 
+        {
           observablePosInCall[i] = obsPosInCall.get(i).intValue();
         }
 
         containsNonNull = false;
         for (int i = 0; i < argPatternInReturn.size(); i++)
-          if (argPatternInReturn.get(i) != null) containsNonNull = true;
-        if (containsNonNull) {
+        {
+          if (argPatternInReturn.get(i) != null) 
+          {
+            containsNonNull = true;
+          }
+        }
+          
+        if (containsNonNull) 
+        {
           argPatForObservableOnReturn =  new String[0][0];
           argPatForObservableOnReturn = argPatternInReturn.toArray(argPatForObservableOnReturn);
         }
-        else argPatForObservableOnReturn = null;
-
-      } else {
+        else 
+        {
+          argPatForObservableOnReturn = null;
+        }
+      } 
+      else 
+      {
         log.logln("EncoverConfiguration", "  did not match!");
       }
     }
@@ -451,7 +496,8 @@ class EncoverConfiguration {
    *
    * @return The pattern to use.
    */
-  static Pattern get_patternForObservableOnCall() {
+  static Pattern get_patternForObservableOnCall() 
+  {
     if ( regExpForObservableOnCall.isEmpty() ) return null;
     return Pattern.compile(regExpForObservableOnCall);
   }

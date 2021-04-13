@@ -39,9 +39,12 @@ public class Sample
         try { testNb = Integer.parseInt(params[0]); }
         catch(Exception e) { System.out.println(e); }
 
+        Sample.simpleReject(0);
+        //Sample.stringTest("test");
+        //Sample.stringTest2("test", "test");
         //Sample.bounded(0,1);
         //Sample.bug(0);
-        Sample.pcTest(0,1);
+        //Sample.pcTest(0,1);
         //Sample.leakSum(0,1);
         //Sample.program5(0,1);
         //Sample.program6(0);
@@ -49,6 +52,34 @@ public class Sample
         //Sample.program8(0,1);
         //Sample.program9(0,1);
         //Sample.program10(0);
+    }
+
+    /******************************************************/
+    public static void simpleReject(int x) 
+    {
+        setPolicy(" ");
+        //System.out.println(x);
+        observableByAgent("Eve", x);
+    }
+
+
+    /******************************************************/
+    public static void stringTest(String x) 
+    {
+        setPolicy(" ");
+        System.out.println("stringTest");
+        //setPolicy("x");
+        System.out.println(x);
+    }
+
+    /******************************************************/
+    public static void stringTest2(String x, String y) 
+    {
+        setPolicy(" ");
+        //System.out.println("stringTest");
+        //setPolicy("x");
+        //observableByAgent("Alice", x);
+        System.out.println(x);
     }
 
     /******************************************************/
@@ -223,8 +254,23 @@ public class Sample
 
 
 
-    //sets the leaked inputs
-    static void setPolicy(String policy) {};
+  /////////////////////////////////////////////////////////////////
+  /////////////////////// Helper Methods //////////////////////////
+  /////////////////////////////////////////////////////////////////
+
+  /**
+   * Outputs @param out such that it is only observable by @param agent
+   *
+  */ 
+  public static void observableByAgent(String agent, int out) 
+  {
+    System.out.println(agent + " observes '" + out + "'.");
+  }
+
+  /**
+   *  Sets the inputs in @param policy as leaked
+  */ 
+  public static void setPolicy(String policy) {};
 }
 
 // Local Variables: 

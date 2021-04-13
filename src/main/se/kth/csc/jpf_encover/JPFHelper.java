@@ -205,7 +205,17 @@ public class JPFHelper extends LoggerStaticUser {
    */
   public static EExpression sExpression2eExpression(Expression exp) {
     EExpression res = null;
+
+    //System.out.println(exp);
+
     // logln("Trying to translate this expression: " + exp + " of class " + exp.getClass());
+
+    //EE_Variable.PseudonymPolicy pPolicyToUse = EE_Variable.PseudonymPolicy.COMBINED;
+    //EE_Variable.PseudonymPolicy oldPPolicy = EE_Variable.getPseudonymPolicy();
+    //EE_Variable.setPseudonymPolicy(pPolicyToUse);
+    //System.out.println("          --- : " + exp);
+    //EE_Variable.setPseudonymPolicy(oldPPolicy);
+
 
     /*******************************************/
     /*** Constants ***/
@@ -227,29 +237,37 @@ public class JPFHelper extends LoggerStaticUser {
         val = new String(((StringConstant) exp).value());
       }
       res = new EE_Constant(t, val);
-      
+
+
     /*******************************************/
     /*** Symbolic variables ***/
     /*******************************************/
-    } else if (exp instanceof SymbolicInteger
+    } 
+    else if (exp instanceof SymbolicInteger
             || exp instanceof SymbolicReal
-            || exp instanceof StringSymbolic) {
-
+            || exp instanceof StringSymbolic) 
+    {
       EExpression.Type t = null;
       String symbcExtendedName = null;
-      if (exp instanceof SymbolicInteger) {
-        // logln("Translating SymbolicInteger '" + ((SymbolicInteger) exp) + "'"
-        //       + " with min=" + ((SymbolicInteger) exp)._min + " and max=" + ((SymbolicInteger) exp)._max);
-        if ( ((SymbolicInteger) exp)._min == 0 && ((SymbolicInteger) exp)._max == 1 ) {
+      if (exp instanceof SymbolicInteger) 
+      {
+        if ( ((SymbolicInteger) exp)._min == 0 && ((SymbolicInteger) exp)._max == 1 ) 
+        {
           t = EExpression.Type.BOOL;
-        } else {
+        } 
+        else 
+        {
           t = EExpression.Type.INT;
         }
         symbcExtendedName = ((SymbolicInteger) exp).getName();
-      } else if (exp instanceof SymbolicReal) {
+      } 
+      else if (exp instanceof SymbolicReal) 
+      {
         t = EExpression.Type.REAL;
         symbcExtendedName = ((SymbolicReal) exp).getName();
-      } else if (exp instanceof StringSymbolic) {
+      } 
+      else if (exp instanceof StringSymbolic) 
+      {
         t = EExpression.Type.STR;
         symbcExtendedName = ((StringSymbolic) exp).getName();
       }
@@ -262,30 +280,56 @@ public class JPFHelper extends LoggerStaticUser {
 
       Pattern p = Pattern.compile("((\\w+)_(\\d+))(_\\w+)?");
       Matcher m = p.matcher(symbcExtendedName);
-      if ( m.matches() ) {
+      if ( m.matches() ) 
+      {
         symbcName = m.group(1);
         varId = m.group(3);
-        if ( m.group(4) != null ) {
+        if ( m.group(4) != null ) 
+        {
           varName = m.group(2);
-        } else {
+        } 
+        else 
+        {
           varName = m.group(2).charAt(0) + varId;
+          
         }
-      } else {
+      } 
+      else 
+      {
         logln("Extended symbolic name '" + symbcExtendedName + "' did not match the regular expression.");
         symbcName = symbcExtendedName;
         varName = symbcExtendedName;
       }
 
       res = symbcName2eevar.get(symbcName);
-      if ( res == null ) {
-
+      if ( res == null ) 
+      {
         if (exp instanceof StringSymbolic) 
         {
           EExpression strLgth = sExpression2eExpression(((StringSymbolic) exp).___length());
           logln("Translating StringVariable with name '"
                 + ((StringSymbolic) exp).getName()
                 + "' and length " + strLgth);
-          res = new EE_StringVariable(varName, strLgth);
+          
+          ///////////////// HOT FIX ///////////////////////
+          ///////////////// Probably has issues ///////////
+          if (EE_Variable.variableExists(t, varName))
+          {
+            for (EE_Variable var : EE_Variable.getExistingVariablesWithName(varName)) 
+            {
+              if (var.getType() == t)
+              {
+                res = var;
+              }
+            }
+          }
+          else
+          {
+            res = new EE_StringVariable(varName, strLgth);
+          }
+          ///////////////////////////////////////////////////
+
+          //res = new EE_StringVariable(varName, strLgth);
         } 
         else 
         {
@@ -747,9 +791,13 @@ public class JPFHelper extends LoggerStaticUser {
    *   converted.
    * @return An EExpression object equivalent to ssVal.
    */
-  public static EExpression symbolicStateValue2eExpression(Object ssVal) {
+  public static EExpression symbolicStateValue2eExpression(Object ssVal) 
+  {
+    System.out.println(ssVal.getClass());
 
-    if (ssVal instanceof DynamicElementInfo) {
+    if (ssVal instanceof DynamicElementInfo) 
+    {
+
       String logMsg =
         "Symbolic state value is a DynamicElementInfo."
         + " This type of output is not handled,"
@@ -759,12 +807,17 @@ public class JPFHelper extends LoggerStaticUser {
       logln(logMsg);
 
       DynamicElementInfo dei = (DynamicElementInfo) ssVal;
-      if ( dei.isStringObject() ) {
+      if ( dei.isStringObject() ) 
+      {
         ssVal = dei.asString();
-      } else if ( dei.isArray() ) {
+      } 
+      else if ( dei.isArray() ) 
+      {
         logln("Warning doOn_OutputInvocation: this type of DynamicElementInfo is not handled yet.");
         ssVal = "array of " + dei.arrayLength() + " element(s) of type "  + dei.getArrayType();
-      } else {
+      } 
+      else 
+      {
         logln("Warning doOn_OutputInvocation: this type of DynamicElementInfo is not handled yet.");
         ssVal = "unknown DynamicElementInfo: " + dei.toString();
       }
@@ -772,35 +825,40 @@ public class JPFHelper extends LoggerStaticUser {
 
     EExpression eExpr = null;
 
-    if (ssVal instanceof Expression) {
-        
+    if (ssVal instanceof Expression) 
+    {
       logln("Symbolic state value is an Expression of class " + ssVal.getClass() + ".");
       eExpr = JPFHelper.sExpression2eExpression((Expression) ssVal);
-
-    } else if (ssVal instanceof Boolean) {
+    } 
+    else if (ssVal instanceof Boolean) 
+    {
         
       logln("Symbolic state value is a Boolean. Doing an automatic translation to EE_Constant<Boolean>");
       eExpr =  new EE_Constant(EExpression.Type.BOOL, (Boolean) ssVal);
 
-    } else if (ssVal instanceof Integer) {
+    } 
+    else if (ssVal instanceof Integer) 
+    {
         
       logln("Symbolic state value is an Integer. Doing an automatic translation to EE_Constant<Integer>");
       eExpr =  new EE_Constant(EExpression.Type.INT, (Integer) ssVal);
 
-    } else if (ssVal instanceof Double) {
+    } 
+    else if (ssVal instanceof Double) 
+    {
         
       logln("Symbolic state value is a Double. Doing an automatic translation to EE_Constant<Double>");
       eExpr =  new EE_Constant(EExpression.Type.REAL, (Double) ssVal);
 
-    } else {
-
+    } 
+    else 
+    {
       String logMsg =
         "Symbolic state value '" + ssVal + "'"
         + " is of " + ssVal.getClass() + "."
         + " Doing an automatic translation to EE_Constant<String>";
       logln(logMsg);
       eExpr = new EE_Constant(EExpression.Type.STR, ssVal.toString());
-
     }
 
     return eExpr;

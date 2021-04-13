@@ -273,7 +273,8 @@ public class Z3_Handler extends SolverHandler {
   private Map<String,EE_Variable> feedVariablesOfFormulaToZ3(EFormula formula) throws Exception {
     logln("calling feedVariablesOfFormulaToZ3"); flushLog();
 
-    if ( z3 == null ) {
+    if ( z3 == null ) 
+    {
       logln("Z3 does not seems to be started.");
       flushLog();
       throw new Error("An instance of Z3 MUST be running when calling this method.");
@@ -282,23 +283,28 @@ public class Z3_Handler extends SolverHandler {
     Map<String,EE_Variable> pseudo2var = new HashMap();
     List<String> declarationLines = new ArrayList();
 
-
     Iterator<EE_Variable> varIte = formula.getVariables().iterator();
-    while ( varIte.hasNext() ) {
+    while ( varIte.hasNext() ) 
+    {
       EE_Variable v = varIte.next();
       String vPseudo = v.getPseudonym();
-      if ( pseudo2var.containsKey(vPseudo) ) {
+      if ( pseudo2var.containsKey(vPseudo) ) 
+      {
         throw new Error("Two variables in this formula have the same pseudonym. Z3 will mix them.");
-      } else {
+      } 
+      else 
+      {
         pseudo2var.put(vPseudo, v);
       }
       String vType = "";
 
-      switch (v.getType()) {
+      switch (v.getType()) 
+      {
       case BOOL: vType = "Bool"; break;
       case INT: vType = "Int"; break;
       case REAL: vType = "Real"; break;
-      case STR: throw new Error("Variables of type String are not handled yet by Z3_Handler.feedVariablesOfFormulaToZ3(EFormula)");
+      case STR: vType = "String"; break;
+      //case STR: throw new Error("Variables of type String are not handled yet by Z3_Handler.feedVariablesOfFormulaToZ3(EFormula)");
       }
       declarationLines.add("(declare-const " + vPseudo + " " + vType + ")");
     }
@@ -371,8 +377,7 @@ public class Z3_Handler extends SolverHandler {
       logln(e.getMessage());
       return formula;
     }
-
-
+    
     logln("  -> translating formula"); flushLog();
 
     String smt2Formula = null;
@@ -391,6 +396,8 @@ public class Z3_Handler extends SolverHandler {
       logln(e.getMessage());
       return formula;
     }
+    
+
     String answer = answerCollector.toString();
     logln("Asking for simplification of: " + smt2Formula);
     logln("z3 says the result is: " + answer);
@@ -433,6 +440,9 @@ public class Z3_Handler extends SolverHandler {
     EE_Variable.PseudonymPolicy pPolicyToUse = EE_Variable.PseudonymPolicy.COMBINED;
     EE_Variable.PseudonymPolicy oldPPolicy = EE_Variable.getPseudonymPolicy();
     EE_Variable.setPseudonymPolicy(pPolicyToUse);
+
+    //System.out.println();
+    //System.out.println(formula);
 
     try { satisfyingAssignment = checkSatisfiability_internals(formula); }
     catch(Throwable t) { pendingThrowable = t; }
@@ -506,15 +516,19 @@ public class Z3_Handler extends SolverHandler {
     }
     String answer = answerCollector.toString(); 
 
+
+    //System.out.println("(assert " + smt2Formula + ")");
+
+
+
     if ( answer.equals("sat") ) {
       logln("The previous formula is satisfiable."); flushLog();
-
       satisfyingAssignment = new TreeMap();
-
       logln("  -> asking for model"); flushLog();
 
       Iterator<Map.Entry<String,EE_Variable>> pseudo2varIte = pseudo2var.entrySet().iterator();
-      while ( pseudo2varIte.hasNext() ) {
+      while ( pseudo2varIte.hasNext() ) 
+      {
         Map.Entry<String,EE_Variable> entry = pseudo2varIte.next();
         String pseudo = entry.getKey();
         EE_Variable var = entry.getValue();
@@ -524,19 +538,40 @@ public class Z3_Handler extends SolverHandler {
           logln(e.getMessage()); flushLog();
           throw new Error(e);
         }
+
         answer = answerCollector.toString();
+
         EExpression parsedAnswer = null;
-        if ( ! answer.matches("\\(error \".*\"\\)") ) {
+        if ( ! answer.matches("\\(error \".*\"\\)") ) 
+        {
           try { parsedAnswer = Smt2Parser.parse(answer, pseudo2var); }
           catch(ParseException e) { logln("Exception while parsing: " + e); }
           logln("Smt2Parser says it is equivalent to: " + parsedAnswer);
         }
 
         logln(" " + var + " -> " + parsedAnswer); flushLog();
-        satisfyingAssignment.put(var, (EE_Constant) parsedAnswer);
+
+        /* ///////////////////// Hacki fix ///////////////////////
+        *    There is an issue in the lexer, so string answers
+        *    returend from z3 are typed as unknown, this solution
+        *    tries to bypass that issue. But there are probably 
+        *    some edge cases where is will fail :) 
+        *  ///////////////////////////////////////////////////////
+        */
+        if (parsedAnswer.getType() == EExpression.Type.STR || parsedAnswer.getType() == EExpression.Type.UNKNOWN)
+        {
+          EE_Constant ec = new EE_Constant(EExpression.Type.STR, answer);
+          satisfyingAssignment.put(var, ec);   
+        }
+        else
+        {
+          satisfyingAssignment.put(var, (EE_Constant) parsedAnswer);   
+        }
       }
 
-    } else {
+    } 
+    else 
+    {
       logln("The previous formula is unsatisfiable."); flushLog();
       satisfyingAssignment = null;
     }
