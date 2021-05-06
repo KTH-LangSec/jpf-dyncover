@@ -1,0 +1,4 @@
+println    | *.print*(O)
+Alice      | *.observableByAgent("Alice", O)
+Bob        | *.observableByAgent("Bob", O)
+Eve        | *.observableByAgent("Eve", O)

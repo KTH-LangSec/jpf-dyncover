@@ -1,0 +1,5 @@
+smpl-Alice          | {{MainClass}} | 0 | {{MainClass}}.simplestTest(sym)         | Eve | perfect   | reject
+smpl-two-Alice      | {{MainClass}} | 0 | {{MainClass}}.simplestTestTwo(sym#sym)  | Eve | perfect   | reject
+forwardingDM        | {{MainClass}} | 0 | {{MainClass}}.forwardingDM(sym)         | Eve | perfect   | reject
+hidePhoneNumber     | {{MainClass}} | 0 | {{MainClass}}.hidePhoneNumber(sym)      | Eve | perfect   | reject
+leakMembership      | {{MainClass}} | 0 | {{MainClass}}.leakMembership(sym)      | Eve | perfect   | reject
