@@ -39,7 +39,7 @@ public class Sample
         try { testNb = Integer.parseInt(params[0]); }
         catch(Exception e) { System.out.println(e); }
 
-        Sample.simpleReject(0);
+        //Sample.simpleReject(0);
         //Sample.stringTest("test");
         //Sample.stringTest2("test", "test");
         //Sample.bounded(0,1);
@@ -51,7 +51,9 @@ public class Sample
         //Sample.program7(0);
         //Sample.program8(0,1);
         //Sample.program9(0,1);
-        //Sample.program10(0);
+        Sample.program10(0);
+        //Sample.program26(1,2);
+        //Sample.program27(0,1);
     }
 
     /******************************************************/
@@ -250,6 +252,42 @@ public class Sample
         }
         setPolicy(" ");
         System.out.println(1); 
+    }
+
+    /******************************************************/
+    public static void program26(int x, int y) 
+    {
+        //setPolicy("x, (> y 0)");
+        setPolicy("x");
+        //System.out.println(x);
+        if (y > 0) 
+        {
+            System.out.println(1);
+        }
+        else
+        {
+            System.out.println(2); 
+        }
+        //System.out.println(3); 
+    }
+
+    /******************************************************/
+    public static void program27(int x, int y ) 
+    {
+        setPolicy("x");
+        System.out.println(x);
+        System.out.println(1);
+        System.out.println(1);
+        if (y > 0) 
+        {
+            System.out.println(2);
+        }
+        setPolicy(" ");
+        if (y <= 0) 
+        {
+            System.out.println(2);
+        }
+        System.out.println(3);
     }
 
 

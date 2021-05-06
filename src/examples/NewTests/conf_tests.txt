@@ -10,8 +10,8 @@ program6      | NewTests.Sample | 1 | NewTests.Sample.program6(sym)           | 
 program7      | NewTests.Sample | 1 | NewTests.Sample.program7(sym)           | print | perfect   | reject
 program8      | NewTests.Sample | 1 | NewTests.Sample.program8(sym#sym)       | print | perfect   | reject
 program9      | NewTests.Sample | 1 | NewTests.Sample.program9(sym#sym)       | print | perfect   | reject
-program10     | NewTests.Sample | 1 | NewTests.Sample.program10(sym)          | print | perfect   | reject
-
-
+program10     | NewTests.Sample | 1 | NewTests.Sample.program10(sym)          | print | forgetful   | reject
+program26     | NewTests.Sample | 1 | NewTests.Sample.program26(sym#sym)      | print | perfect   | reject
+program27     | NewTests.Sample | 1 | NewTests.Sample.program27(sym#sym)      | print | bounded,2   | reject
 
 
