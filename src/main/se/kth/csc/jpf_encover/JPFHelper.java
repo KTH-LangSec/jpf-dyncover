@@ -793,8 +793,6 @@ public class JPFHelper extends LoggerStaticUser {
    */
   public static EExpression symbolicStateValue2eExpression(Object ssVal) 
   {
-    System.out.println(ssVal.getClass());
-
     if (ssVal instanceof DynamicElementInfo) 
     {
 

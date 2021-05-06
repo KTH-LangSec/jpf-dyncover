@@ -241,7 +241,6 @@ public class EncoverListener extends SymbolicListener {
         activePolicy = JPFHelper.symbolicStateValue2eExpression(obsVal).toString();
         activePolicy = activePolicy.substring(1, activePolicy.length()-1); // removing " from string
         ofg.setActivePolicy(activePolicy);
-        ofg.setActivePolicy(" ");
       }
 
       if ( testStartMethodBaseName.startsWith(invokedMethodBaseName) ) 
@@ -814,7 +813,7 @@ public class EncoverListener extends SymbolicListener {
             {
               OFG_Vertex vertexPre = verteciesPreIter.next();
               interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertexPre, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
-              //System.out.print("Policy consistency check before node: " + vertex + ":\n   Interference Formula => " + interferenceFormula);
+              System.out.println("Policy consistency check before node: " + vertex + ":\n   Interference Formula => " + interferenceFormula);
               
               try 
               {
