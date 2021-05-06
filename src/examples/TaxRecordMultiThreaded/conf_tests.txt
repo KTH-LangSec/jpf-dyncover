@@ -1,9 +1,0 @@
-multi-smpl-Alice-F      | {{MainClass}} | 0 FIX | <<MainClass}}.simplestTest(sym) | Alice      | incomeAlice | 
-multi-smpl-taxChecker-F | {{MainClass}} | 0 FIX | {{MainClass}}.simplestTest(sym) | taxChecker |             | incomeAlice
-multi-smpl-charity-F    | {{MainClass}} | 0 FIX | {{MainClass}}.simplestTest(sym) | charity    |             | incomeAlice
-multi-oneP-Alice-F      | {{MainClass}} | 1 FIX | {{MainClass}}.onePayer(sym#sym#sym) | Alice      | {{inputsAlice}} | 
-multi-oneP-taxChecker-F | {{MainClass}} | 1 FIX | {{MainClass}}.onePayer(sym#sym#sym) | taxChecker |                 | {{inputsAlice}}
-multi-oneP-charity-F    | {{MainClass}} | 1 FIX | {{MainClass}}.onePayer(sym#sym#sym) | charity    |                 | {{inputsAlice}}
-multi-twoP-Alice-F      | {{MainClass}} | 2 FIX | {{MainClass}}.twoPayers(sym#sym#sym#sym#sym#sym) | Alice      | {{inputsAlice}} | {{inputsBob}}
-multi-twoP-taxChecker-F | {{MainClass}} | 2 FIX | {{MainClass}}.twoPayers(sym#sym#sym#sym#sym#sym) | taxChecker | (- (* incomeAlice 100) paymentAlice), (- (* incomeBob 100) paymentBob) | {{inputsAlice}}, {{inputsBob}}
-multi-twoP-charity-F    | {{MainClass}} | 2 FIX | {{MainClass}}.twoPayers(sym#sym#sym#sym#sym#sym) | charity    | (+ charityAlice charityBob) | {{inputsAlice}}, {{inputsBob}}

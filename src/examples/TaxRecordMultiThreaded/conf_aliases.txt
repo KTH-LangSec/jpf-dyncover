@@ -1,3 +1,0 @@
-MainClass   | TaxRecordMultiThreaded.EncoverTests
-inputsAlice | incomeAlice, charityAlice, paymentAlice
-inputsBob   | incomeBob, charityBob, paymentBob

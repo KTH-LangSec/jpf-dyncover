@@ -1,5 +1,0 @@
-println    | *.print*(O)
-taxPayer   | O TaxRecordMultiThreaded.TaxRecord.getAmountPayed(); O TaxRecordMultiThreaded.TaxRecord.getTaxes(); O TaxRecordMultiThreaded.TaxRecord.payTaxes(*, *)
-Alice      | *.observableByAgent("Alice", O)
-charity    | O TaxRecordMultiThreaded.TaxServer.getCharity()
-taxChecker | O TaxRecordMultiThreaded.TaxRecord.getTaxpayerName(); O TaxRecordMultiThreaded.TaxRecord.verifyPayment()

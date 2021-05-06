@@ -19,17 +19,17 @@
  */
 
 /**
- * Example of an empty program (for evaluating start up cost).
+ * An implementation of the programs presented in the paper.
  * 
  * @author Amir M. Ahmadian
  * @version 0.1
  */
 
-package NewTests;
+package encover.tests;
 
 import java.util.*;
 
-public class Sample 
+public class Benchmarks 
 {
     public static void main(String[] args) 
     {
@@ -39,21 +39,21 @@ public class Sample
         try { testNb = Integer.parseInt(params[0]); }
         catch(Exception e) { System.out.println(e); }
 
-        //Sample.simpleReject(0);
-        //Sample.stringTest("test");
-        //Sample.stringTest2("test", "test");
-        //Sample.bounded(0,1);
-        //Sample.bug(0);
-        //Sample.pcTest(0,1);
-        //Sample.leakSum(0,1);
-        //Sample.program5(0,1);
-        //Sample.program6(0);
-        //Sample.program7(0);
-        //Sample.program8(0,1);
-        //Sample.program9(0,1);
-        Sample.program10(0);
-        //Sample.program26(1,2);
-        //Sample.program27(0,1);
+        //Benchmarks.simpleReject(0);
+        //Benchmarks.stringTest("test");
+        //Benchmarks.stringTest2("test", "test");
+        //Benchmarks.bounded(0,1);
+        //Benchmarks.bug(0);
+        //Benchmarks.pcTest(0,1);
+        //Benchmarks.leakSum(0,1);
+        //Benchmarks.program5(0,1);
+        //Benchmarks.program6(0);
+        //Benchmarks.program7(0);
+        //Benchmarks.program8(0,1);
+        //Benchmarks.program9(0,1);
+        Benchmarks.program10(0);
+        //Benchmarks.program26(1,2);
+        //Benchmarks.program27(0,1);
     }
 
     /******************************************************/
@@ -310,9 +310,3 @@ public class Sample
   */ 
   public static void setPolicy(String policy) {};
 }
-
-// Local Variables: 
-// c-basic-offset: 2
-// indent-tabs-mode: nil
-// End:
- 

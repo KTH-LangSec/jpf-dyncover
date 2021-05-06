@@ -1,0 +1,17 @@
+simpleReject  | {{MainClass}} | 1 | {{MainClass}}.simpleReject(sym)       | Alice | perfect   | reject
+stringTest    | {{MainClass}} | 1 | {{MainClass}}.stringTest(sym)         | Alice | perfect   | reject
+stringTest2   | {{MainClass}} | 1 | {{MainClass}}.stringTest2(sym#sym)    | print | perfect   | reject
+bounded       | {{MainClass}} | 1 | {{MainClass}}.bounded(sym#sym)        | print | bounded,1 | reject
+bug           | {{MainClass}} | 1 | {{MainClass}}.bug(sym)                | print | perfect   | reject
+pcTest        | {{MainClass}} | 1 | {{MainClass}}.pcTest(sym#sym)         | print | perfect   | accept
+leakSum       | {{MainClass}} | 1 | {{MainClass}}.leakSum(sym#sym)        | print | perfect   | reject
+program5      | {{MainClass}} | 1 | {{MainClass}}.program5(sym#sym)       | print | perfect   | reject
+program6      | {{MainClass}} | 1 | {{MainClass}}.program6(sym)           | print | perfect   | reject
+program7      | {{MainClass}} | 1 | {{MainClass}}.program7(sym)           | print | perfect   | reject
+program8      | {{MainClass}} | 1 | {{MainClass}}.program8(sym#sym)       | print | perfect   | reject
+program9      | {{MainClass}} | 1 | {{MainClass}}.program9(sym#sym)       | print | perfect   | reject
+program10     | {{MainClass}} | 1 | {{MainClass}}.program10(sym)          | print | forgetful   | reject
+program26     | {{MainClass}} | 1 | {{MainClass}}.program26(sym#sym)      | print | perfect   | reject
+program27     | {{MainClass}} | 1 | {{MainClass}}.program27(sym#sym)      | print | bounded,2   | reject
+
+
