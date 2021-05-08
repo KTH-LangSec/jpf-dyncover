@@ -29,6 +29,10 @@ unitTests/
 #outputs
 *.out
 
+
+# VScode Setting
+.vscode/
+
 # Eclipse Settings
 .settings/
 .project

@@ -348,16 +348,8 @@ public class Benchmarks
   /////////////////////////////////////////////////////////////////
 
   /**
-   * Outputs @param out such that it is only observable by @param agent
-   *
-  */ 
-  public static void observableByAgent(String agent, int out) 
-  {
-    System.out.println(agent + " observes '" + out + "'.");
-  }
-
-  /**
-   *  Sets the inputs in @param policy as leaked
+   *  Sets the inputs in @param policy as leaked. Calling this method is observable by Encover
+   *  and allows it to update the policy accordingly.
   */ 
   public static void setPolicy(String policy) {};
 }
