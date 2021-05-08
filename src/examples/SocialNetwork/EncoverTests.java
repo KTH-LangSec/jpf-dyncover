@@ -19,7 +19,7 @@
  */
 
 /**
- * This class implements the tests to be run by Encover.
+ * This class implements the Social Network test scenarios.
  * 
  * @author Amir M. Ahmadian
  * @version 0.1
@@ -134,12 +134,29 @@ class EncoverTests
 
   public static void main(String[] args) 
   {
-    //EncoverTests.simplestTest("HelloWorld");
-    //EncoverTests.simplestTestTwo("HelloWorld", "Secret");
-    //EncoverTests.forwardingDM("Secret");
-    //EncoverTests.hidePhoneNumber(42);
-    EncoverTests.leakMembership("Alice");
+    String[] params = args[0].split(" ");
+
+    int testNb = Integer.parseInt(params[0]);
+    switch (testNb) {
+    case 1: 
+      EncoverTests.simplestTest("HelloWorld");
+      break;
+    case 2: 
+      EncoverTests.simplestTestTwo("HelloWorld", "Secret");
+      break;
+    case 3: 
+      EncoverTests.forwardingDM("Secret");
+      break;
+    case 4: 
+      EncoverTests.hidePhoneNumber(42);
+      break;
+    case 5: 
+      EncoverTests.leakMembership("Alice");
+      break;
+    }
   }
+
+
 
   /////////////////////////////////////////////////////////////////
   /////////////////////// Helper Methods //////////////////////////

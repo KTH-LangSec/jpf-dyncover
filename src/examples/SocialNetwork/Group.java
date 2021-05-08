@@ -107,6 +107,23 @@ class Group
     }
   }
 
+  public void leaveGroup(User requester)
+  {
+    for (int i=0; i<nbMembers; i++)
+    {
+      if (membersList[i] == requester)
+      {
+        membersList[i] = null;
+        for (int j=i+1; j<nbMembers; j++)
+        {
+          membersList[j-1] = membersList[j];
+          membersList[j] = null;
+        }
+        nbMembers--;
+      }
+    }
+  }
+
 
   ////////////////////////////////////// Check if a User is a Member //////////////////////////////////////
   private boolean isMember(User user)
