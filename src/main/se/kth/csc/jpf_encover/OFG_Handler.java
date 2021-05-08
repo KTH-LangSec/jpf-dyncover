@@ -95,7 +95,7 @@ public class OFG_Handler {
       verticesIter.next().setPolicy(consistentPolicy);
     }
 
-    System.out.println("    ---> New Consistent Policy: "+ consistentPolicy +"  <---");
+    //System.out.println("    ---> New Consistent Policy: "+ consistentPolicy +"  <---");
   }
 
 
@@ -246,7 +246,7 @@ public class OFG_Handler {
       } 
       catch (Error e) 
       {
-        System.out.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
+        //System.out.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
       }
       
       if ( ! wasStarted ) solver.stop();
@@ -739,9 +739,9 @@ public class OFG_Handler {
       if ( (new File(fileName)).exists() ) {
         OutputFlowGraph ofg = loadOFG(fileName);
         if ( ofg != null ) {
-          System.out.println(getGraphLegend(ofg));
+          //System.out.println(getGraphLegend(ofg));
         } else {
-          System.out.println("Problem opening the file: " + fileName);
+          //System.out.println("Problem opening the file: " + fileName);
         }
       }
     } else {

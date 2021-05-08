@@ -66,7 +66,7 @@ class EncoverLogger {
    */
   EncoverLogger(Config conf) {
 
-    // System.out.println("EncoverLogger initialization: Start");
+    // //System.out.println("EncoverLogger initialization: Start");
 
     boolean setDebugMode = false;
     if (DEBUG_MODE_ENABLED) {
@@ -75,7 +75,7 @@ class EncoverLogger {
     }
     DEBUG_MODE = DEBUG_MODE_ENABLED && setDebugMode;
 
-    // System.out.println("EncoverLogger initialization: debug mode done");
+    // //System.out.println("EncoverLogger initialization: debug mode done");
 
     if (DEBUG_MODE) {
 
@@ -93,14 +93,14 @@ class EncoverLogger {
 
         String testClassName = conf.getTarget();
 
-        // System.out.println("EncoverLogger initialization: before testStartMethodName");
+        // //System.out.println("EncoverLogger initialization: before testStartMethodName");
 
         String testStartMethodName = "";
         String[] targetArgs = conf.getTargetArgs();
         if ( targetArgs.length > 0 )
           testStartMethodName = conf.getTargetArgs()[0];
 
-        // System.out.println("EncoverLogger initialization: after testStartMethodName");
+        // //System.out.println("EncoverLogger initialization: after testStartMethodName");
 
         String testStartMethodBaseName = testClassName + "." + testStartMethodName;
 

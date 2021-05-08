@@ -121,11 +121,11 @@ PARSER_BEGIN(Smt2Parser)
      */
     public static void main(String[] args) throws ParseException, TokenMgrError {
       String test1 = "(not (or (<= x 0) (<= x -2.86)))";
-      System.out.println(test1 + " -> " + Smt2Parser.parse(test1, null));
+      //System.out.println(test1 + " -> " + Smt2Parser.parse(test1, null));
       String test2 = "(let (($x35 (<= x -1))) (not $x35))";
-      System.out.println(test2 + " -> " + Smt2Parser.parse(test2, null));
+      //System.out.println(test2 + " -> " + Smt2Parser.parse(test2, null));
       String test3 = "(not (or (= b True) f))";
-      System.out.println(test3 + " -> " + Smt2Parser.parse(test3, null));
+      //System.out.println(test3 + " -> " + Smt2Parser.parse(test3, null));
     }
   }
 PARSER_END(Smt2Parser)

@@ -130,12 +130,22 @@ public class EncoverListener extends SymbolicListener {
 
   private long time_overall_start = 0;
   private long time_overall_end = 0;
+
   private long time_modelExtraction_start = 0;
   private long time_modelExtraction_end = 0;
+
   private long time_interfFmlGeneration_start = 0;
   private long time_interfFmlGeneration_end = 0;
+  private long time_interfFmlGeneration_intermediate = 0;
+
   private long time_interfFmlSatisfaction_start = 0;
   private long time_interfFmlSatisfaction_end = 0;
+  private long time_interfFmlSatisfaction_intermediate = 0;
+
+  private long time_consistentPolicyGeneration_start = 0;
+  private long time_consistentPolicyGeneration_end = 0;
+  private long time_consistentPolicyGeneration_intermediate = 0;
+
   private long time_mcmasModelGeneration_start = 0;
   private long time_mcmasModelGeneration_end = 0;
   private long time_mcmasModelVerification_start = 0;
@@ -733,31 +743,6 @@ public class EncoverListener extends SymbolicListener {
     super.publishFinished(publisher);
     // if (log.DEBUG_MODE) log.println();
 
-    /** OUTPUT CONFIGURATION INFORMATION **/
-    if ( selectedOutputs.contains(EncoverConfiguration.Output.CONFIG) ) {
-      encoverOut.println("CONFIGURATION:");
-
-      encoverOut.print("  input domains:");
-      Iterator<Map.Entry<EE_Variable,List<EE_Constant>>> domIte = inputDomains.entrySet().iterator();
-      while( domIte.hasNext() ) {
-        Map.Entry<EE_Variable,List<EE_Constant>> dom = domIte.next();
-        encoverOut.print(" "+dom.getKey()+"->"+dom.getValue());
-      }
-      encoverOut.println("");
-
-      encoverOut.print("  leaked input expressions:");
-      Iterator<EExpression> leakedIte = leakedInputExpressions.iterator();
-      while( leakedIte.hasNext() ) { encoverOut.print(" (" + leakedIte.next() + ")"); }
-      encoverOut.println("");
-
-      encoverOut.print("  harbored input expressions:");
-      Iterator<EExpression> harboredIte = harboredInputExpressions.iterator();
-      while( harboredIte.hasNext() ) { encoverOut.print(" (" + harboredIte.next() + ")"); }
-      encoverOut.println("");
-
-      encoverOut.println("");
-    }
-
     /** OUTPUT OFG **/
     if ( selectedOutputs.contains(EncoverConfiguration.Output.OFG) ) {
       encoverOut.println("OUTPUT FLOW GRAPH:");
@@ -778,16 +763,19 @@ public class EncoverListener extends SymbolicListener {
 
       if (inconsistentPolicy == InconsistentPolicyMethod.ACCEPT)
       {
-        System.out.println("\n\n---> Preprocess: Determining Leaking Path Conditions <---");
+        time_consistentPolicyGeneration_start = System.nanoTime();
+        //System.out.println("\n\n---> Preprocess: Determining Leaking Path Conditions <---");
         Iterator<OFG_Vertex> iterPre = ofg.depthFirstTaversal().iterator();
         while (iterPre.hasNext()) 
         { 
           OFG_Handler.generateLeakingPC(ofg, iterPre.next(), inputDomains, pseudo2Var, solver);
         }
+        time_consistentPolicyGeneration_end = System.nanoTime();
+        time_consistentPolicyGeneration_intermediate += (time_consistentPolicyGeneration_end - time_consistentPolicyGeneration_start);
       }
 
-      System.out.println("\n\n");
-      System.out.println("---> Checking <---");
+      //System.out.println("\n\n");
+      //System.out.println("---> Checking <---");
 
       boolean isSecure = true;
       boolean consistentPolicy = true;
@@ -812,15 +800,23 @@ public class EncoverListener extends SymbolicListener {
             while (verteciesPreIter.hasNext())
             {
               OFG_Vertex vertexPre = verteciesPreIter.next();
+              time_interfFmlGeneration_start = System.nanoTime();
               interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertexPre, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
-              System.out.println("Policy consistency check before node: " + vertex + ":\n   Interference Formula => " + interferenceFormula);
+              time_interfFmlGeneration_end = System.nanoTime();
+              time_interfFmlGeneration_intermediate += (time_interfFmlGeneration_end - time_interfFmlGeneration_start);
+              //System.out.println("Policy consistency check before node: " + vertex + ":\n   Interference Formula => " + interferenceFormula);
               
               try 
               {
                 /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
                 boolean wasStarted = solver.isStarted();
                 if ( ! wasStarted ) solver.start();
+
+                time_interfFmlSatisfaction_start = System.nanoTime();
                 SortedMap<EE_Variable,EE_Constant> satisfyingAssignment = solver.checkSatisfiability(interferenceFormula);
+                time_interfFmlSatisfaction_end = System.nanoTime();
+                time_interfFmlSatisfaction_intermediate += (time_interfFmlSatisfaction_end - time_interfFmlSatisfaction_start);
+                
                 if ( ! wasStarted ) solver.stop();
                 /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
 
@@ -844,12 +840,18 @@ public class EncoverListener extends SymbolicListener {
                   }
                   else
                   {
-                    System.out.println("Policy update before node >> " + vertex + " << was inconsistent");
-                    System.out.println("    ---> Generating New Consistent Policy <---");
+                    time_consistentPolicyGeneration_start = System.nanoTime();
+
+                    //System.out.println("Policy update before node >> " + vertex + " << was inconsistent");
+                    //System.out.println("    ---> Generating New Consistent Policy <---");
                     OFG_Handler.consistentPolicyGeneration(ofg, vertex);
 
                     harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(vertex.getPolicy(), pseudo2Var);
                     leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(vertex.getPolicy(), pseudo2Var);
+
+                    time_consistentPolicyGeneration_end = System.nanoTime();
+                    time_consistentPolicyGeneration_intermediate += (time_consistentPolicyGeneration_end - time_consistentPolicyGeneration_start);
+
                   }
                 }
               } 
@@ -866,9 +868,13 @@ public class EncoverListener extends SymbolicListener {
           //////////////////////////////////////////////////
           ///////////////// Security check /////////////////
           //////////////////////////////////////////////////
+          time_interfFmlGeneration_start = System.nanoTime();
           interferenceFormula = OFG_Handler.generateInterferenceFormula(ofg, vertex, inputDomains, leakedInputExpressions, harboredInputExpressions, attackerType, attackerMemoryCapacity);
+          time_interfFmlGeneration_end = System.nanoTime();
+          time_interfFmlGeneration_intermediate += (time_interfFmlGeneration_end - time_interfFmlGeneration_start);
         
-          System.out.print("Security check at Node " + vertex + ":\n    Interference Formula => " + interferenceFormula);
+        
+          //System.out.print("Security check at Node " + vertex + ":\n    Interference Formula => " + interferenceFormula);
 
           /** START INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
           boolean wasStarted = solver.isStarted();
@@ -876,7 +882,10 @@ public class EncoverListener extends SymbolicListener {
 
           try 
           {
+            time_interfFmlSatisfaction_start = System.nanoTime();
             SortedMap<EE_Variable,EE_Constant> satisfyingAssignment = solver.checkSatisfiability(interferenceFormula);
+            time_interfFmlSatisfaction_end = System.nanoTime();
+            time_interfFmlSatisfaction_intermediate += (time_interfFmlSatisfaction_end - time_interfFmlSatisfaction_start);
 
             if ( satisfyingAssignment != null ) 
             {
@@ -897,11 +906,11 @@ public class EncoverListener extends SymbolicListener {
           } 
           catch (Error e) 
           {
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
             log.println("Impossible to check satisfiability of interference formula: " + e.getMessage());
           }
 
-          System.out.println("\n-----------------------------------------------\n");
+          //System.out.println("\n-----------------------------------------------\n");
 
           if ( ! wasStarted ) solver.stop();
           /** END INTERFERENCE FORMULA SATISFIABILITY CHECKING **/
@@ -913,8 +922,8 @@ public class EncoverListener extends SymbolicListener {
       }
 
       //ofg.display();
-      System.out.println(ofg);
-      System.out.println("\n\n");
+      //System.out.println(ofg);
+      //System.out.println("\n\n");
 
       if ( consistentPolicy && isSecure ) 
       {
@@ -967,8 +976,9 @@ public class EncoverListener extends SymbolicListener {
     if ( selectedOutputs.contains(EncoverConfiguration.Output.TIMINGS) ) {
       long elapsedTime_overall = time_overall_end - time_overall_start;
       long elapsedTime_modelExtraction = time_modelExtraction_end - time_modelExtraction_start;
-      long elapsedTime_interfFmlGeneration = time_interfFmlGeneration_end - time_interfFmlGeneration_start;
-      long elapsedTime_interfFmlSatisfaction = time_interfFmlSatisfaction_end - time_interfFmlSatisfaction_start;
+      long elapsedTime_interfFmlGeneration = time_interfFmlGeneration_intermediate;
+      long elapsedTime_interfFmlSatisfaction = time_interfFmlSatisfaction_intermediate;
+      long elapsedTime_consistentPolicyGeneration = time_consistentPolicyGeneration_intermediate;
       long elapsedTime_mcmasModelGeneration = time_mcmasModelGeneration_end - time_mcmasModelGeneration_start;
       long elapsedTime_mcmasModelVerification = time_mcmasModelVerification_end - time_mcmasModelVerification_start;
       String elapsedTimeStr_overall =
@@ -979,6 +989,8 @@ public class EncoverListener extends SymbolicListener {
         Double.toString(((double) (elapsedTime_interfFmlGeneration / 100000)) / 10);
       String elapsedTimeStr_interfFmlSatisfaction =
         Double.toString(((double) (elapsedTime_interfFmlSatisfaction / 100000)) / 10);
+      String elapsedTimeStr_consistentPolicyGeneration =
+        Double.toString(((double) (elapsedTime_consistentPolicyGeneration / 100000)) / 10);
       String elapsedTimeStr_mcmasModelGeneration =
         Double.toString(((double) (elapsedTime_mcmasModelGeneration / 100000)) / 10);
       String elapsedTimeStr_mcmasModelVerification =
@@ -989,10 +1001,14 @@ public class EncoverListener extends SymbolicListener {
         encoverOut.println("  overall: " + elapsedTimeStr_overall + " ms (" + elapsedTime_overall + ")");
       if ( elapsedTime_modelExtraction != 0 )
         encoverOut.println("  model extraction: " + elapsedTimeStr_modelExtraction + " ms (" + elapsedTime_modelExtraction + ")");
+      
       if ( elapsedTime_interfFmlGeneration != 0 )
         encoverOut.println("  interference formula generation: " + elapsedTimeStr_interfFmlGeneration + " ms (" + elapsedTime_interfFmlGeneration + ")");
       if ( elapsedTime_interfFmlSatisfaction != 0 )
         encoverOut.println("  interference formula satisfaction: " + elapsedTimeStr_interfFmlSatisfaction + " ms (" + elapsedTime_interfFmlSatisfaction + ")");
+      if ( elapsedTime_consistentPolicyGeneration != 0 )
+        encoverOut.println("  consistent policy generation: " + elapsedTimeStr_consistentPolicyGeneration + " ms (" + elapsedTime_consistentPolicyGeneration + ")");
+      
       if ( elapsedTime_mcmasModelGeneration != 0 )
         encoverOut.println("  MCMAS model generation: " + elapsedTimeStr_mcmasModelGeneration + " ms (" + elapsedTime_mcmasModelGeneration + ")");
       if ( elapsedTime_mcmasModelVerification != 0 )
@@ -1009,13 +1025,13 @@ public class EncoverListener extends SymbolicListener {
       encoverOut.println("  width of OFG: " + ofg.getWidth());
       encoverOut.println("");
 
-      if ( interferenceFormula != null) {
-        encoverOut.println("FORMULA SIZE:");
-        encoverOut.println("  number of distinct variables: " + interferenceFormula.getVariables().size());
-        encoverOut.println("  number of atomic formulas: " + interferenceFormula.getNbAtomicFormulas());
-        encoverOut.println("  number of instances of variables or constants: " + interferenceFormula.getNbInstancesCV());
-        encoverOut.println("");
-      }
+      // if ( interferenceFormula != null) {
+      //   encoverOut.println("FORMULA SIZE:");
+      //   encoverOut.println("  number of distinct variables: " + interferenceFormula.getVariables().size());
+      //   encoverOut.println("  number of atomic formulas: " + interferenceFormula.getNbAtomicFormulas());
+      //   encoverOut.println("  number of instances of variables or constants: " + interferenceFormula.getNbInstancesCV());
+      //   encoverOut.println("");
+      // }
     }
 
     encoverOut.close();
@@ -1081,14 +1097,6 @@ public class EncoverListener extends SymbolicListener {
    * @param vm Instance of the JPF virtual machine
    */
   private void doOn_TestedMethodInvocation(JVM vm) {
-//    methodInputTypes = m.getArgumentTypeNames();      // GURVAN -> MUSARD: can those lines be deleted?
-//    String[] lv = m.getLocalVariableNames();
-//    String[] sv = new String[methodInputTypes.length];
-//    for(int i=0;i<methodInputTypes.length;i++){
-//      sv[i]=lv[i];
-//    }
-//    methodInputs=sv;
-
 
     if (log.DEBUG_MODE) {
       
@@ -1351,8 +1359,6 @@ public class EncoverListener extends SymbolicListener {
 
       pseudo2Var.put(localVar.getName(), temp);
     }
-
-    //System.out.println("---> " + pseudo2Var + " <---");
     return pseudo2Var;
   }
 

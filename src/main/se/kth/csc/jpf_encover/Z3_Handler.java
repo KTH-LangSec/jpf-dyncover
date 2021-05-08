@@ -441,9 +441,6 @@ public class Z3_Handler extends SolverHandler {
     EE_Variable.PseudonymPolicy oldPPolicy = EE_Variable.getPseudonymPolicy();
     EE_Variable.setPseudonymPolicy(pPolicyToUse);
 
-    //System.out.println();
-    //System.out.println(formula);
-
     try { satisfyingAssignment = checkSatisfiability_internals(formula); }
     catch(Throwable t) { pendingThrowable = t; }
     finally { EE_Variable.setPseudonymPolicy(oldPPolicy); }
@@ -515,11 +512,6 @@ public class Z3_Handler extends SolverHandler {
       throw new Error(e);
     }
     String answer = answerCollector.toString(); 
-
-
-    //System.out.println("(assert " + smt2Formula + ")");
-
-
 
     if ( answer.equals("sat") ) {
       logln("The previous formula is satisfiable."); flushLog();

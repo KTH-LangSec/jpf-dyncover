@@ -259,7 +259,7 @@ public class JPFEventsGraph implements Serializable {
     JEGViewer viewer = new JEGViewer(graph);
     viewer.setupJUNG();
     SwingUtilities.invokeLater(viewer);
-    System.out.println(this);
+    //System.out.println(this);
   }
 
 

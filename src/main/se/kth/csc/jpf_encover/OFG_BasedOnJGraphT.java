@@ -520,7 +520,7 @@ class OFG_BasedOnJGraphT implements OutputFlowGraph, Serializable {
     //     }
     // });
 
-    System.out.println(this.toString());
+    //System.out.println(this.toString());
   }
 
   /**
