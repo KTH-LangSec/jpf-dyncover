@@ -39,34 +39,97 @@ public class Benchmarks
         try { testNb = Integer.parseInt(params[0]); }
         catch(Exception e) { System.out.println(e); }
 
-        Benchmarks.program1("movie");
-        Benchmarks.program2("secret");
-        Benchmarks.program3("movie");
-        Benchmarks.program4(0,1);
-        Benchmarks.program5(0,1);
-        Benchmarks.program6(0);
-        Benchmarks.program7(0,1);
-        Benchmarks.program8(0);
-        Benchmarks.program9(0);
-        Benchmarks.program10(0,1);
-        Benchmarks.program11(0,1);
-        Benchmarks.program12(0);
-        Benchmarks.program13(0,1);
-        Benchmarks.program14(0,1);
-        Benchmarks.program15(0,1);
-        Benchmarks.program16(0,1);
-        Benchmarks.program17(0,1,2);
-        Benchmarks.program18(0,1);
-        Benchmarks.program19(0);
-        Benchmarks.program20(0);
-        Benchmarks.program21(0,1);
-        Benchmarks.program22(0,1);
-        Benchmarks.program23(0,1);
-        Benchmarks.program24(0,1);
+        switch (testNb) 
+        {
+        case 1: 
+            Benchmarks.program1("movie");
+            break;
+        case 2: 
+            Benchmarks.program2("secret");
+            break;
+        case 3: 
+            Benchmarks.program3("movie");
+            break;
+        case 4: 
+            Benchmarks.program4(0,1);
+            break;
+        case 5: 
+            Benchmarks.program5(0,1);
+            break;
+        case 6: 
+            Benchmarks.program6(0);
+            break;
+        case 7: 
+            Benchmarks.program7(0,1);
+            break;
+        case 8: 
+            Benchmarks.program8(0);
+            break;
+        case 9: 
+            Benchmarks.program9(0);
+            break;
+        case 10: 
+            Benchmarks.program10(0,1);
+            break;
+        case 11: 
+            Benchmarks.program11(0,1);
+            break;
+        case 12: 
+            Benchmarks.program12(0);
+            break;
+        case 13: 
+            Benchmarks.program13(0,1);
+            break;
+        case 14: 
+            Benchmarks.program14(0,1);
+            break;
+        case 15: 
+            Benchmarks.program15(0,1);
+            break;
+        case 16: 
+            Benchmarks.program16(0,1);
+            break;
+        case 17: 
+            Benchmarks.program17(0,1,2);
+            break;
+        case 18: 
+            Benchmarks.program18(0,1);
+            break;
+        case 19: 
+            Benchmarks.program19(0);
+            break;
+        case 20: 
+            Benchmarks.program20(0);
+            break;
+        case 21: 
+            Benchmarks.program21(0,1);
+            break;
+        case 22: 
+            Benchmarks.program22(0,1);
+            break;
+        case 23: 
+            Benchmarks.program23(0,1);
+            break;
+        case 24: 
+            Benchmarks.program24(0,1);
+            break;
+        case 25: 
+            Benchmarks.whileLoop_5(0);
+            break;
+        case 26: 
+            Benchmarks.whileLoop_10(0);
+            break;
+        case 27: 
+            Benchmarks.whileLoop_50(0);
+            break;
+        case 28: 
+            Benchmarks.leakingPC(0,1);
+            break;
+        }
     }
 
     /******************************************************/
-    public static void program1(int movie) 
+    public static void program1(String movie) 
     {
         setPolicy("movie");
         System.out.println(movie);
@@ -341,6 +404,92 @@ public class Benchmarks
         System.out.println(3);
     }
 
+
+    /******************************************************/
+    public static void whileLoop_5(int secret) 
+    {
+        int MAX = 5;
+        if (secret < 0) { secret = 0; };
+        if (secret > MAX) { secret = MAX; };
+
+        setPolicy("secret");
+        int i = 0;
+        while (i < secret) 
+        {
+            System.out.println(i++);
+        }
+        setPolicy(" ");
+        while (secret < MAX) 
+        {
+            System.out.println(secret++);
+        }
+    }
+
+    /******************************************************/
+    public static void whileLoop_10(int secret) 
+    {
+        int MAX = 10;
+        if (secret < 0) { secret = 0; };
+        if (secret > MAX) { secret = MAX; };
+
+        setPolicy("secret");
+        int i = 0;
+        while (i < secret) 
+        {
+            System.out.println(i++);
+        }
+        setPolicy(" ");
+        while (secret < MAX) 
+        {
+            System.out.println(secret++);
+        }
+    }
+
+    /******************************************************/
+    public static void whileLoop_50(int secret) 
+    {
+        int MAX = 50;
+        if (secret < 0) { secret = 0; };
+        if (secret > MAX) { secret = MAX; };
+
+        setPolicy("secret");
+        int i = 0;
+        while (i < secret) 
+        {
+            System.out.println(i++);
+        }
+        setPolicy(" ");
+        while (secret < MAX) 
+        {
+            System.out.println(secret++);
+        }
+    }
+
+    /******************************************************/
+    public static void leakingPC(int x, int y) 
+    {
+        setPolicy("x");
+        System.out.println(x);
+        if (x > 0) 
+        {
+            System.out.println(1);
+        }
+        else
+        {
+            System.out.println(2);
+        }
+        setPolicy("x, y");
+        if (y > 0) 
+        {
+            System.out.println(3);
+        }
+        else
+        {
+            System.out.println(4);
+        }
+        setPolicy("y");
+        System.out.println(5);
+    }
 
 
   /////////////////////////////////////////////////////////////////
