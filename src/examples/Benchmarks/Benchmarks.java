@@ -39,126 +39,90 @@ public class Benchmarks
         try { testNb = Integer.parseInt(params[0]); }
         catch(Exception e) { System.out.println(e); }
 
-        //Benchmarks.simpleReject(0);
-        //Benchmarks.stringTest("test");
-        //Benchmarks.stringTest2("test", "test");
-        //Benchmarks.bounded(0,1);
-        //Benchmarks.bug(0);
-        //Benchmarks.pcTest(0,1);
-        //Benchmarks.leakSum(0,1);
-        //Benchmarks.program5(0,1);
-        //Benchmarks.program6(0);
-        //Benchmarks.program7(0);
-        //Benchmarks.program8(0,1);
-        //Benchmarks.program9(0,1);
-        Benchmarks.program10(0);
-        //Benchmarks.program26(1,2);
-        //Benchmarks.program27(0,1);
+        Benchmarks.program1("movie");
+        Benchmarks.program2("secret");
+        Benchmarks.program3("movie");
+        Benchmarks.program4(0,1);
+        Benchmarks.program5(0,1);
+        Benchmarks.program6(0);
+        Benchmarks.program7(0,1);
+        Benchmarks.program8(0);
+        Benchmarks.program9(0);
+        Benchmarks.program10(0,1);
+        Benchmarks.program11(0,1);
+        Benchmarks.program12(0);
+        Benchmarks.program13(0,1);
+        Benchmarks.program14(0,1);
+        Benchmarks.program15(0,1);
+        Benchmarks.program16(0,1);
+        Benchmarks.program17(0,1,2);
+        Benchmarks.program18(0,1);
+        Benchmarks.program19(0);
+        Benchmarks.program20(0);
+        Benchmarks.program21(0,1);
+        Benchmarks.program22(0,1);
+        Benchmarks.program23(0,1);
+        Benchmarks.program24(0,1);
     }
 
     /******************************************************/
-    public static void simpleReject(int x) 
+    public static void program1(int movie) 
     {
+        setPolicy("movie");
+        System.out.println(movie);
         setPolicy(" ");
-        //System.out.println(x);
-        observableByAgent("Eve", x);
+        System.out.println(movie);
     }
 
-
     /******************************************************/
-    public static void stringTest(String x) 
+    public static void program2(String secretFile) 
     {
-        setPolicy(" ");
-        System.out.println("stringTest");
-        //setPolicy("x");
-        System.out.println(x);
+        setPolicy("secretFile");
+        System.out.println(secretFile);
+        System.out.println("Hello World!");
+        System.out.println("1234");
+        setPolicy("");
+        System.out.println(secretFile);
     }
 
     /******************************************************/
-    public static void stringTest2(String x, String y) 
+    public static void program3(String movie) 
     {
+        setPolicy("movie");
+        System.out.println(movie);
         setPolicy(" ");
-        //System.out.println("stringTest");
-        //setPolicy("x");
-        //observableByAgent("Alice", x);
-        System.out.println(x);
+        System.out.println("No Subscription!");
     }
 
     /******************************************************/
-    public static void bounded(int x, int y) 
+    public static void program4(int aliceSalary, int bobSalary) 
     {
-        setPolicy(" ");
-        if (x > 0) 
-        {
-            System.out.println(1);
-        }
-        else
-        {
-            System.out.println(1);
-        }
-        if (y > 0) 
-        {
-            System.out.println(2);
-        }
-        else
-        {
-            System.out.println(2);
-        }
+        setPolicy("aliceSalary, bobSalary");
+        System.out.println(aliceSalary + bobSalary);
+        setPolicy("bobSalary");
+        System.out.println(bobSalary);
     }
 
     /******************************************************/
-    public static void bug(int x) 
+    public static void program5(int aliceSalary, int bobSalary) 
     {
-        setPolicy(" ");
-        if (x > 0) 
-        {
-            System.out.println(false);
-        }
-        else
-        {
-            System.out.println(x + 5);
-        }
+        setPolicy("aliceSalary, bobSalary");
+        System.out.println(aliceSalary + bobSalary);
+        setPolicy("bobSalary");
+        System.out.println(aliceSalary);
     }
 
     /******************************************************/
-    public static void pcTest(int x, int y) 
+    public static void program6(int x) 
     {
         setPolicy("x");
+        System.out.println(1);
+        setPolicy(" ");
         System.out.println(x);
-        if (x > 0) 
-        {
-            System.out.println(1);
-        }
-        else
-        {
-            System.out.println(2);
-        }
-        setPolicy("x, y");
-        if (y > 0) 
-        {
-            System.out.println(3);
-        }
-        else
-        {
-            System.out.println(4);
-        }
-        setPolicy("y");
-        System.out.println(5);
     }
 
-
     /******************************************************/
-    public static void leakSum(int x, int y) 
-    {
-        setPolicy("x, y");
-        System.out.println(x+y);
-        setPolicy("y");
-        System.out.println(y);
-    }
-
-
-    /******************************************************/
-    public static void program5(int x, int y) 
+    public static void program7(int x, int y) 
     {
         setPolicy("x, y");
         System.out.println(x);
@@ -172,7 +136,7 @@ public class Benchmarks
 
 
     /******************************************************/
-    public static void program6(int x) 
+    public static void program8(int x) 
     {
         setPolicy("x");
         System.out.println(x);
@@ -184,7 +148,7 @@ public class Benchmarks
 
 
     /******************************************************/
-    public static void program7(int x) 
+    public static void program9(int x) 
     {
         setPolicy("x");
         System.out.println(1);
@@ -202,7 +166,7 @@ public class Benchmarks
 
 
     /******************************************************/
-    public static void program8(int x, int y) 
+    public static void program10(int x, int y) 
     {
         setPolicy("x, y");
         System.out.println(1);
@@ -210,7 +174,7 @@ public class Benchmarks
         {
             System.out.println(y);
         }
-        setPolicy("x");
+        setPolicy(" ");
         if (x <= 0) 
         {
             System.out.println(y);
@@ -220,7 +184,7 @@ public class Benchmarks
 
 
     /******************************************************/
-    public static void program9(int x, int y) 
+    public static void program11(int x, int y) 
     {
         setPolicy("x, y");
         System.out.println(y);
@@ -231,14 +195,14 @@ public class Benchmarks
         }
         if (x <= 0) 
         {
-            System.out.println(1); 
-            //System.out.println(2);
+            //System.out.println(2); 
+            System.out.println(1);
         }
     }
 
 
     /******************************************************/
-    public static void program10(int x) 
+    public static void program12(int x) 
     {
         setPolicy("x");
         if (x > 0) 
@@ -255,11 +219,98 @@ public class Benchmarks
     }
 
     /******************************************************/
-    public static void program26(int x, int y) 
+    public static void program13(int x, int y) 
     {
-        //setPolicy("x, (> y 0)");
+        setPolicy("x, y");
+        System.out.println(x);
+        setPolicy("y");
+    }
+
+    /******************************************************/
+    public static void program14(int x, int y) 
+    {
         setPolicy("x");
-        //System.out.println(x);
+        System.out.println(x > 0);
+        setPolicy("y");
+    }
+
+    /******************************************************/
+    public static void program15(int x, int y) 
+    {
+        setPolicy("x, y");
+        System.out.println(x > 0);
+        setPolicy("y");
+    }
+
+    /******************************************************/
+    public static void program16(int x, int y) 
+    {
+        setPolicy("x, y");
+        System.out.println(x + y);
+        setPolicy(" ");
+    }
+
+    /******************************************************/
+    public static void program17(int x, int y, int z) 
+    {
+        setPolicy(" "); // x -> y with an attacker at level A, means that neither x nor y cannot flow to A
+        y = x;
+        setPolicy(" ");
+        setPolicy(" "); // y -> z with an attacker at level A, means that neither y nor z cannot flow to A
+        z = y;
+    }
+
+    /******************************************************/
+    public static void program18(int x, int y) 
+    {
+        setPolicy(" "); // x -> y with an attacker at level A, means that neither x nor y cannot flow to A
+        y = x;
+        setPolicy(" ");
+        setPolicy("y");
+        System.out.println(y);
+    }
+
+    /******************************************************/
+    public static void program19(int x) 
+    {
+        setPolicy("x");
+        System.out.println(x);
+        System.out.println(0);
+        setPolicy(" ");
+        System.out.println(x);
+    }
+
+    /******************************************************/
+    public static void program20(int x) 
+    {
+        setPolicy("x");
+        System.out.println(0);
+        setPolicy(" ");
+        System.out.println(x);
+    }
+
+    /******************************************************/
+    public static void program21(int x, int y) 
+    {
+        setPolicy("x, y");
+        System.out.println(x + y);
+        setPolicy("y");
+        System.out.println(y);
+    }
+
+    /******************************************************/
+    public static void program22(int x, int y) 
+    {
+        setPolicy("x, y");
+        System.out.println(x ^ y);
+        setPolicy("y");
+        System.out.println(y);
+    }
+
+    /******************************************************/
+    public static void program23(int x, int y) 
+    {
+        setPolicy("x, (> y 0)");
         if (y > 0) 
         {
             System.out.println(1);
@@ -268,11 +319,11 @@ public class Benchmarks
         {
             System.out.println(2); 
         }
-        //System.out.println(3); 
+        System.out.println(3); 
     }
 
     /******************************************************/
-    public static void program27(int x, int y ) 
+    public static void program24(int x, int y ) 
     {
         setPolicy("x");
         System.out.println(x);
