@@ -37,7 +37,7 @@ class Event
   User[] participantsList;
   int nbParticipants;
 	
-  Event(User creator, String name, int date) 
+  Event(Server server, User creator, String name, int date) 
   {
     this.creator = creator;
     this.name = name;
@@ -46,7 +46,8 @@ class Event
     this.participantsList = new User[Event.MAX_PARTICIPANTS];
     this.nbParticipants = 0;
 
-    this.addParticipant(creator, creator);
+    this.participantsList[this.nbParticipants] = creator;
+    this.nbParticipants++;
   }
 	
   public String getName(User requester)

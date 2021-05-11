@@ -1,167 +1,167 @@
 program1_perfect_reject      | {{MainClass}} | 1 | {{MainClass}}.program1(sym)            | print | perfect   | reject
-program1_perfect_accept      | {{MainClass}} | 1 | {{MainClass}}.program1(sym)            | print | perfect   | accept
+program1_perfect_update      | {{MainClass}} | 1 | {{MainClass}}.program1(sym)            | print | perfect   | update
 program1_bounded_reject      | {{MainClass}} | 1 | {{MainClass}}.program1(sym)            | print | bounded,1 | reject
-program1_bounded_accept      | {{MainClass}} | 1 | {{MainClass}}.program1(sym)            | print | bounded,1  | accept
-program1_forgetfull          | {{MainClass}} | 1 | {{MainClass}}.program1(sym)            | print | forgetful | reject
+program1_bounded_update      | {{MainClass}} | 1 | {{MainClass}}.program1(sym)            | print | bounded,1  | update
+program1_forgetful           | {{MainClass}} | 1 | {{MainClass}}.program1(sym)            | print | forgetful | reject
 
 program2_perfect_reject      | {{MainClass}} | 2 | {{MainClass}}.program2(sym)            | print | perfect   | reject
-program2_perfect_accept      | {{MainClass}} | 2 | {{MainClass}}.program2(sym)            | print | perfect   | accept
+program2_perfect_update      | {{MainClass}} | 2 | {{MainClass}}.program2(sym)            | print | perfect   | update
 program2_bounded_reject      | {{MainClass}} | 2 | {{MainClass}}.program2(sym)            | print | bounded,1 | reject
-program2_bounded_accept      | {{MainClass}} | 2 | {{MainClass}}.program2(sym)            | print | bounded,1 | accept
-program2_forgetfull          | {{MainClass}} | 2 | {{MainClass}}.program2(sym)            | print | forgetful | reject
+program2_bounded_update      | {{MainClass}} | 2 | {{MainClass}}.program2(sym)            | print | bounded,1 | update
+program2_forgetful           | {{MainClass}} | 2 | {{MainClass}}.program2(sym)            | print | forgetful | reject
 
 program3_perfect_reject      | {{MainClass}} | 3 | {{MainClass}}.program3(sym)            | print | perfect   | reject
-program3_perfect_accept      | {{MainClass}} | 3 | {{MainClass}}.program3(sym)            | print | perfect   | accept
+program3_perfect_update      | {{MainClass}} | 3 | {{MainClass}}.program3(sym)            | print | perfect   | update
 program3_bounded_reject      | {{MainClass}} | 3 | {{MainClass}}.program3(sym)            | print | bounded,1 | reject
-program3_bounded_accept      | {{MainClass}} | 3 | {{MainClass}}.program3(sym)            | print | bounded,1 | accept
-program3_forgetfull          | {{MainClass}} | 3 | {{MainClass}}.program3(sym)            | print | forgetful | reject
+program3_bounded_update      | {{MainClass}} | 3 | {{MainClass}}.program3(sym)            | print | bounded,1 | update
+program3_forgetful           | {{MainClass}} | 3 | {{MainClass}}.program3(sym)            | print | forgetful | reject
 
 program4_perfect_reject      | {{MainClass}} | 4 | {{MainClass}}.program4(sym#sym)        | print | perfect   | reject
-program4_perfect_accept      | {{MainClass}} | 4 | {{MainClass}}.program4(sym#sym)        | print | perfect   | accept
+program4_perfect_update      | {{MainClass}} | 4 | {{MainClass}}.program4(sym#sym)        | print | perfect   | update
 program4_bounded_reject      | {{MainClass}} | 4 | {{MainClass}}.program4(sym#sym)        | print | bounded,1 | reject
-program4_bounded_accept      | {{MainClass}} | 4 | {{MainClass}}.program4(sym#sym)        | print | bounded,1 | accept
-program4_forgetfull          | {{MainClass}} | 4 | {{MainClass}}.program4(sym#sym)        | print | forgetful | reject
+program4_bounded_update      | {{MainClass}} | 4 | {{MainClass}}.program4(sym#sym)        | print | bounded,1 | update
+program4_forgetful           | {{MainClass}} | 4 | {{MainClass}}.program4(sym#sym)        | print | forgetful | reject
 
 program5_perfect_reject      | {{MainClass}} | 5 | {{MainClass}}.program5(sym#sym)        | print | perfect   | reject
-program5_perfect_accept      | {{MainClass}} | 5 | {{MainClass}}.program5(sym#sym)        | print | perfect   | accept
+program5_perfect_update      | {{MainClass}} | 5 | {{MainClass}}.program5(sym#sym)        | print | perfect   | update
 program5_bounded_reject      | {{MainClass}} | 5 | {{MainClass}}.program5(sym#sym)        | print | bounded,1 | reject
-program5_bounded_accept      | {{MainClass}} | 5 | {{MainClass}}.program5(sym#sym)        | print | bounded,1 | accept
-program5_forgetfull          | {{MainClass}} | 5 | {{MainClass}}.program5(sym#sym)        | print | forgetful | reject
+program5_bounded_update      | {{MainClass}} | 5 | {{MainClass}}.program5(sym#sym)        | print | bounded,1 | update
+program5_forgetful           | {{MainClass}} | 5 | {{MainClass}}.program5(sym#sym)        | print | forgetful | reject
 
 program6_perfect_reject      | {{MainClass}} | 6 | {{MainClass}}.program6(sym)            | print | perfect   | reject
-program6_perfect_accept      | {{MainClass}} | 6 | {{MainClass}}.program6(sym)            | print | perfect   | accept
+program6_perfect_update      | {{MainClass}} | 6 | {{MainClass}}.program6(sym)            | print | perfect   | update
 program6_bounded_reject      | {{MainClass}} | 6 | {{MainClass}}.program6(sym)            | print | bounded,1 | reject
-program6_bounded_accept      | {{MainClass}} | 6 | {{MainClass}}.program6(sym)            | print | bounded,1 | accept
-program6_forgetfull          | {{MainClass}} | 6 | {{MainClass}}.program6(sym)            | print | forgetful | reject
+program6_bounded_update      | {{MainClass}} | 6 | {{MainClass}}.program6(sym)            | print | bounded,1 | update
+program6_forgetful           | {{MainClass}} | 6 | {{MainClass}}.program6(sym)            | print | forgetful | reject
 
 program7_perfect_reject      | {{MainClass}} | 7 | {{MainClass}}.program7(sym#sym)        | print | perfect   | reject
-program7_perfect_accept      | {{MainClass}} | 7 | {{MainClass}}.program7(sym#sym)        | print | perfect   | accept
+program7_perfect_update      | {{MainClass}} | 7 | {{MainClass}}.program7(sym#sym)        | print | perfect   | update
 program7_bounded_reject      | {{MainClass}} | 7 | {{MainClass}}.program7(sym#sym)        | print | bounded,1 | reject
-program7_bounded_accept      | {{MainClass}} | 7 | {{MainClass}}.program7(sym#sym)        | print | bounded,1 | accept
-program7_forgetfull          | {{MainClass}} | 7 | {{MainClass}}.program7(sym#sym)        | print | forgetful | reject
+program7_bounded_update      | {{MainClass}} | 7 | {{MainClass}}.program7(sym#sym)        | print | bounded,1 | update
+program7_forgetful           | {{MainClass}} | 7 | {{MainClass}}.program7(sym#sym)        | print | forgetful | reject
 
 program8_perfect_reject      | {{MainClass}} | 8 | {{MainClass}}.program8(sym)            | print | perfect   | reject
-program8_perfect_accept      | {{MainClass}} | 8 | {{MainClass}}.program8(sym)            | print | perfect   | accept
+program8_perfect_update      | {{MainClass}} | 8 | {{MainClass}}.program8(sym)            | print | perfect   | update
 program8_bounded_reject      | {{MainClass}} | 8 | {{MainClass}}.program8(sym)            | print | bounded,1 | reject
-program8_bounded_accept      | {{MainClass}} | 8 | {{MainClass}}.program8(sym)            | print | bounded,1 | accept
-program8_forgetfull          | {{MainClass}} | 8 | {{MainClass}}.program8(sym)            | print | forgetful | reject
+program8_bounded_update      | {{MainClass}} | 8 | {{MainClass}}.program8(sym)            | print | bounded,1 | update
+program8_forgetful           | {{MainClass}} | 8 | {{MainClass}}.program8(sym)            | print | forgetful | reject
 
 program9_perfect_reject      | {{MainClass}} | 9 | {{MainClass}}.program9(sym)            | print | perfect   | reject
-program9_perfect_accept      | {{MainClass}} | 9 | {{MainClass}}.program9(sym)            | print | perfect   | accept
+program9_perfect_update      | {{MainClass}} | 9 | {{MainClass}}.program9(sym)            | print | perfect   | update
 program9_bounded_reject      | {{MainClass}} | 9 | {{MainClass}}.program9(sym)            | print | bounded,1 | reject
-program9_bounded_accept      | {{MainClass}} | 9 | {{MainClass}}.program9(sym)            | print | bounded,1 | accept
-program9_forgetfull          | {{MainClass}} | 9 | {{MainClass}}.program9(sym)            | print | forgetful | reject
+program9_bounded_update      | {{MainClass}} | 9 | {{MainClass}}.program9(sym)            | print | bounded,1 | update
+program9_forgetful           | {{MainClass}} | 9 | {{MainClass}}.program9(sym)            | print | forgetful | reject
 
 program10_perfect_reject     | {{MainClass}} | 10 | {{MainClass}}.program10(sym#sym)      | print | perfect   | reject
-program10_perfect_accept     | {{MainClass}} | 10 | {{MainClass}}.program10(sym#sym)      | print | perfect   | accept
+program10_perfect_update     | {{MainClass}} | 10 | {{MainClass}}.program10(sym#sym)      | print | perfect   | update
 program10_bounded_reject     | {{MainClass}} | 10 | {{MainClass}}.program10(sym#sym)      | print | bounded,1 | reject
-program10_bounded_accept     | {{MainClass}} | 10 | {{MainClass}}.program10(sym#sym)      | print | bounded,1 | accept
-program10_forgetfull         | {{MainClass}} | 10 | {{MainClass}}.program10(sym#sym)      | print | forgetful | reject
+program10_bounded_update     | {{MainClass}} | 10 | {{MainClass}}.program10(sym#sym)      | print | bounded,1 | update
+program10_forgetful          | {{MainClass}} | 10 | {{MainClass}}.program10(sym#sym)      | print | forgetful | reject
 
 program11_perfect_reject     | {{MainClass}} | 11 | {{MainClass}}.program11(sym#sym)      | print | perfect   | reject
-program11_perfect_accept     | {{MainClass}} | 11 | {{MainClass}}.program11(sym#sym)      | print | perfect   | accept
+program11_perfect_update     | {{MainClass}} | 11 | {{MainClass}}.program11(sym#sym)      | print | perfect   | update
 program11_bounded_reject     | {{MainClass}} | 11 | {{MainClass}}.program11(sym#sym)      | print | bounded,1 | reject
-program11_bounded_accept     | {{MainClass}} | 11 | {{MainClass}}.program11(sym#sym)      | print | bounded,1 | accept
-program11_forgetfull         | {{MainClass}} | 11 | {{MainClass}}.program11(sym#sym)      | print | forgetful | reject
+program11_bounded_update     | {{MainClass}} | 11 | {{MainClass}}.program11(sym#sym)      | print | bounded,1 | update
+program11_forgetful          | {{MainClass}} | 11 | {{MainClass}}.program11(sym#sym)      | print | forgetful | reject
 
 program12_perfect_reject     | {{MainClass}} | 12 | {{MainClass}}.program12(sym)          | print | perfect   | reject
-program12_perfect_accept     | {{MainClass}} | 12 | {{MainClass}}.program12(sym)          | print | perfect   | accept
+program12_perfect_update     | {{MainClass}} | 12 | {{MainClass}}.program12(sym)          | print | perfect   | update
 program12_bounded_reject     | {{MainClass}} | 12 | {{MainClass}}.program12(sym)          | print | bounded,1 | reject
-program12_bounded_accept     | {{MainClass}} | 12 | {{MainClass}}.program12(sym)          | print | bounded,1 | accept
-program12_forgetfull         | {{MainClass}} | 12 | {{MainClass}}.program12(sym)          | print | forgetful | reject
+program12_bounded_update     | {{MainClass}} | 12 | {{MainClass}}.program12(sym)          | print | bounded,1 | update
+program12_forgetful          | {{MainClass}} | 12 | {{MainClass}}.program12(sym)          | print | forgetful | reject
 
 program13_perfect_reject     | {{MainClass}} | 13 | {{MainClass}}.program13(sym#sym)      | print | perfect   | reject
-program13_perfect_accept     | {{MainClass}} | 13 | {{MainClass}}.program13(sym#sym)      | print | perfect   | accept
+program13_perfect_update     | {{MainClass}} | 13 | {{MainClass}}.program13(sym#sym)      | print | perfect   | update
 program13_bounded_reject     | {{MainClass}} | 13 | {{MainClass}}.program13(sym#sym)      | print | bounded,1 | reject
-program13_bounded_accept     | {{MainClass}} | 13 | {{MainClass}}.program13(sym#sym)      | print | bounded,1 | accept
-program13_forgetfull         | {{MainClass}} | 13 | {{MainClass}}.program13(sym#sym)      | print | forgetful | reject
+program13_bounded_update     | {{MainClass}} | 13 | {{MainClass}}.program13(sym#sym)      | print | bounded,1 | update
+program13_forgetful          | {{MainClass}} | 13 | {{MainClass}}.program13(sym#sym)      | print | forgetful | reject
 
 program14_perfect_reject     | {{MainClass}} | 14 | {{MainClass}}.program14(sym#sym)      | print | perfect   | reject
-program14_perfect_accept     | {{MainClass}} | 14 | {{MainClass}}.program14(sym#sym)      | print | perfect   | accept
+program14_perfect_update     | {{MainClass}} | 14 | {{MainClass}}.program14(sym#sym)      | print | perfect   | update
 program14_bounded_reject     | {{MainClass}} | 14 | {{MainClass}}.program14(sym#sym)      | print | bounded,1 | reject
-program14_bounded_accept     | {{MainClass}} | 14 | {{MainClass}}.program14(sym#sym)      | print | bounded,1 | accept
-program14_forgetfull         | {{MainClass}} | 14 | {{MainClass}}.program14(sym#sym)      | print | forgetful | reject
+program14_bounded_update     | {{MainClass}} | 14 | {{MainClass}}.program14(sym#sym)      | print | bounded,1 | update
+program14_forgetful          | {{MainClass}} | 14 | {{MainClass}}.program14(sym#sym)      | print | forgetful | reject
 
 program15_perfect_reject     | {{MainClass}} | 15 | {{MainClass}}.program15(sym#sym)      | print | perfect   | reject
-program15_perfect_accept     | {{MainClass}} | 15 | {{MainClass}}.program15(sym#sym)      | print | perfect   | accept
+program15_perfect_update     | {{MainClass}} | 15 | {{MainClass}}.program15(sym#sym)      | print | perfect   | update
 program15_bounded_reject     | {{MainClass}} | 15 | {{MainClass}}.program15(sym#sym)      | print | bounded,1 | reject
-program15_bounded_accept     | {{MainClass}} | 15 | {{MainClass}}.program15(sym#sym)      | print | bounded,1 | accept
-program15_forgetfull         | {{MainClass}} | 15 | {{MainClass}}.program15(sym#sym)      | print | forgetful | reject
+program15_bounded_update     | {{MainClass}} | 15 | {{MainClass}}.program15(sym#sym)      | print | bounded,1 | update
+program15_forgetful          | {{MainClass}} | 15 | {{MainClass}}.program15(sym#sym)      | print | forgetful | reject
 
 program16_perfect_reject     | {{MainClass}} | 16 | {{MainClass}}.program16(sym#sym)      | print | perfect   | reject
-program16_perfect_accept     | {{MainClass}} | 16 | {{MainClass}}.program16(sym#sym)      | print | perfect   | accept
+program16_perfect_update     | {{MainClass}} | 16 | {{MainClass}}.program16(sym#sym)      | print | perfect   | update
 program16_bounded_reject     | {{MainClass}} | 16 | {{MainClass}}.program16(sym#sym)      | print | bounded,1 | reject
-program16_bounded_accept     | {{MainClass}} | 16 | {{MainClass}}.program16(sym#sym)      | print | bounded,1 | accept
-program16_forgetfull         | {{MainClass}} | 16 | {{MainClass}}.program16(sym#sym)      | print | forgetful | reject
+program16_bounded_update     | {{MainClass}} | 16 | {{MainClass}}.program16(sym#sym)      | print | bounded,1 | update
+program16_forgetful          | {{MainClass}} | 16 | {{MainClass}}.program16(sym#sym)      | print | forgetful | reject
 
 program17_perfect_reject     | {{MainClass}} | 17 | {{MainClass}}.program17(sym#sym#sym)  | print | perfect   | reject
-program17_perfect_accept     | {{MainClass}} | 17 | {{MainClass}}.program17(sym#sym#sym)  | print | perfect   | accept
+program17_perfect_update     | {{MainClass}} | 17 | {{MainClass}}.program17(sym#sym#sym)  | print | perfect   | update
 program17_bounded_reject     | {{MainClass}} | 17 | {{MainClass}}.program17(sym#sym#sym)  | print | bounded,1 | reject
-program17_bounded_accept     | {{MainClass}} | 17 | {{MainClass}}.program17(sym#sym#sym)  | print | bounded,1 | accept
-program17_forgetfull         | {{MainClass}} | 17 | {{MainClass}}.program17(sym#sym#sym)  | print | forgetful | reject
+program17_bounded_update     | {{MainClass}} | 17 | {{MainClass}}.program17(sym#sym#sym)  | print | bounded,1 | update
+program17_forgetful          | {{MainClass}} | 17 | {{MainClass}}.program17(sym#sym#sym)  | print | forgetful | reject
 
 program18_perfect_reject     | {{MainClass}} | 18 | {{MainClass}}.program18(sym#sym)      | print | perfect   | reject
-program18_perfect_accept     | {{MainClass}} | 18 | {{MainClass}}.program18(sym#sym)      | print | perfect   | accept
+program18_perfect_update     | {{MainClass}} | 18 | {{MainClass}}.program18(sym#sym)      | print | perfect   | update
 program18_bounded_reject     | {{MainClass}} | 18 | {{MainClass}}.program18(sym#sym)      | print | bounded,1 | reject
-program18_bounded_accept     | {{MainClass}} | 18 | {{MainClass}}.program18(sym#sym)      | print | bounded,1 | accept
-program18_forgetfull         | {{MainClass}} | 18 | {{MainClass}}.program18(sym#sym)      | print | forgetful | reject
+program18_bounded_update     | {{MainClass}} | 18 | {{MainClass}}.program18(sym#sym)      | print | bounded,1 | update
+program18_forgetful          | {{MainClass}} | 18 | {{MainClass}}.program18(sym#sym)      | print | forgetful | reject
 
 program19_perfect_reject     | {{MainClass}} | 19 | {{MainClass}}.program19(sym)          | print | perfect   | reject
-program19_perfect_accept     | {{MainClass}} | 19 | {{MainClass}}.program19(sym)          | print | perfect   | accept
+program19_perfect_update     | {{MainClass}} | 19 | {{MainClass}}.program19(sym)          | print | perfect   | update
 program19_bounded_reject     | {{MainClass}} | 19 | {{MainClass}}.program19(sym)          | print | bounded,1 | reject
-program19_bounded_accept     | {{MainClass}} | 19 | {{MainClass}}.program19(sym)          | print | bounded,1 | accept
-program19_forgetfull         | {{MainClass}} | 19 | {{MainClass}}.program19(sym)          | print | forgetful | reject
+program19_bounded_update     | {{MainClass}} | 19 | {{MainClass}}.program19(sym)          | print | bounded,1 | update
+program19_forgetful          | {{MainClass}} | 19 | {{MainClass}}.program19(sym)          | print | forgetful | reject
 
 program20_perfect_reject     | {{MainClass}} | 20 | {{MainClass}}.program20(sym)          | print | perfect   | reject
-program20_perfect_accept     | {{MainClass}} | 20 | {{MainClass}}.program20(sym)          | print | perfect   | accept
+program20_perfect_update     | {{MainClass}} | 20 | {{MainClass}}.program20(sym)          | print | perfect   | update
 program20_bounded_reject     | {{MainClass}} | 20 | {{MainClass}}.program20(sym)          | print | bounded,1 | reject
-program20_bounded_accept     | {{MainClass}} | 20 | {{MainClass}}.program20(sym)          | print | bounded,1 | accept
-program20_forgetfull         | {{MainClass}} | 20 | {{MainClass}}.program20(sym)          | print | forgetful | reject
+program20_bounded_update     | {{MainClass}} | 20 | {{MainClass}}.program20(sym)          | print | bounded,1 | update
+program20_forgetful          | {{MainClass}} | 20 | {{MainClass}}.program20(sym)          | print | forgetful | reject
 
 program21_perfect_reject     | {{MainClass}} | 21 | {{MainClass}}.program21(sym#sym)      | print | perfect   | reject
-program21_perfect_accept     | {{MainClass}} | 21 | {{MainClass}}.program21(sym#sym)      | print | perfect   | accept
+program21_perfect_update     | {{MainClass}} | 21 | {{MainClass}}.program21(sym#sym)      | print | perfect   | update
 program21_bounded_reject     | {{MainClass}} | 21 | {{MainClass}}.program21(sym#sym)      | print | bounded,1 | reject
-program21_bounded_accept     | {{MainClass}} | 21 | {{MainClass}}.program21(sym#sym)      | print | bounded,1 | accept
-program21_forgetfull         | {{MainClass}} | 21 | {{MainClass}}.program21(sym#sym)      | print | forgetful | reject
+program21_bounded_update     | {{MainClass}} | 21 | {{MainClass}}.program21(sym#sym)      | print | bounded,1 | update
+program21_forgetful          | {{MainClass}} | 21 | {{MainClass}}.program21(sym#sym)      | print | forgetful | reject
 
 program22_perfect_reject     | {{MainClass}} | 22 | {{MainClass}}.program22(sym#sym)      | print | perfect   | reject
-program22_perfect_accept     | {{MainClass}} | 22 | {{MainClass}}.program22(sym#sym)      | print | perfect   | accept
+program22_perfect_update     | {{MainClass}} | 22 | {{MainClass}}.program22(sym#sym)      | print | perfect   | update
 program22_bounded_reject     | {{MainClass}} | 22 | {{MainClass}}.program22(sym#sym)      | print | bounded,1 | reject
-program22_bounded_accept     | {{MainClass}} | 22 | {{MainClass}}.program22(sym#sym)      | print | bounded,1 | accept
-program22_forgetfull         | {{MainClass}} | 22 | {{MainClass}}.program22(sym#sym)      | print | forgetful | reject
+program22_bounded_update     | {{MainClass}} | 22 | {{MainClass}}.program22(sym#sym)      | print | bounded,1 | update
+program22_forgetful          | {{MainClass}} | 22 | {{MainClass}}.program22(sym#sym)      | print | forgetful | reject
 
 program23_perfect_reject     | {{MainClass}} | 23 | {{MainClass}}.program23(sym#sym)      | print | perfect   | reject
-program23_perfect_accept     | {{MainClass}} | 23 | {{MainClass}}.program23(sym#sym)      | print | perfect   | accept
+program23_perfect_update     | {{MainClass}} | 23 | {{MainClass}}.program23(sym#sym)      | print | perfect   | update
 program23_bounded_reject     | {{MainClass}} | 23 | {{MainClass}}.program23(sym#sym)      | print | bounded,1 | reject
-program23_bounded_accept     | {{MainClass}} | 23 | {{MainClass}}.program23(sym#sym)      | print | bounded,1 | accept
-program23_forgetfull         | {{MainClass}} | 23 | {{MainClass}}.program23(sym#sym)      | print | forgetful | reject
+program23_bounded_update     | {{MainClass}} | 23 | {{MainClass}}.program23(sym#sym)      | print | bounded,1 | update
+program23_forgetful          | {{MainClass}} | 23 | {{MainClass}}.program23(sym#sym)      | print | forgetful | reject
 
 program24_perfect_reject     | {{MainClass}} | 24 | {{MainClass}}.program24(sym#sym)      | print | perfect   | reject
-program24_perfect_accept     | {{MainClass}} | 24 | {{MainClass}}.program24(sym#sym)      | print | perfect   | accept
+program24_perfect_update     | {{MainClass}} | 24 | {{MainClass}}.program24(sym#sym)      | print | perfect   | update
 program24_bounded_reject     | {{MainClass}} | 24 | {{MainClass}}.program24(sym#sym)      | print | bounded,1 | reject
-program24_bounded_accept     | {{MainClass}} | 24 | {{MainClass}}.program24(sym#sym)      | print | bounded,1 | accept
-program24_forgetfull         | {{MainClass}} | 24 | {{MainClass}}.program24(sym#sym)      | print | forgetful | reject
+program24_bounded_update     | {{MainClass}} | 24 | {{MainClass}}.program24(sym#sym)      | print | bounded,1 | update
+program24_forgetful          | {{MainClass}} | 24 | {{MainClass}}.program24(sym#sym)      | print | forgetful | reject
 
 whileLoop_5_perfect_reject   | {{MainClass}} | 25 | {{MainClass}}.whileLoop_5(sym)        | print | perfect   | reject
-whileLoop_5_perfect_accept   | {{MainClass}} | 25 | {{MainClass}}.whileLoop_5(sym)        | print | perfect   | accept
+whileLoop_5_perfect_update   | {{MainClass}} | 25 | {{MainClass}}.whileLoop_5(sym)        | print | perfect   | update
 whileLoop_5_bounded_reject   | {{MainClass}} | 25 | {{MainClass}}.whileLoop_5(sym)        | print | bounded,1 | reject
-whileLoop_5_bounded_accept   | {{MainClass}} | 25 | {{MainClass}}.whileLoop_5(sym)        | print | bounded,1 | accept
-whileLoop_5_forgetfull       | {{MainClass}} | 25 | {{MainClass}}.whileLoop_5(sym)        | print | forgetful | reject
+whileLoop_5_bounded_update   | {{MainClass}} | 25 | {{MainClass}}.whileLoop_5(sym)        | print | bounded,1 | update
+whileLoop_5_forgetful        | {{MainClass}} | 25 | {{MainClass}}.whileLoop_5(sym)        | print | forgetful | reject
 
 whileLoop_10_perfect_reject  | {{MainClass}} | 26 | {{MainClass}}.whileLoop_10(sym)       | print | perfect   | reject
-whileLoop_10_perfect_accept  | {{MainClass}} | 26 | {{MainClass}}.whileLoop_10(sym)       | print | perfect   | accept
+whileLoop_10_perfect_update  | {{MainClass}} | 26 | {{MainClass}}.whileLoop_10(sym)       | print | perfect   | update
 whileLoop_10_bounded_reject  | {{MainClass}} | 26 | {{MainClass}}.whileLoop_10(sym)       | print | bounded,1 | reject
-whileLoop_10_bounded_accept  | {{MainClass}} | 26 | {{MainClass}}.whileLoop_10(sym)       | print | bounded,1 | accept
-whileLoop_10_forgetfull      | {{MainClass}} | 26 | {{MainClass}}.whileLoop_10(sym)       | print | forgetful | reject
+whileLoop_10_bounded_update  | {{MainClass}} | 26 | {{MainClass}}.whileLoop_10(sym)       | print | bounded,1 | update
+whileLoop_10_forgetful       | {{MainClass}} | 26 | {{MainClass}}.whileLoop_10(sym)       | print | forgetful | reject
 
 whileLoop_50_perfect_reject  | {{MainClass}} | 27 | {{MainClass}}.whileLoop_50(sym)       | print | perfect   | reject
-whileLoop_50_perfect_accept  | {{MainClass}} | 27 | {{MainClass}}.whileLoop_50(sym)       | print | perfect   | accept
+whileLoop_50_perfect_update  | {{MainClass}} | 27 | {{MainClass}}.whileLoop_50(sym)       | print | perfect   | update
 whileLoop_50_bounded_reject  | {{MainClass}} | 27 | {{MainClass}}.whileLoop_50(sym)       | print | bounded,1 | reject
-whileLoop_50_bounded_accept  | {{MainClass}} | 27 | {{MainClass}}.whileLoop_50(sym)       | print | bounded,1 | accept
-whileLoop_50_forgetfull      | {{MainClass}} | 27 | {{MainClass}}.whileLoop_50(sym)       | print | forgetful | reject
+whileLoop_50_bounded_update  | {{MainClass}} | 27 | {{MainClass}}.whileLoop_50(sym)       | print | bounded,1 | update
+whileLoop_50_forgetful       | {{MainClass}} | 27 | {{MainClass}}.whileLoop_50(sym)       | print | forgetful | reject
 
 leakingPC_perfect_reject     | {{MainClass}} | 28 | {{MainClass}}.leakingPC(sym#sym)      | print | perfect   | reject
-leakingPC_perfect_accept     | {{MainClass}} | 28 | {{MainClass}}.leakingPC(sym#sym)      | print | perfect   | accept
+leakingPC_perfect_update     | {{MainClass}} | 28 | {{MainClass}}.leakingPC(sym#sym)      | print | perfect   | update
 leakingPC_bounded_reject     | {{MainClass}} | 28 | {{MainClass}}.leakingPC(sym#sym)      | print | bounded,1 | reject
-leakingPC_bounded_accept     | {{MainClass}} | 28 | {{MainClass}}.leakingPC(sym#sym)      | print | bounded,1 | accept
-leakingPC_forgetfull         | {{MainClass}} | 28 | {{MainClass}}.leakingPC(sym#sym)      | print | forgetful | reject
+leakingPC_bounded_update     | {{MainClass}} | 28 | {{MainClass}}.leakingPC(sym#sym)      | print | bounded,1 | update
+leakingPC_forgetful          | {{MainClass}} | 28 | {{MainClass}}.leakingPC(sym#sym)      | print | forgetful | reject

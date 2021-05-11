@@ -76,6 +76,8 @@ class Group
     {
       this.membersList[this.nbMembers] = newMember;
       this.nbMembers++;
+
+      EncoverTests.observableByAgent(newMember.getName(), "You are added to the Group "+ this.getName() +"!");
     }
     else
     {
@@ -98,6 +100,8 @@ class Group
             membersList[j] = null;
           }
           nbMembers--;
+
+          EncoverTests.observableByAgent(member.getName(), "You are removed from Group "+ this.getName() +"!");
         }
       }
     }
@@ -140,9 +144,17 @@ class Group
 
   public void seeMembers(User requester)
   {
-    for (int i=0; i<nbMembers; i++)
+    if (isMember(requester))
     {
-      EncoverTests.observableByAgent(requester.getName(), membersList[i].getPolicyRespectingInfo());
+      for (int i=0; i<nbMembers; i++)
+      {
+          EncoverTests.observableByAgent(requester.getName(), membersList[i].getName());
+      }
     }
+    else
+    {
+      EncoverTests.observableByAgent(requester.getName(), "Only members can see the list of members!");
+    }
+
   }
 }

@@ -25,20 +25,20 @@
 
 1. Compile the examples.
 
-   Command: `ant examples`.
+   Command: `ant examples`
 
-2. Enter the build/examples directory
+2. Enter the build/examples directory.
 
-   Command: `cd build/examples`.
+   Command: `cd build/examples`
 
-3. Generate configuration files of a set of example (e.g. Benchmarks)
+3. Generate configuration files of a set of examples (e.g. Benchmarks).
  
    Command: `bash bin/generateTestConfFiles.sh Benchmarks`.
 
-4. Run an example (e.g. Benchmarks.program10).
+4. Run an example (e.g. Benchmarks.program1).
 
-   Command: `bash ../../bin/encover.sh testConf_encover.tests.Benchmarks.program10.jpf`.
+   Command: `bash ../../bin/encover.sh testConf_encover.tests.Benchmarks_program1_perfect_reject.jpf`
 
-5. Look at the results (e.g. PaperCSF.Small_getSign). TODO
+5. Look at the results.
 
-   Command: `less run__PaperCSF__Small__getSign#sym__getSign.out`.
+   Command: `less output.out`.

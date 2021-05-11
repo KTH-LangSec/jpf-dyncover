@@ -53,6 +53,12 @@ class Server
     // group list?
     return new Group(this, requester, name);
   }
+
+  public Event createEvent(User requester, String name, int date) 
+  {
+    // events list?
+    return new Event(this, requester, name, date);
+  }
 }
 
 

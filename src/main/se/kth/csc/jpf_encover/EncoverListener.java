@@ -51,6 +51,8 @@ import gov.nasa.jpf.symbc.numeric.PathCondition;
 import gov.nasa.jpf.symbc.numeric.PCChoiceGenerator;
 import gov.nasa.jpf.jvm.LocalVarInfo;
 
+import gov.nasa.jpf.report.Reporter;
+
 import se.kth.csc.jpf_encover.EncoverConfiguration.AttackerType;
 import se.kth.csc.jpf_encover.EncoverConfiguration.InconsistentPolicyMethod;
 
@@ -204,8 +206,6 @@ public class EncoverListener extends SymbolicListener {
     inconsistentPolicy = EncoverConfiguration.get_InconsistentPolicyMethod();
 
     /////////////////////////////////////////////////////////////////////////////////
-    // Temp chage to make outputs file name fixed
-    
     //encoverOutFileName = GENERIC_OUT_FILE_NAME.replaceAll("%s", formattedTestName);
     encoverOutFileName = "output.out";
     /////////////////////////////////////////////////////////////////////////////////
@@ -266,15 +266,7 @@ public class EncoverListener extends SymbolicListener {
         doOn_TestedMethodInvocation(vm);
         doOn_codeAnalysisStart(vm);
 
-        // Load the initial policy here
-        ////////////////// Find a better place for this /////////////////////
-        ///////////////////////////////////////////////////////
         pseudo2Var = generatePseudo2Var(invInstr.getInvokedMethod());
-        //harboredInputExpressions = EncoverConfiguration.get_harboredInputExpressions(" ", pseudo2Var);
-        //leakedInputExpressions = EncoverConfiguration.get_leakedInputExpressions(" ", pseudo2Var);
-
-        ///////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////
 
         if (log.DEBUG_MODE) log.println();
       }
@@ -406,24 +398,8 @@ public class EncoverListener extends SymbolicListener {
     
         if (log.DEBUG_MODE) log.println();
       }
-    
-      // if ( testStartMethodBaseName.startsWith(returnedMethodBaseName) ) {
-      //   if (log.DEBUG_MODE) log.println("Returning from " + returnedMethodBaseName);
-      //   if (log.DEBUG_MODE) log.println();
-      // }
     }
   }
-
-
-  // public void methodEntered(JVM vm) {
-  //   super.methodEntered(vm);
-  // 
-  //   String mn = vm.getLastThreadInfo().getTopFrame().getMethodName();
-  //   if ( mn.startsWith("print") ){
-  //     log.println("Entering " + mn);
-  //     log.println();
-  //   }
-  // }
 
 
   /**************************************************************************/
@@ -761,7 +737,7 @@ public class EncoverListener extends SymbolicListener {
       //ofg.display();
       //System.out.println(ofg);
 
-      if (inconsistentPolicy == InconsistentPolicyMethod.ACCEPT)
+      if (inconsistentPolicy == InconsistentPolicyMethod.UPDATE)
       {
         time_consistentPolicyGeneration_start = System.nanoTime();
         //System.out.println("\n\n---> Preprocess: Determining Leaking Path Conditions <---");
@@ -965,7 +941,6 @@ public class EncoverListener extends SymbolicListener {
 
       if ( askFor_emcSolving ) {
         time_mcmasModelVerification_start = System.nanoTime();
-        // TODO: fill
         time_mcmasModelVerification_end = System.nanoTime();
       }
     }
@@ -1014,6 +989,17 @@ public class EncoverListener extends SymbolicListener {
       if ( elapsedTime_mcmasModelVerification != 0 )
         encoverOut.println("  MCMAS model verification: " + elapsedTimeStr_mcmasModelVerification + " ms (" + elapsedTime_mcmasModelVerification + ")");
       encoverOut.println("");
+
+      // if (elapsedTime_consistentPolicyGeneration == 0)
+      // {
+        
+      //   encoverOut.println("table:  $"+elapsedTimeStr_overall+"$ & $"+elapsedTimeStr_modelExtraction+"$ & $"+elapsedTimeStr_interfFmlGeneration+"$ & $"+elapsedTimeStr_interfFmlSatisfaction+"$ & $"+"-"+"$ & $"+ofg.getNbNodes()+"$");
+      // }
+      // else
+      // {
+      //   encoverOut.println("table:  $"+elapsedTimeStr_overall+"$ & $"+elapsedTimeStr_modelExtraction+"$ & $"+elapsedTimeStr_interfFmlGeneration+"$ & $"+elapsedTimeStr_interfFmlSatisfaction+"$ & $"+elapsedTimeStr_consistentPolicyGeneration+"$ & $"+ofg.getNbNodes()+"$");
+      // }
+      
     }
 
     /** OUTPUT METRICS **/

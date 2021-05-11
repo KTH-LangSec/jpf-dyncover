@@ -38,7 +38,7 @@ class User
   private boolean hideMembership = false;  
   private boolean hideFollowing = false;  
 
-  private static final int MAX = 10;
+  private static final int MAX = 100;
 
   private User[] followerList;
   private int nbFollowers;
@@ -67,14 +67,6 @@ class User
     return this.name;
   }
 
-  public String getPolicyRespectingInfo()
-  {
-    if (hideMembership)
-      return "NameHidden";
-    else
-      return this.name;
-  }
-
   public int getNumber() 
   {
     if (hideNumber)
@@ -87,11 +79,6 @@ class User
   public void setNumberPrivacy(boolean setting)
   {
     hideNumber = setting;
-  }
-
-  public void setMembershipPrivacy(boolean setting)
-  {
-    hideMembership = setting;
   }
 
   ////////////////////////////////////// Posting ////////////////////////////////////// 
@@ -140,6 +127,8 @@ class User
     user.unfollow(this); // makes that user to unfollow you
     this.unfollow(user); // unfollows that user
 
+    EncoverTests.observableByAgent(user.getName(), this.getName() + " has blocked you!");
+
     this.blockedList[this.nbBlockedUsers] = user;  // adds it to the list of blocked users
     this.nbBlockedUsers++;
   }
@@ -149,6 +138,7 @@ class User
   public void follow(User target)
   {
     target.followedBy(this);
+    EncoverTests.observableByAgent(this.getName(), "You have followed " + target.getName());
   }
 
   public void followedBy(User follower) 
@@ -169,6 +159,7 @@ class User
   public void unfollow(User target)
   {
     target.unfollowedBy(this);
+    EncoverTests.observableByAgent(this.getName(), "You have unfollowed " + target.getName());
   }
 
   public void unfollowedBy(User follower)

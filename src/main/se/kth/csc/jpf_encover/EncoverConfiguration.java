@@ -37,7 +37,7 @@ import gov.nasa.jpf.Config;
 class EncoverConfiguration {
 
   public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL};
-  public static enum InconsistentPolicyMethod {REJECT, ACCEPT};
+  public static enum InconsistentPolicyMethod {REJECT, UPDATE};
 
   static enum Verifier { SMT_COUNTEREXAMPLE_GENERATION, EPISTEMIC_MODEL_CHECKING };
   static enum Output { CONFIG, OFG, INTFERENCE_FML, SIMPLIFIED_INTFERENCE_FML, TIMINGS, METRICS };
@@ -219,16 +219,16 @@ class EncoverConfiguration {
   /**
    * Returns the method used when facing an inconsistent policy.
    *
-   * @return REJECT if we want to reject programs with inconsistent policies, and ACCEPT when we 
+   * @return REJECT if we want to reject programs with inconsistent policies, and UPDATE when we 
    *         want encover to generate a consistent policy and continue.
   */
   static InconsistentPolicyMethod get_InconsistentPolicyMethod()
   {
     String inconsistentPolicyMethod = conf.getString("encover.inconsistentPolicyMethod","");
 
-    if (inconsistentPolicyMethod.equals("accept"))
+    if (inconsistentPolicyMethod.equals("update"))
     {
-      return InconsistentPolicyMethod.ACCEPT;
+      return InconsistentPolicyMethod.UPDATE;
     }
     else
     {

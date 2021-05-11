@@ -1,5 +1,22 @@
-smpl-Alice          | {{MainClass}} | 1 | {{MainClass}}.simplestTest(sym)         | Eve | perfect   | reject
-smpl-two-Alice      | {{MainClass}} | 2 | {{MainClass}}.simplestTestTwo(sym#sym)  | Eve | perfect   | reject
-forwardingDM        | {{MainClass}} | 3 | {{MainClass}}.forwardingDM(sym)         | Eve | perfect   | reject
-hidePhoneNumber     | {{MainClass}} | 4 | {{MainClass}}.hidePhoneNumber(sym)      | Eve | perfect   | reject
-leakMembership      | {{MainClass}} | 5 | {{MainClass}}.leakMembership(sym)      | Eve | perfect   | reject
+postForFollowers-perfect         | {{MainClass}} | 1 | {{MainClass}}.postForFollowers(sym#sym)      | Eve | perfect     | reject
+postForFollowers-forgetful       | {{MainClass}} | 1 | {{MainClass}}.postForFollowers(sym#sym)      | Eve | forgetful   | reject
+
+blockingUser-perfect             | {{MainClass}} | 2 | {{MainClass}}.blockingUser(sym#sym)          | Eve | perfect     | reject
+blockingUser-forgetful           | {{MainClass}} | 2 | {{MainClass}}.blockingUser(sym#sym)          | Eve | forgetful   | reject
+
+forwardingDM-perfect             | {{MainClass}} | 3 | {{MainClass}}.forwardingDM(sym)              | Eve | perfect     | reject
+forwardingDM-bounded             | {{MainClass}} | 3 | {{MainClass}}.forwardingDM(sym)              | Eve | bounded,1   | reject
+forwardingDM-forgetful           | {{MainClass}} | 3 | {{MainClass}}.forwardingDM(sym)              | Eve | forgetful   | reject
+
+phoneNumberPrivacy-perfect       | {{MainClass}} | 4 | {{MainClass}}.phoneNumberPrivacy(sym)        | Eve | perfect     | reject
+phoneNumberPrivacy-forgetful     | {{MainClass}} | 4 | {{MainClass}}.phoneNumberPrivacy(sym)        | Eve | forgetful   | reject
+
+leakMembership-perfect           | {{MainClass}} | 5 | {{MainClass}}.leakMembership(sym)            | Eve | perfect     | reject
+
+leakMembership_leave-perfect     | {{MainClass}} | 6 | {{MainClass}}.leakMembership_leave(sym)      | Eve | perfect     | reject
+leakMembership_leave-forgetful   | {{MainClass}} | 6 | {{MainClass}}.leakMembership_leave(sym)      | Eve | forgetful   | reject
+
+leakEventInfo-perfect            | {{MainClass}} | 7 | {{MainClass}}.leakEventInfo(sym#sym)         | Eve | perfect     | reject
+
+leakEventInfo_mistake-perfect    | {{MainClass}} | 8 | {{MainClass}}.leakEventInfo_mistake(sym#sym) | Eve | perfect     | reject
+leakEventInfo_mistake-forgetful  | {{MainClass}} | 8 | {{MainClass}}.leakEventInfo_mistake(sym#sym) | Eve | forgetful   | reject
