@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Gurvan Le Guernic
+ * Copyright (C) 2021 Amir M. Ahmadian
  * 
  * This file is part of ENCoVer. ENCoVer is a JavaPathFinder extension allowing
  * to verify if a Java method respects different epistemic noninterference
@@ -126,9 +127,6 @@ public class EncoverListener extends SymbolicListener {
   private OutputFlowGraph ofg;
   /** Graph registering JPF events */
   private JPFEventsGraph jeg;
-
-  //  private String[] methodInputs;     // GURVAN -> MUSARD: can those be removed?
-  //  private String[] methodInputTypes;
 
   private long time_overall_start = 0;
   private long time_overall_end = 0;
@@ -737,7 +735,7 @@ public class EncoverListener extends SymbolicListener {
       //ofg.display();
       //System.out.println(ofg);
 
-      if (inconsistentPolicy == InconsistentPolicyMethod.UPDATE)
+      if (inconsistentPolicy == InconsistentPolicyMethod.REPAIR)
       {
         time_consistentPolicyGeneration_start = System.nanoTime();
         //System.out.println("\n\n---> Preprocess: Determining Leaking Path Conditions <---");
@@ -992,7 +990,6 @@ public class EncoverListener extends SymbolicListener {
 
       // if (elapsedTime_consistentPolicyGeneration == 0)
       // {
-        
       //   encoverOut.println("table:  $"+elapsedTimeStr_overall+"$ & $"+elapsedTimeStr_modelExtraction+"$ & $"+elapsedTimeStr_interfFmlGeneration+"$ & $"+elapsedTimeStr_interfFmlSatisfaction+"$ & $"+"-"+"$ & $"+ofg.getNbNodes()+"$");
       // }
       // else

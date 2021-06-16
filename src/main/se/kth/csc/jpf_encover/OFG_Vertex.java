@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Gurvan Le Guernic
+ * Copyright (C) 2021 Amir M. Ahmadian
  * 
  * This file is part of ENCoVer. ENCoVer is a JavaPathFinder extension allowing
  * to verify if a Java method respects different epistemic noninterference

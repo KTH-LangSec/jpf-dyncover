@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Gurvan Le Guernic
+ * Copyright (C) 2021 Amir M. Ahmadian
  * 
  * This file is part of ENCoVer. ENCoVer is a JavaPathFinder extension allowing
  * to verify if a Java method respects different epistemic noninterference
@@ -37,7 +38,7 @@ import gov.nasa.jpf.Config;
 class EncoverConfiguration {
 
   public static enum AttackerType {PERFECT, BOUNDED, FORGETFUL};
-  public static enum InconsistentPolicyMethod {REJECT, UPDATE};
+  public static enum InconsistentPolicyMethod {REJECT, REPAIR};
 
   static enum Verifier { SMT_COUNTEREXAMPLE_GENERATION, EPISTEMIC_MODEL_CHECKING };
   static enum Output { CONFIG, OFG, INTFERENCE_FML, SIMPLIFIED_INTFERENCE_FML, TIMINGS, METRICS };
@@ -226,9 +227,9 @@ class EncoverConfiguration {
   {
     String inconsistentPolicyMethod = conf.getString("encover.inconsistentPolicyMethod","");
 
-    if (inconsistentPolicyMethod.equals("update"))
+    if (inconsistentPolicyMethod.equals("repair"))
     {
-      return InconsistentPolicyMethod.UPDATE;
+      return InconsistentPolicyMethod.REPAIR;
     }
     else
     {
