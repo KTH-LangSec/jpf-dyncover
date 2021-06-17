@@ -1,6 +1,9 @@
+## Notice
+DynCoVer is based on ENCoVer (https://people.kth.se/~musard/files/encover.html) and has been modified to account for dynamic police checks.
+
 ## Install
 
-- ENCoVer requires Z3. You can manually install Z3 for your platform (https://github.com/Z3Prover/z3) and make sure that Z3 is in your path. ENCoVer is known to work with Z3 version 4.8; it may or may not work with more recent versions.
+- DynCoVer requires Z3. You can manually install Z3 for your platform (https://github.com/Z3Prover/z3) and make sure that Z3 is in your path. DynCoVer is known to work with Z3 version 4.8; it may or may not work with more recent versions.
 
 - You may also need to install ant.
   Test: running `ant -version` in a terminal should return `Apache Ant version 1.7.1 compiled on September 8 2010` or something similar.
@@ -11,7 +14,7 @@
 
 1. Enter the jpf-encover directory
    
-   Command: `cd jpf-encover`.
+   Command: `cd jpf-dyncover`.
 
 2. Run the `compile` task.
    
@@ -37,7 +40,7 @@
 
 4. Run an example (e.g. Benchmarks.program1).
 
-   Command: `bash ../../bin/encover.sh testConf_encover.tests.Benchmarks_program1_perfect_reject.jpf`
+   Command: `bash ../../bin/dyncover.sh testConf_encover.tests.Benchmarks_program1_perfect_reject.jpf`
 
 5. Look at the results.
 

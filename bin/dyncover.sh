@@ -1,6 +1,7 @@
 #!/bin/bash
 
  # Copyright (C) 2012 Gurvan Le Guernic
+ # Copyright (C) 2021 Amir M. Ahmadian
  # 
  # This file is part of ENCoVer. ENCoVer is a JavaPathFinder extension allowing
  # to verify if a Java method respects different epistemic noninterference
@@ -17,7 +18,6 @@
  # 
  # You should have received a copy of the GNU General Public License along with
  # ENCoVer. If not, see <http://www.gnu.org/licenses/>.
-
 
 sitePropertiesFile="$(dirname $0)/../site.properties";
 
