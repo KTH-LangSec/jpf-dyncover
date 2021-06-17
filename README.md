@@ -1,5 +1,5 @@
 ## Notice
-DynCoVer is based on ENCoVer (https://people.kth.se/~musard/files/encover.html) and has been modified to account for dynamic police checks.
+DynCoVer is a tool based on ENCoVer (https://people.kth.se/~musard/files/encover.html). It has modified ENcover to account for dynamic policy chnages, consistent policy checks, and consistent policy generation. 
 
 ## Install
 
