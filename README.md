@@ -3,7 +3,7 @@ DynCoVer is a tool based on [ENCoVer](https://people.kth.se/~musard/files/encove
 
 ## Install
 
-- DynCoVer requires Z3. You can manually install Z3 for your platform (https://github.com/Z3Prover/z3) and make sure that Z3 is in your path. DynCoVer is known to work with Z3 version 4.8; it may or may not work with more recent versions.
+- DynCoVer requires Z3. You can manually install [Z3 for your platform](https://github.com/Z3Prover/z3) and make sure that Z3 is in your path. DynCoVer is known to work with Z3 version 4.8; it may or may not work with more recent versions.
 
 - You may also need to install ant.
   Test: running `ant -version` in a terminal should return `Apache Ant version 1.7.1 compiled on September 8 2010` or something similar.
