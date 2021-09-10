@@ -1,9 +1,9 @@
-## Notice
-DynCoVer is a tool based on [ENCoVer](https://people.kth.se/~musard/files/encover.html). It has modified ENcover to account for dynamic policy chnages, consistent policy checks, and consistent policy generation. 
+# DynCoVer
+DynCoVer is a prototype tool based on [ENCoVer](https://people.kth.se/~musard/files/encover.html) and [JavaPathFinder](https://github.com/javapathfinder). DynCoVer can be used to verify security in the presence of dynamic policies, perform policy consistency checks, and generate consistent policies. 
 
 ## Install
 
-- DynCoVer requires Z3. You can manually install [Z3 for your platform](https://github.com/Z3Prover/z3) and make sure that Z3 is in your path. DynCoVer is known to work with Z3 version 4.8; it may or may not work with more recent versions.
+- DynCoVer requires [Z3](https://github.com/Z3Prover/z3). You can manually install Z3 for your platform and make sure that Z3 is in your path. DynCoVer is known to work with Z3 version 4.8; it may or may not work with more recent versions.
 
 - You may also need to install ant.
   Test: running `ant -version` in a terminal should return `Apache Ant version 1.7.1 compiled on September 8 2010` or something similar.
@@ -12,7 +12,7 @@ DynCoVer is a tool based on [ENCoVer](https://people.kth.se/~musard/files/encove
 
 ## Compile
 
-1. Enter the jpf-encover directory
+1. Enter the jpf-dyncover directory
    
    Command: `cd jpf-dyncover`.
 
@@ -24,7 +24,18 @@ DynCoVer is a tool based on [ENCoVer](https://people.kth.se/~musard/files/encove
 
    Command: `ant test`.
 
-## Running some examples
+## Use cases
+
+- In the examples directory, we provide two use cases: A benchmark and a social network.
+
+- Each use case has a configuration file called `conf_tests.txt`. The information in this file is used by DynCoVer, and it defines among other things:
+	1. The method which is going to be executed symbolically by jpf
+	2. The methods observable by the attacker (e.g. *print*)
+	3. The type of attacker (e.g. *perfect*, *bounded*, *forgetful*)
+	4. The capacity of the bounded attacker's memory (e.g. *bounded,1*) 
+	5. The method used to deal with inconsistent policies (e.g. *reject* or *repair*).
+
+## Running the use cases
 
 1. Compile the examples.
 
@@ -38,7 +49,7 @@ DynCoVer is a tool based on [ENCoVer](https://people.kth.se/~musard/files/encove
  
    Command: `bash bin/generateTestConfFiles.sh Benchmarks`.
 
-4. Run an example (e.g. Benchmarks.program1).
+4. Run the example (e.g. Program 1 in the Benchmarks).
 
    Command: `bash ../../bin/dyncover.sh testConf_encover.tests.Benchmarks_program1_perfect_reject.jpf`
 
