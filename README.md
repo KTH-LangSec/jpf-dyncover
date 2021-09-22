@@ -20,10 +20,6 @@ DynCoVer is a prototype tool based on [ENCoVer](https://people.kth.se/~musard/fi
    
    Command: `ant compile`.
 
-3. Run the `test` task.
-
-   Command: `ant test`.
-
 ## Use cases
 
 - In the examples directory, we provide two use cases: A benchmark and a social network.
