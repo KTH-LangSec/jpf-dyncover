@@ -107,12 +107,12 @@ public class Benchmarks
         case 22: 
             Benchmarks.program22(0,1);
             break;
-        case 23: 
-            Benchmarks.program23(0,1,2);
-            break;
-        case 24: 
-            Benchmarks.program24(0,1);
-            break;
+//         case 23: 
+//             Benchmarks.program23(0,1,2);
+//             break;
+//         case 24: 
+//             Benchmarks.program24(0,1);
+//             break;
         case 25:
             Benchmarks.whileLoop_5(0);
             break;

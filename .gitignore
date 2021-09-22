@@ -1,3 +1,6 @@
+
+
+
 # Compiled class file
 *.class
 
@@ -24,6 +27,8 @@ hs_err_pid*
 
 # Build Directory
 build/
+!lib/jpf-core-r644/build/
+!lib/jpf-symbc-r374/build/
 unitTests/
 
 #outputs
