@@ -51,7 +51,7 @@ DynCoVer is a prototype tool based on [ENCoVer](https://people.kth.se/~musard/fi
 
 5. Run the example (e.g. Program 1 in the Benchmarks).
 
-   Command: `bash ./bin/dyncover.sh testConf_encover.tests.Benchmarks_program1_perfect_reject.jpf`
+   Command: `bash ./bin/dyncover.sh ./build/examples/testConf_encover.tests.Benchmarks_program1_perfect_reject.jpf`
 
 6. Look at the results.
 
