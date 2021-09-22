@@ -44,11 +44,15 @@ DynCoVer is a prototype tool based on [ENCoVer](https://people.kth.se/~musard/fi
 3. Generate configuration files of a set of examples (e.g. Benchmarks).
  
    Command: `bash bin/generateTestConfFiles.sh Benchmarks`.
+   
+4. Return to the main directory.
 
-4. Run the example (e.g. Program 1 in the Benchmarks).
+   Command: `cd ../..`
 
-   Command: `bash ../../bin/dyncover.sh testConf_encover.tests.Benchmarks_program1_perfect_reject.jpf`
+5. Run the example (e.g. Program 1 in the Benchmarks).
 
-5. Look at the results.
+   Command: `bash ./bin/dyncover.sh testConf_encover.tests.Benchmarks_program1_perfect_reject.jpf`
 
-   Command: `less output.out`.
+6. Look at the results.
+
+   Command: `less ./output.out`.
