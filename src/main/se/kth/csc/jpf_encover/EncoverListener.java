@@ -987,15 +987,6 @@ public class EncoverListener extends SymbolicListener {
       if ( elapsedTime_mcmasModelVerification != 0 )
         encoverOut.println("  MCMAS model verification: " + elapsedTimeStr_mcmasModelVerification + " ms (" + elapsedTime_mcmasModelVerification + ")");
       encoverOut.println("");
-
-      // if (elapsedTime_consistentPolicyGeneration == 0)
-      // {
-      //   encoverOut.println("table:  $"+elapsedTimeStr_overall+"$ & $"+elapsedTimeStr_modelExtraction+"$ & $"+elapsedTimeStr_interfFmlGeneration+"$ & $"+elapsedTimeStr_interfFmlSatisfaction+"$ & $"+"-"+"$ & $"+ofg.getNbNodes()+"$");
-      // }
-      // else
-      // {
-      //   encoverOut.println("table:  $"+elapsedTimeStr_overall+"$ & $"+elapsedTimeStr_modelExtraction+"$ & $"+elapsedTimeStr_interfFmlGeneration+"$ & $"+elapsedTimeStr_interfFmlSatisfaction+"$ & $"+elapsedTimeStr_consistentPolicyGeneration+"$ & $"+ofg.getNbNodes()+"$");
-      // }
       
     }
 
@@ -1007,14 +998,6 @@ public class EncoverListener extends SymbolicListener {
       encoverOut.println("  depth of OFG: " + ofg.getDepth());
       encoverOut.println("  width of OFG: " + ofg.getWidth());
       encoverOut.println("");
-
-      // if ( interferenceFormula != null) {
-      //   encoverOut.println("FORMULA SIZE:");
-      //   encoverOut.println("  number of distinct variables: " + interferenceFormula.getVariables().size());
-      //   encoverOut.println("  number of atomic formulas: " + interferenceFormula.getNbAtomicFormulas());
-      //   encoverOut.println("  number of instances of variables or constants: " + interferenceFormula.getNbInstancesCV());
-      //   encoverOut.println("");
-      // }
     }
 
     encoverOut.close();
