@@ -72,7 +72,7 @@ public class Benchmarks
             Benchmarks.program10(0);
             break;
         case 11: 
-            Benchmarks.program11(0,1);
+            Benchmarks.program11(true,false);
             break;
         case 12: 
             Benchmarks.program12(0,1);
@@ -224,7 +224,6 @@ public class Benchmarks
     {
         setPolicy("cc");
         System.out.println(cc);
-        System.out.println(0);
         setPolicy(" ");
         System.out.println(cc);
     }
@@ -239,7 +238,7 @@ public class Benchmarks
     }
 
     /******************************************************/
-    public static void program11(int secret, int key) 
+    public static void program11(boolean secret, boolean key) 
     {
         setPolicy("secret, key");
         System.out.println(secret ^ key);
