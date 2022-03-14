@@ -1,3 +1,10 @@
+This repository contains the source code of DynCoVer, a prototype tool devoloped for the paper"
+
+[Dynamic Policies Revisited](https://github.com/amir-ahmadian/jpf-dyncover/blob/main/paper/Dynamic%20Policies%20Revisited.pdf),
+Amir M. Ahmadian and Musard Balliu,
+_IEEE European Symposium on Security and Privacy (Euro S&P)_, 2022.
+
+---
 # DynCoVer
 DynCoVer is a prototype tool based on [ENCoVer](https://people.kth.se/~musard/files/encover.html) and [JavaPathFinder](https://github.com/javapathfinder). DynCoVer can be used to verify security in the presence of dynamic policies, perform policy consistency checks, and generate consistent policies. 
 
