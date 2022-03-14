@@ -1,4 +1,4 @@
-This repository contains the source code of DynCoVer, a prototype tool devoloped for the paper"
+This repository contains the source code of DynCoVer, a prototype tool devoloped for the paper:
 
 [Dynamic Policies Revisited](https://github.com/amir-ahmadian/jpf-dyncover/blob/main/paper/Dynamic%20Policies%20Revisited.pdf),
 Amir M. Ahmadian and Musard Balliu,
